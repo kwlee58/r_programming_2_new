@@ -1,0 +1,118 @@
+---
+title: "생활 속의 통계학 최종"
+author: "금융정보통계학과 이기원교수"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width=180)
+rm(list=ls())
+```
+
+```{r, presets, , message = FALSE, echo = FALSE}
+options(digits = 3)
+library(xlsx)
+library(knitr)
+library(pander)
+library(magrittr)
+panderOptions("table.split.table", Inf)
+```
+
+
+```{r, Total Scores, message = FALSE, echo = FALSE}
+total <- read.xlsx(file = "../data/scoreList1801v3.xlsx", 
+                   sheetIndex = 1, 
+                   rowIndex = 3:182, 
+                   colIndex = 1:7, 
+                   colClasses = c("character", rep("numeric", 6)), 
+                   header = TRUE,
+                   stringsAsFactors = FALSE)
+total <- total[c(1, 5:7, 3, 4, 2)]
+v_names_total <- c("ID", "Offline", "Online", "TED", "Quiz", "Assignment", "Total")
+names(total) <- v_names_total
+total[total$id == "20122928", c("Assignment", "Total")] <- c(11.0, 80.3)
+```
+
+## FA list
+ 
+```{r, FA_list, eval = TRUE, message = FALSE, echo = FALSE}
+FA_id <- c("20173934", "20183851", "20183957")
+FA <- total$ID %in% FA_id
+kable(total[FA, ], row.names = FALSE)
+```
+
+## 줄기-잎 그림
+
+```{r, message = FALSE, echo = FALSE}
+total2 <- total[!FA, ]
+total2$Total %>% 
+  stem 
+total2$Grades <- total2$Total %>% 
+  cut(breaks = c(0, 1, 20, 60, seq(80, 100, by = 5)), include.lowest = TRUE, right = FALSE) 
+counts <- total2$Grades %>%
+  table
+perc <- counts %>%
+  prop.table %>%
+  `*`(100) %>%
+  round(digits = 2) 
+rbind("Counts" = format(counts, digits = 0, nsmall = 0), 
+      "Percentage" = format(perc, digits = 1, nsmall = 1), 
+      "Cumulative" = format(rev(cumsum(rev(perc))), digits = 1, nsmall = 1)) %>%
+#   cbind("Sum" = rowSums(.)) %>%
+#   format(digits = 1, nsmall = 1) %>%
+  kable(align = "r")
+total2$Grades %<>% 
+  factor(labels = c("F", "D+", "C0", "C+", "B0", "B+", "A0", "A+"))
+total[!FA, ] <- total2[, -8]
+total[!FA, "Grades"] <- total2$Grades
+levels(total$Grades) <- c(levels(total2$Grades), "FA")
+total[FA, "Grades"] <- "FA"
+total %>% 
+  kable(align = c(rep("r", 7), "c"))
+```
+<!--
+
+## 출석, TED 만점자
+
+```{r, eval = TRUE, echo = FALSE}
+kable(total[total$Offline == 20 & total$Online == 10 & total$TED == 30, ],
+      align = c(rep("r", 7), "c"))
+nrow(total[total$Offline == 20 & total$Online == 10 & total$TED == 30, ])
+```
+
+
+##  A 학점자
+
+```{r, eval = TRUE, echo = FALSE}
+kable(total[total$Grades %in% c("A+", "A"), ],
+      align = c(rep("r", 7), "c"))
+nrow(total[total$Grades %in% c("A+", "A"), ])
+```
+
+<P style = "page-break-before:always">
+
+
+```{r, individual scores, eval = TRUE, echo = FALSE}
+total <- total[, ]
+v_names_kr <- c("학번", "교실(20)", "온라인(10)",  "TED(30)", "퀴즈(20)", "과제(20)", "총점(100)", "학점")
+total_kr <- total
+names(total_kr) <- v_names_kr
+my_grade <- function(id){
+  kable(total_kr[total$ID %in% id, ], row.names = FALSE)
+}
+my_grade(c("20103117", "20113228", "20121307"))
+```
+-->
+
+<!--### Save Data
+
+```{r Save Data, echo = FALSE}
+total1226 <- total
+saveRDS(total1226, file = "total1226.RDS")
+save.image(file = "../R/final_Records1226.RData")
+```
+
+-->
+               

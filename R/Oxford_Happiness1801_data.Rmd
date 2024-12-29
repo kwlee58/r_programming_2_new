@@ -1,0 +1,146 @@
+---
+title: "Oxford Happiness_Questionnaire 1801 : Data"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(pander)
+panderOptions("table.split.table", Inf)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+옥스포드 행복 설문지 실험결과를 분석합니다. 이 실험에는 두 가지 목적이 있습니다.
+첫째는 있는 그대로 옥스포드 행복 설문지로 측정하는 여러분의 행복 수준은 어느 정도인지,
+둘째는 영문판으로 응답할 때와 국문판으로 응답할 때 어떤 차이가 있는지, 특히 응답에 소요되는 시간을 측정해 보았습니다. 여러분이 직접 평균 점수를 계산했기 때문에 그 계산과 컴퓨터로 계산한 평균 점수와의 차이도 살펴봅니다.
+
+### Data
+
+```{r, xlsx}
+library(xlsx)
+library(magrittr)
+options(width = 180)
+oxford <- "../data/oxford_happiness180425.xlsx" %>% 
+  read.xlsx(sheetIndex = 1, 
+            startRow = 3, 
+            endRow = 182, 
+            colIndex = 1:33, 
+            colClasses = c("character", rep("numeric", 31), "character"),
+            header = FALSE, 
+            stringsAsFactors = FALSE)
+names(oxford) <- c("ID", paste0("Q", 1:29), "Scores_y", "Duration", "Group")
+oxford$Group %<>% factor(levels = c("Red", "Black"), 
+                         labels = c("국문", "영문"))
+#> (역) 또는 (R) 항목은 7에서 뺀 점수로 
+oxford[, paste0("Q", c(1, 5, 6, 10, 13, 14, 24, 27:29))] %<>% 
+  `-` (7, .)
+oxford$Scores <- oxford[ , 2:30] %>% apply(MARGIN = 1, FUN = function(x) sum(x) / 29)
+# oxford$Diff <- round(oxford$Scores_y - oxford$Scores, digits = 3)
+oxford$Diff <- oxford %$% 
+  `-`(Scores_y, Scores) %>% 
+  round(digits = 3)
+oxford$Duration_m <- oxford$Duration %/% 60
+oxford$Duration_s <- oxford$Duration %% 60
+oxford$Duration_2 <- paste0(oxford$Duration_m, "분", oxford$Duration_s, "초")
+oxford_labels <- c("행복하지 않다", "다소 행복하지 않다", "그저 그렇다",
+                   "꽤 행복하다", "매우 행복하다")
+oxford$Levels <- oxford$Scores %>% 
+  cut(breaks = 1:6, right = FALSE) %>%
+  factor(levels = levels(.), labels = oxford_labels)
+oxford$Duration_2[oxford$Levels %>% is.na] <- NA
+oxford[, c("ID", "Scores_y", "Scores",  "Diff", "Levels", "Duration_2", "Group")] %>% 
+  format(digits = 3, nsmall = 2) %>%
+  pander
+```
+
+### Scores 비교
+
+#### `summary()`
+
+```{r}
+oxford$Scores %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+#### `table()`
+
+```{r}
+oxford_tbl <- oxford$Levels %>% table(oxford$Group, ., useNA = "ifany") %>% addmargins
+colnames(oxford_tbl)[6:7] <- c("결석", "계")
+rownames(oxford_tbl)[3] <-  "계"
+oxford_tbl %>% pander
+oxford_tbl %>% 
+  `[`(-3, -c(1, 6:7)) %>% 
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+oxford_tbl[3, -(6:7)] %>%  
+  prop.table %>% 
+  `*`(100) %>% 
+  c(., "계" = sum(.)) %>%
+  format(digits = 1, nsmall = 1) %>% 
+  pander
+```
+
+#### `boxplot()`
+
+```{r}
+par(family = "HCR Dotum LVT")
+boxplot(Scores ~ Group, data = oxford)
+```
+
+#### `t.test()` on means
+
+```{r}
+t.test(Scores ~ Group, data = oxford, var.equal = FALSE) %>% pander
+```
+
+### 소요시간 비교
+
+#### `summary()`
+
+```{r}
+oxford$Duration %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+#### `boxplot()`
+
+```{r}
+par(family = "HCR Dotum LVT")
+boxplot(Duration ~ Group, data = oxford)
+```
+
+#### `t.test()` on means
+
+```{r}
+t.test(Duration ~ Group, data = oxford, var.equal = FALSE) %>% pander
+```
+
+### Difference
+
+#### `summary()`
+
+```{r}
+oxford$Diff %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+#### `boxplot()`
+
+```{r}
+par(family = "HCR Dotum LVT")
+boxplot(Diff ~ Group, data = oxford)
+```
+
+#### `t.test()` on means
+
+```{r}
+t.test(Diff ~ Group, data = oxford, var.equal = FALSE) %>% pander
+```
+
+

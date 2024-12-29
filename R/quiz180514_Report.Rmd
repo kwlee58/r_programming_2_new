@@ -1,0 +1,222 @@
+---
+title: "Anchor Effects"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+library(xlsx)
+library(magrittr)
+library(pander)
+library(knitr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+# options(width = 180)
+```
+
+```{r, data, echo = FALSE, results = 'hide'}
+quiz0514 <- "../data/quiz180514.xlsx" %>% 
+  read.xlsx(sheetIndex = 1, 
+            startRow = 2, 
+            endRow = 182, 
+            colIndex = 1:6, 
+            colClasses = c(rep("character", 6)), 
+            encoding = "UTF-8",
+            stringsAsFactors = FALSE)
+quiz0514 %>% str
+names(quiz0514) <- c("id", "Q1", "Q2", "Q3", "Q4", "group")
+quiz0514$group %<>% factor(levels = c("Red", "Black"))
+quiz0514$Q1 %<>% factor(levels = c("가", "나", "다", "라", "무응답"), 
+                        labels = c("황금기 최대증가 1분위", 
+                                 "황금기 최대증가율 1분위", 
+                                 "신자유주의기 최대증가 1분위", 
+                                 "신자유주의기 최대증가율 1분위",
+                                 "불참"))
+quiz0514$Q2 %<>% factor(levels = c("가", "나", "다", "라", "무응답"), 
+                        labels = c("10억", "20억", "25억", "30억", "불참"))
+quiz0514$Q3 %<>% factor(levels = c("가", "나", "다", "라", "무응답"), 
+                        labels = c("100%", "75%", "50%", "25%", "불참"))
+quiz0514$Q4 %<>% factor(levels = c("가", "나", "다", "라", "마", "무응답"), 
+                        labels = c("무상", "100만원", "200만원", "500만원", "1,000만원", "불참"))
+quiz0514 %>% str
+```
+
+```{r, echo = FALSE, results = 'hide'}
+quiz0514 %>%
+  summary %>%
+  pander
+```
+
+### 퀴즈 응답 비교
+
+#### 활금기와 신자유주의 시기 소득5분위별 소득증가율
+
+`r knitr::include_graphics("../pics/Quiz171108_Q1.png", dpi = NA)`
+
+##### 집계
+
+```{r, echo = FALSE}
+tbl_q1_a <- quiz0514$Q1 %>% 
+  table(quiz0514$group, ., useNA = "ifany") %>%
+  cbind(., "계" = rowSums(.)) %>%
+  rbind(., "계" = colSums(.))
+#   addmargins  
+colnames(tbl_q1_a)[5:6] %<>% `<-`(., c("불참", "결석"))
+# rownames(tbl_q1_a)[3] %<>% `<-`(., "계")
+tbl_q1_a %>% 
+  kable
+# tbl_q1_a[-3, -(5:7)] %>% 
+#   chisq.test(simulate.p.value = TRUE) %>% 
+#   pander
+```
+
+##### %
+
+```{r, productivity vs wage in percentage, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -(5:7), drop = FALSE) %>%
+  prop.table %>% 
+  cbind(., "계" = rowSums(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  kable(align = "r")
+```
+
+<P style = "page-break-before:always">
+
+#### LM3
+
+`r knitr::include_graphics("../pics/Quiz171108_Q2.png", dpi = NA)`
+
+##### 집계
+
+```{r, LM3, echo = FALSE}
+tbl_q2_a <- quiz0514$Q2 %>%
+  table(quiz0514$group, ., useNA = "ifany") %>%
+  cbind(., "계" = rowSums(.)) %>%
+  rbind(., "계" = colSums(.))
+#   addmargins
+colnames(tbl_q2_a)[5:6] <- c("불참", "결석")
+tbl_q2_a %>% 
+  kable 
+tbl_q2_a %>%
+  `[`(-3, -(5:7)) %>% 
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+##### %
+
+```{r, LM3 in percentage, echo = FALSE}
+tbl_q2_a %>%
+  `[`(3, -(5:7), drop = FALSE) %>%
+  prop.table %>%
+  cbind(., "계" = rowSums(.)) %>%
+  `*`(100) %>%
+  format(., digits = 2, nsmall = 1) %>%
+  kable(align = "r")
+```
+
+<P style = "page-break-before:always">
+
+#### 식량자급률
+
+`r knitr::include_graphics("../pics/Quiz171108_Q3.png", dpi = NA)`
+
+##### 집계
+
+```{r, echo = FALSE}
+tbl_q3_a <- quiz0514$Q3 %>%
+  table(quiz0514$group, ., useNA = "ifany") %>%
+  cbind(., "계" = rowSums(.)) %>%
+  rbind(., "계" = colSums(.))
+#   addmargins
+colnames(tbl_q3_a)[5:6] <- c("불참", "결석")
+tbl_q3_a %>% 
+  kable
+tbl_q3_a %>%
+  `[`(-3, 2:4) %>% 
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+##### %
+
+```{r, echo = FALSE}
+tbl_q3_a %>%
+  `[`(3, -(5:7), drop = FALSE) %>%
+  prop.table %>%
+  cbind(., "계" = rowSums(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  kable(align = "r")
+```
+
+<P style = "page-break-before:always">
+
+#### 국공립대 등록금 국제 비교
+
+##### Red
+
+`r knitr::include_graphics("../pics/Quiz171108_Q4_Red.png", dpi = NA)`
+
+##### Black
+
+`r knitr::include_graphics("../pics/Quiz171108_Q4_Black.png", dpi = NA)`
+
+이 질문은 THAAD배치 질문에서와 같이 배경 설명이 응답에 많은 영향을 미친다는 것을 보여줍니다. 국공립대학의 등록금이 무상인 나라들을 소개한 Red군에서는 적정 수준이 "무상" 또는 100만원 이라고 이라고 응답한 비율이 72.4%로 국공립대학의 등록금이 우리나라보다 높거나 대등한 나라들의 예를 먼저 들고 적정 수준을 물어본 경우(Black)에 "무상" 또는 100만원이라고 응답한 비율인 33.8%보다 월등히 높은 것을 알 수 있습니다. 500만원 이상을 적정하다고 응답한 비율이 Red 집단에는 4.3%에 불과하지만 Black 집단에는 10.4%나 되는 점도 마찬가지 이유에서 입니다.
+
+##### 국공립대 등록금의 적정 수준
+
+```{r, college tuition, echo = FALSE}
+tbl_q4_a <- quiz0514$Q4 %>%
+  table(quiz0514$group, ., useNA = "ifany") %>%
+  cbind(., "계" = rowSums(.)) %>%
+  rbind(., "계" = colSums(.))
+#   addmargins
+colnames(tbl_q4_a)[7] <- "결석"
+rownames(tbl_q4_a) <- c("Red(등록금무상국가 소개)", "Black(등록금고액국가 소개)", "계")
+tbl_q4_a %>% 
+  kable
+tbl_q4_a %>%
+  `[`(-3, -(6:8)) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+##### 국공립대 등록금의 적정 수준 (%)
+
+```{r, college tuition in percentage, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(-3, -(6:8)) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  kable(align = "r")
+```
+
+##### 국공립대 등록금의 적정 수준 (%) 무상, 100만원 => 100만원 이하, 200만원, 500만원, 1,000만원 => 200만원 이상
+
+```{r, college tuition in percentage 2, echo = FALSE}
+levels(quiz0514$Q4) <- list("100만원 이하" = c("무상", "100만원"), "200만원 이상" = c("200만원", "500만원", "1,000만원"))
+quiz0514$Q4 %>%
+  table(quiz0514$group, ., useNA = "ifany") %>%
+  cbind(., "계" = rowSums(.)) %>%
+  rbind(., "계" = colSums(.)) %>%
+  `[`(-3, -(3:4)) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  kable(align = "r")
+```
+
+```{r, save, echo = FALSE}
+# save.image("../R/quiz0514.rda")
+```

@@ -1,0 +1,291 @@
+---
+title: "Oxford Happiness Questionnaire"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(pander)
+panderOptions("table.split.table", Inf)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+옥스포드 행복 설문지 실험결과를 분석한다. 이 실험에는 두 가지 목적이 있다.
+첫째는 있는 그대로 옥스포드 행복 설문지로 측정하는 여러분의 행복 수준은 어느 정도인지,
+둘째는 영문판으로 응답할 때와 국문판으로 응답할 때 어떤 차이가 있는지, 특히 응답에 소요되는 시간을 측정해 보았다. 여러분이 직접 손으로 계산한 값과 컴퓨터로 계산한 값의 차이도 살펴본다.
+
+## Data
+
+```{r, echo = FALSE, message = FALSE}
+library(xlsx)
+library(magrittr)
+library(extrafont)
+options(width = 180)
+oxford <- "../data/oxford_happiness180425.xlsx" %>% 
+  read.xlsx(sheetIndex = 1, 
+            startRow = 3, 
+            endRow = 182, 
+            colIndex = 1:33, 
+            colClasses = c("character", rep("numeric", 31), "character"),
+            header = FALSE, 
+            stringsAsFactors = FALSE)
+names(oxford) <- c("ID", paste0("Q", 1:29), "Scores_M", "Duration", "Group")
+oxford$Group %<>% 
+  factor(levels = c("Red", "Black"), 
+         labels = c("국문", "영문"))
+#> (역) 또는 (R) 항목은 7에서 뺀 점수로 
+oxford[, paste0("Q", c(1, 5, 6, 10, 13, 14, 24, 27:29))] %<>% 
+  `-` (7, .)
+oxford$Scores <- oxford[ , 2:30] %>% 
+  apply(MARGIN = 1, FUN = {. %>% sum %>% `/`(29)})
+#  apply(MARGIN = 1, FUN = function(x) sum(x) / 29)
+#  oxford$Diff <- round(oxford$Scores_M - oxford$Scores, digits = 3)
+oxford$Diff <- oxford %$% 
+  `-`(Scores_M, Scores) %>% 
+  round(digits = 3)
+oxford$Duration_m <- oxford$Duration %/% 60
+oxford$Duration_s <- oxford$Duration %% 60
+oxford$Duration_2 <- paste0(oxford$Duration_m, "분", oxford$Duration_s, "초")
+oxford_labels <- c("행복하지 않다", "다소 행복하지 않다", "그저 그렇다",
+                   "꽤 행복하다", "매우 행복하다")
+oxford$Levels <- oxford$Scores %>% 
+  cut(breaks = 1:6, right = FALSE) %>%
+  factor(levels = levels(.), labels = oxford_labels)
+oxford$Duration_2[oxford$Levels %>% is.na] <- NA
+col_names <- c("학번", "손점수", "컴퓨터점수", "차이", "행복 수준", "소요 시간", "질문지 유형")
+oxford[, c("ID", "Scores_M", "Scores",  "Diff", "Levels", "Duration_2", "Group")] %>% 
+  format(digits = 3, nsmall = 2) %>%
+  kable(align = c("c", "c", "c", "c", "r", "r", "c"), col.names = col_names)
+```
+
+<P style = "page-break-before:always">
+
+## 행복 점수 비교
+
+국문 설문지와 영문 설문지의 행복점수를 비교한다. 행복점수 단계별로 비교했을 때는 국문과 영문 설문지의 차이는 얼핏 보았을 때나 카이제곱 테스트로 검증하였을 때나 유의한 차이를 발견할 수 없는 데 평균 점수에 대해서 t-test를 수행한 결과는 통계적으로 유의하다고 나온다. 
+
+### `summary()`
+
+```{r, echo = FALSE}
+oxford$Scores %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+### `table()`
+
+```{r, echo = FALSE}
+oxford_tbl <- oxford %$%
+  table(.$Group, .$Levels, useNA = "ifany") %>% 
+  cbind(., "계" = rowSums(.)) %>%
+  rbind(., "게" = colSums(.))
+# oxford_tbl <- oxford$Levels %>% 
+#   table(oxford$Group, ., useNA = "ifany") %>% 
+#   cbind(., "계" = rowSums(.)) %>%
+#   rbind(., "게" = colSums(.))
+colnames(oxford_tbl)[6] <- "결석"
+# rownames(oxford_tbl)[3] <-  "계"
+oxford_tbl %>% 
+  kable
+oxford_tbl %>% 
+  `[`(-3, -c(1, 6:7)) %>% 
+  chisq.test(simulate.p.value = TRUE)
+#> `drop = FALSE` 가 왜 필요한지 생각해 볼 것.
+oxford_tbl[3, -(6:7), drop = FALSE] %>%  
+  prop.table %>% 
+  `*`(100) %>% 
+  cbind(., "계" = rowSums(.)) %>%
+  format(digits = 1, nsmall = 1) %>% 
+  kable
+# oxford_tbl[3, -(6:7)] %>%  
+#   prop.table %>% 
+#   `*`(100) %>% 
+#   c(., "계" = sum(.)) %>%
+#   t %>%
+#   format(digits = 1, nsmall = 1) %>% 
+#   kable
+```
+
+<!--
+### `boxplot()`
+
+```{r, echo = FALSE}
+par(family = "HCR Dotum LVT")
+boxplot(Scores ~ Group, data = oxford)
+```
+-->
+
+<P style = "page-break-before:always">
+
+### `geom_boxplot()`
+
+```{r, echo = FALSE, message = FALSE, fig.width = 4.5, fig.height = 4.5}
+library(tidyverse)
+library(ggplot2)
+source("theme_kr_Malgun.R")
+ggplot(data = oxford, 
+       mapping = aes(x = Group, y = Scores)) +
+  geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
+  theme_bw() +
+  theme_kr +
+  scale_x_discrete(name = "질문지 유형") +
+  scale_y_continuous(name = "행복 점수")
+```
+
+### `t.test()` on means
+
+```{r, echo = FALSE}
+t.test(Scores ~ Group, data = oxford, var.equal = FALSE) 
+```
+
+<P style = "page-break-before:always">
+
+## 소요시간 비교
+
+초 단위로 측정한 소요시간에서는 예상한 바와 같이 상당한 차이가 관찰된다. 평균, 중위수에서도 차이가 뚜렷할 뿐 아니라 `boxplot()`과 t-test에서 매우 큰 차이를 보인다.
+평균적으로 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% round(1)`초, 즉 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% "%/%"(60)`분 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% "%%"(60) %>% round`초정도 국문 질문지에 더 빨리 응답한다. 중위소요시간을 비교해 봐도 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% round(1)` 초, 약 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% "%/%"(60) `분 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% "%%"(60)  %>% round`초 만큼 국문 질문지에 더 빨리 응답한다.
+
+### `summary()`
+
+```{r, echo = FALSE}
+oxford$Duration %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+<!--
+### `boxplot()`
+
+```{r, echo = FALSE}
+par(family = "HCR Dotum LVT")
+boxplot(Duration ~ Group, data = oxford)
+```
+-->
+
+### `geom_boxplot()`
+
+```{r, fig.width = 4.5, fig.height = 4.5, echo = FALSE, message = FALSE}
+ggplot(data = oxford, 
+       mapping = aes(x = Group, y = Duration)) +
+  geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
+  theme_bw() +
+  theme_kr +
+  scale_x_discrete(name = "질문지 유형") +
+  scale_y_continuous(name = "소요시간")
+```
+
+### `t.test()` on means
+
+```{r, echo = FALSE}
+t.test(Duration ~ Group, data = oxford, var.equal = FALSE)
+```
+
+<P style = "page-break-before:always">
+
+## Difference
+
+손으로 집계한 값과 컴퓨터로 집계한 값들을 산점도로 비교해 본다.
+
+### `plot()`
+
+```{r, fig.width = 4.5, fig.height = 4.5, echo = FALSE, eval = TRUE}
+par(family = "Malgun Gothic")
+plot(Scores_M ~ Scores, 
+     data = oxford, 
+     col = 3 - as.numeric(Group), 
+     pch = (as.numeric(Group) - 1) * 3 + 1,
+     xlim = c(2, 6), ylim = c(2, 6),
+     ann = FALSE)
+abline(a = 0, b = 1)
+title(xlab = "컴퓨터 집계", ylab = "손 집계")
+legend("topleft", inset = 0.05, 
+       title = "질문지 유형",
+       legend = c("국문", "영문"),
+       pch = c(1, 4),
+       col = c(2, 1))
+```
+
+### `geom_point()`
+
+```{r, fig.width = 4.5, fig.height = 4.5, echo = FALSE, message = FALSE}
+ggplot(data = oxford, 
+       mapping = aes(x = Scores, y = Scores_M, colour = Group, shape = Group)) +
+  geom_point(na.rm = TRUE) +
+  theme_bw() +
+  theme_kr +
+  scale_x_continuous(name = "컴퓨터 집계", limits = c(2, 6)) +
+  scale_y_continuous(name = "손 집계", limits = c(2, 6)) +
+  scale_colour_manual(name = "질문지 유형", values = c("Red", "Black")) +
+  scale_shape_manual(name = "질문지 유형", values = c(1, 4)) +
+  theme(legend.box.background = element_rect(), legend.position = c(0.15, 0.85), )
+```
+
+### `summary()`
+
+```{r, echo = FALSE}
+oxford$Diff %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+<!--
+### `boxplot()`
+
+```{r, echo = FALSE}
+par(family = "HCR Dotum LVT")
+boxplot(Diff ~ Group, data = oxford)
+```
+-->
+
+### `geom_boxplot()`
+
+```{r, echo = FALSE, fig.width = 4.5, fig.height = 4.5}
+ggplot(data = oxford, 
+       mapping = aes(x = Group, y = Diff)) +
+  geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
+  theme_bw() +
+  theme_kr +
+  scale_x_discrete(name = "질문지 유형") +
+  scale_y_continuous(name = "차이")
+```
+
+<P style = "page-break-before:always">
+
+### 평균과 표준편차
+
+국문 질문지를 사용한 경우 컴퓨터로 집계한 것과 손으로 집계한 것의 차이의 평균은 
+`r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% "["(1) %>% round(3)`점, 표준편차는 `r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = sd, na.rm = TRUE) %>% "["(1) %>% round(3)` 점, 표본의 크기는 $75 + 1 = 76$이므로 $표준오차 = 표준편차/\sqrt{표본의 크기}$ 로부터 모집단의 평균은 대략 `r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% "["(1) %>% round(3)` $\pm$ 
+`r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = sd, na.rm = TRUE) %>% "["(1) %>% "/"(sqrt(76)) %>% round(3)` 점 정도될 것으로 추측할 수 있다.
+영문 질문지를 사용한 경우 표본의 평균은 `r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% "["(2) %>% round(3)`점, 표준편차는 `r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = sd, na.rm = TRUE) %>% "["(2) %>% round(3)` 점, 표본의 크기는 $73 + 1 = 74$이므로 모집단의 평균은 대략 `r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% "["(2) %>% round(3)` $\pm$ 
+`r oxford %$% Diff %>% tapply(INDEX = oxford$Group, FUN = sd, na.rm = TRUE) %>% "["(2) %>% "/"(sqrt(74)) %>% round(3)` 점 정도될 것으로 추측할 수 있다. 즉, 국문 질문지의 경우 컴퓨터로 집계하는 것보다 손으로 집계할 경우 0.08 점 정도 낮게 나올 수 있고, 영문 질문지를 사용할 경우 평균적으로 차이가 나지 않지만 편차는 국문 질문지보다 두 배 정도 크다는 것을 알 수 있다.
+
+### 표본 평균
+
+```{r, echo = FALSE}
+oxford %$% 
+  Diff %>%
+  tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% 
+  round(3) 
+```
+
+### 표본 표준편차
+
+```{r, echo = FALSE}
+oxford %$% 
+  Diff %>% 
+  tapply(INDEX = oxford$Group, FUN = sd, na.rm = TRUE) %>% 
+  round(3) 
+```
+
+### `t.test()`
+
+```{r, echo = FALSE}
+oxford %$% 
+  Diff %>% 
+  tapply(INDEX = oxford$Group, FUN = t.test) %>% 
+  pander
+```
+
+

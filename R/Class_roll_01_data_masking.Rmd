@@ -1,0 +1,66 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(xlsx)
+library(knitr)
+```
+
+### Data
+
+```{r, data}
+class_roll <- read.xlsx("../data/class_roll01.xlsx", 
+                        sheetIndex = 1, 
+                        startRow = 2, 
+                        endRow = 12, 
+                        colIndex = c(3:7, 9), 
+                        colClasses = rep("character", 6),
+                        encoding = "UTF-8",
+                        stringsAsFactors = FALSE)
+names(class_roll) <- c("dept", "id", "name", "year", "e.mail", "cell.no")
+kable(class_roll)
+```
+
+### Names
+
+```{r, name}
+not3.ind <- which(nchar(class_roll$name) != 3)
+not3.ind
+class_roll$name[not3.ind] <- paste(substr(class_roll$name[not3.ind], 1, 1), "ㅇㅇ", sep = "")
+class_roll$name[not3.ind]
+names.split <- sapply(class_roll$name, function(x) unlist(strsplit(x, split = "")))
+kable(names.split[, 1:10])
+names.split[2:3, ] <- rep("ㅇ", 2)
+class_roll$name <- apply(names.split, 2, paste, collapse = "")
+kable(class_roll)
+```
+
+### Cell Phone Numbers
+
+```{r, cell.no}
+cell.na <- is.na(class_roll$cell.no)
+class_roll$cell.no[cell.na] <- "NA-NA-NA"
+cell.split <- sapply(class_roll$cell.no, function(x) unlist(strsplit(x, split = "-")))
+kable(cell.split[, 1:5])
+cell.split[3, ] <- "xxxx"
+class_roll$cell.no <- apply(cell.split, 2, paste, collapse = "-")
+kable(class_roll)
+```
+
+### e-mail
+
+
+```{r, e_mail}
+e.mail.na <- is.na(class_roll$e.mail)
+class_roll$e.mail[e.mail.na] <- "NA@NA"
+email.split <- sapply(class_roll$e.mail, function(x) unlist(strsplit(x, split = "@")))
+kable(email.split[, 1:5])
+email.split[1, ] <- "user_name"
+class_roll$e.mail <- apply(email.split, 2, paste, collapse = "@")
+kable(class_roll)
+```
+
+<!--
+```{r, save}
+write.table(class_roll, file ="../data/class_roll_masked.txt")
+save.image("../R/class_roll_170303_data_masked.RData")
+```
+-->

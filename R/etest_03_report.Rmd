@@ -1,0 +1,133 @@
+---
+title: "Quiz03 Submission Time"
+# author: "coop711"
+# date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# install.packages("readr", repos = "https://cran/rstudio.com")
+library(xlsx)
+library(pander)
+library(knitr)
+library(extrafont)
+panderOptions('table.split.table', Inf)
+options(width = 180)
+```
+
+<!--
+### Data
+-->
+
+```{r, data, echo = FALSE, results = "hide"}
+class_id_group0907 <- readRDS("./class_id_group180907.RDS")
+quiz03 <- read.xlsx("../data/etest03.xlsx", 
+                        sheetIndex = 1, 
+                        startRow = 3, 
+                        endRow = 159, 
+                        colIndex = 2:5, 
+#                        colClasses = rep("character", 6), 
+                        encoding = "UTF-8",
+                        stringsAsFactors = FALSE)
+names(quiz03) <- c("id", "score1", "score2", "time")
+quiz03$group <- class_id_group0907$group[match(quiz03$id, class_id_group0907$id)]
+quiz03$submit <- ifelse(is.na(quiz03$time), "미제출", "제출")
+quiz03$hours_passed <- as.numeric(difftime(Sys.time(), quiz03$time, units = 'days'))
+## 학교 정보시스템이 GMT로 표기되어 있어서 9시간의 타임갭을 감안하여야 함.
+quiz03$days <- as.numeric(difftime("2018-09-24 09:00:00", quiz03$time, units = 'days'))
+quiz03$hours <- as.numeric(difftime("2018-09-24 09:00:00", quiz03$time, units = 'hours'))
+quiz03$bird <- factor(ifelse(quiz03$hours >= 10, "Early", "Late"), 
+                      labels = c("마감날 오후2시 이전 제출", "마감날 오후2시 이후 제출"))
+str(quiz03)
+```
+
+
+### 제출/미제출
+
+제출시간이 기록되지 않은 사람은 미제출.
+
+```{r, echo = FALSE, results = "markup"}
+kable(table(quiz03$group, quiz03$submit))
+pander(chisq.test(table(quiz03$group, quiz03$submit)))
+```
+
+## 제출 시간의 분포
+
+마감 시간으로부터 얼마나 일찍 제출하는지 일 단위와 시간 단위로 측정하여 살펴보았다. 
+
+### 시간 단위 기초통계량
+
+```{r, echo = FALSE}
+# quiz03$hours
+summary(quiz03$hours)
+stem(quiz03$hours)
+max(quiz03$hours, na.rm = TRUE)
+```
+
+### 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "Malgun Gothic")
+pander(table(cut(quiz03$days, breaks = c(0:7), include.lowest = TRUE)), caption = "일 단위")
+barplot(rev(table(cut(quiz03$days, breaks = c(0:7), include.lowest = TRUE))), 
+        space = 0,
+        names.arg = paste0(7:1, "일"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+### 시간 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+breaks <- c(0:10, seq(24, 168, by = 24))
+pander(table(cut(quiz03$hours, breaks = breaks, include.lowest = TRUE)), caption = "시간 단위")
+```
+
+### 시간 당 제출 건수의 분포
+
+```{r, echo = FALSE}
+par(family = "Malgun Gothic")
+widths <- c(rep(24, 6), 14, rep(1, 10))
+freqs <- table(cut(quiz03$hours, breaks = c(0:10, seq(24, 168, by = 24)), include.lowest = TRUE))
+heights <- freqs / diff(breaks)
+names_args <- c(paste0(7:1, "일"), rep("", 10))
+barplot(height = rev(heights), width = widths, 
+        space = 0,
+        names.arg = names_args)
+title(main = "시간당 퀴즈 제출 분포")
+arrows(x0 = 144, y0 = 3, x1 = 156, y1 = 0.75, length = 0.15, code = 2, col = "red", lwd = 1.5)
+text(x = 141, y = 3.2, labels = "오후 2시", srt = 15, col = "red")
+```
+
+### 급히 제출한 사람과 일찍 낸 사람 비교
+
+마감 당일 오후 2시 이후에 제출한 사람과 그 이전에 제출한 사람들의 특성 비교
+
+#### 랜덤화 효과
+
+```{r, echo = FALSE}
+kable(table(quiz03$group, quiz03$bird))
+```
+
+#### 기초통계 비교
+
+```{r, echo = FALSE}
+pander(tapply(quiz03$score1, quiz03$bird, summary))
+```
+
+#### Box Plot
+
+```{r, echo = FALSE}
+par(family = "Malgun Gothic")
+plot(score1 ~ bird, data = quiz03, 
+     main = "급히 낸 사람과 일찍 낸 사람", 
+     xlab = "제출 시점", ylab = "퀴즈 점수")
+```
+
+#### t test
+
+```{r, echo = FALSE}
+t.test(score1 ~ bird, data = quiz03)
+```

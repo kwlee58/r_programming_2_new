@@ -1,0 +1,602 @@
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
+
+<script language=javascript>
+
+	var commonResultMessage = "null";
+	if(commonResultMessage=="" || commonResultMessage=="null") {
+		commonResultMessage = "null";
+	}
+	var localeKey = "ko";
+</script>
+
+<html>
+	<head>
+		<title>Learner_File_Save</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	</head>
+<body>
+<form name="learnerForm" method="post" action="/Learner.do">
+<table border="1" cellspacing="0" cellpadding="0" width="900">
+
+	<tr>
+		<td colspan="9" class="search-title">
+			과목명 :
+			응용프로그래밍:R-02(505563)
+		</td>
+	</tr>
+	<tr>
+		<td width="40">No</td>
+		<td width="60">과정</td>
+		<td width="90">학과</td>
+		<td width="80">학(직)번</td>
+		<td width="100">이름</td>
+		<td width="80">학년</td>
+		<td width="200">E-Mail</td>
+		<td width="70">학적상태</td>
+		<td width="140">핸드폰번호</td>
+	</tr>
+	
+		
+			<tr>
+				<td>1</td>
+				<td></td>
+				<td>경영학과</td>
+				<td>20122802</td>
+				<td>강민영
+					
+				</td>
+				<td>4</td>
+				<td>coolguy93@hallym.ac.kr</td>
+				<td></td>
+				<td>010-9950-0560</td>
+			</tr>
+		
+			<tr>
+				<td>2</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143402</td>
+				<td>강주원
+					
+				</td>
+				<td>2</td>
+				<td>wndnjs3283@naver.com</td>
+				<td></td>
+				<td>010-5185-3283</td>
+			</tr>
+		
+			<tr>
+				<td>3</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163201</td>
+				<td>김규리
+					
+				</td>
+				<td>2</td>
+				<td>124rbfl@naver.com</td>
+				<td></td>
+				<td>010-3136-7525</td>
+			</tr>
+		
+			<tr>
+				<td>4</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163202</td>
+				<td>김나경
+					
+				</td>
+				<td>2</td>
+				<td>tmxpsejwl2@naver.com</td>
+				<td></td>
+				<td>010-4909-3791</td>
+			</tr>
+		
+			<tr>
+				<td>5</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163203</td>
+				<td>김다호
+					
+				</td>
+				<td>2</td>
+				<td>kdh970616@naver.com</td>
+				<td></td>
+				<td>010-8648-8091</td>
+			</tr>
+		
+			<tr>
+				<td>6</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163204</td>
+				<td>김슬기
+					
+				</td>
+				<td>2</td>
+				<td>sbe04071@naver.com</td>
+				<td></td>
+				<td>010-8786-0575</td>
+			</tr>
+		
+			<tr>
+				<td>7</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163206</td>
+				<td>김유진
+					
+				</td>
+				<td>2</td>
+				<td>kyjin0304@naver.com</td>
+				<td></td>
+				<td>010-5199-7498</td>
+			</tr>
+		
+			<tr>
+				<td>8</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163208</td>
+				<td>김지연
+					
+				</td>
+				<td>2</td>
+				<td>jyk0365@naver.com</td>
+				<td></td>
+				<td>010-6536-4041</td>
+			</tr>
+		
+			<tr>
+				<td>9</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143404</td>
+				<td>김지연
+					
+				</td>
+				<td>4</td>
+				<td>rlawldus0914@naver.com</td>
+				<td></td>
+				<td>010-4539-9475</td>
+			</tr>
+		
+			<tr>
+				<td>10</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143405</td>
+				<td>김태수
+					
+				</td>
+				<td>2</td>
+				<td>thrujjang95@naver.com</td>
+				<td></td>
+				<td>010-9410-8490</td>
+			</tr>
+		
+			<tr>
+				<td>11</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143407</td>
+				<td>김혜란
+					
+				</td>
+				<td>4</td>
+				<td>hiek2001@naver.com</td>
+				<td></td>
+				<td>010-9868-6627</td>
+			</tr>
+		
+			<tr>
+				<td>12</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20153311</td>
+				<td>노경식
+					
+				</td>
+				<td>3</td>
+				<td>roks1996@naver.com</td>
+				<td></td>
+				<td>010-3039-6897</td>
+			</tr>
+		
+			<tr>
+				<td>13</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163213</td>
+				<td>문가연
+					
+				</td>
+				<td>2</td>
+				<td>rkdus9205@naver.com</td>
+				<td></td>
+				<td>010-7113-0063</td>
+			</tr>
+		
+			<tr>
+				<td>14</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143409</td>
+				<td>박찬영
+					
+				</td>
+				<td>2</td>
+				<td>cksdud436@nate.com</td>
+				<td></td>
+				<td>010-6354-6719</td>
+			</tr>
+		
+			<tr>
+				<td>15</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163221</td>
+				<td>박혜진
+					
+				</td>
+				<td>2</td>
+				<td>phjin3716@naver.com</td>
+				<td></td>
+				<td>010-3009-3716</td>
+			</tr>
+		
+			<tr>
+				<td>16</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143410</td>
+				<td>신경호
+					
+				</td>
+				<td>2</td>
+				<td>keke3943@nate.com</td>
+				<td></td>
+				<td>010-2074-3943</td>
+			</tr>
+		
+			<tr>
+				<td>17</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163227</td>
+				<td>신나리
+					
+				</td>
+				<td>2</td>
+				<td>snl305@naver.com</td>
+				<td></td>
+				<td>010-9308-8912</td>
+			</tr>
+		
+			<tr>
+				<td>18</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163229</td>
+				<td>심혜지
+					
+				</td>
+				<td>2</td>
+				<td>tlagpwl8489@naver.com</td>
+				<td></td>
+				<td>010-4355-8489</td>
+			</tr>
+		
+			<tr>
+				<td>19</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163230</td>
+				<td>안수정
+					
+				</td>
+				<td>2</td>
+				<td>ahnsoo97@naver.com</td>
+				<td></td>
+				<td>010-2779-6122</td>
+			</tr>
+		
+			<tr>
+				<td>20</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143411</td>
+				<td>염민수
+					
+				</td>
+				<td>2</td>
+				<td>yms7560@naver.com</td>
+				<td></td>
+				<td>010-5054-6211</td>
+			</tr>
+		
+			<tr>
+				<td>21</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143413</td>
+				<td>우상휘
+					
+				</td>
+				<td>2</td>
+				<td>bubi15@naver.com</td>
+				<td></td>
+				<td>010-6293-4666</td>
+			</tr>
+		
+			<tr>
+				<td>22</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163231</td>
+				<td>원소영
+					
+				</td>
+				<td>2</td>
+				<td>dpqmsth1@naver.com</td>
+				<td></td>
+				<td>010-7617-3567</td>
+			</tr>
+		
+			<tr>
+				<td>23</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163232</td>
+				<td>위승연
+					
+				</td>
+				<td>2</td>
+				<td>raycome@hanmail.net</td>
+				<td></td>
+				<td>01083563691</td>
+			</tr>
+		
+			<tr>
+				<td>24</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20153422</td>
+				<td>유민희
+					
+				</td>
+				<td>2</td>
+				<td>dbalsgml703@naver.com</td>
+				<td></td>
+				<td>010-5036-6129</td>
+			</tr>
+		
+			<tr>
+				<td>25</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163234</td>
+				<td>윤상희
+					
+				</td>
+				<td>2</td>
+				<td>boradoli9@naver.com</td>
+				<td></td>
+				<td>010-8806-1903</td>
+			</tr>
+		
+			<tr>
+				<td>26</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163235</td>
+				<td>이가원
+					
+				</td>
+				<td>2</td>
+				<td>lgw9498@naver.com</td>
+				<td></td>
+				<td>010-3001-9498</td>
+			</tr>
+		
+			<tr>
+				<td>27</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143417</td>
+				<td>이대정
+					
+				</td>
+				<td>2</td>
+				<td>leedj1995@naver.com</td>
+				<td></td>
+				<td>010-9166-5139</td>
+			</tr>
+		
+			<tr>
+				<td>28</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143419</td>
+				<td>이동환
+					
+				</td>
+				<td>2</td>
+				<td>ehdghks0323@naver.com</td>
+				<td></td>
+				<td>010-5481-8874</td>
+			</tr>
+		
+			<tr>
+				<td>29</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163239</td>
+				<td>이수빈
+					
+				</td>
+				<td>2</td>
+				<td>bins0617@naver.com</td>
+				<td></td>
+				<td>010-9453-4081</td>
+			</tr>
+		
+			<tr>
+				<td>30</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143420</td>
+				<td>이윤정
+					
+				</td>
+				<td>4</td>
+				<td>acara55@naver.com</td>
+				<td></td>
+				<td>010-6702-2727</td>
+			</tr>
+		
+			<tr>
+				<td>31</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163242</td>
+				<td>이재희
+					
+				</td>
+				<td>2</td>
+				<td>jaehijjang@naver.com</td>
+				<td></td>
+				<td>010-9306-3416</td>
+			</tr>
+		
+			<tr>
+				<td>32</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143422</td>
+				<td>이종훈
+					
+				</td>
+				<td>2</td>
+				<td>lhg169@naver.com</td>
+				<td></td>
+				<td>010-3309-2937</td>
+			</tr>
+		
+			<tr>
+				<td>33</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143426</td>
+				<td>장수환
+					
+				</td>
+				<td>2</td>
+				<td>suhwan9381@naver.com</td>
+				<td></td>
+				<td>010-9381-9249</td>
+			</tr>
+		
+			<tr>
+				<td>34</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20162228</td>
+				<td>정다겸
+					
+				</td>
+				<td>2</td>
+				<td>jdg3362@gmail.com</td>
+				<td></td>
+				<td>010-2239-2267</td>
+			</tr>
+		
+			<tr>
+				<td>35</td>
+				<td></td>
+				<td>재무금융학과</td>
+				<td>20163138</td>
+				<td>정해석
+					
+				</td>
+				<td>2</td>
+				<td>tiya516@naver.com</td>
+				<td></td>
+				<td>010-6227-6890</td>
+			</tr>
+		
+			<tr>
+				<td>36</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20163256</td>
+				<td>진다솔
+					
+				</td>
+				<td>2</td>
+				<td>dasol1019@nate.com</td>
+				<td></td>
+				<td>010-5316-4276</td>
+			</tr>
+		
+			<tr>
+				<td>37</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20133436</td>
+				<td>채경민
+					
+				</td>
+				<td>2</td>
+				<td>kmhae12@naver.com</td>
+				<td></td>
+				<td>010-4518-0224</td>
+			</tr>
+		
+			<tr>
+				<td>38</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143437</td>
+				<td>한성우
+					
+				</td>
+				<td>2</td>
+				<td>fkffkfk666@naver.com</td>
+				<td></td>
+				<td>010-2832-6160</td>
+			</tr>
+		
+			<tr>
+				<td>39</td>
+				<td></td>
+				<td>금융정보통계학과</td>
+				<td>20143336</td>
+				<td>황선욱
+					
+				</td>
+				<td>2</td>
+				<td>rjswm65@naver.com</td>
+				<td></td>
+				<td>010-7285-2010</td>
+			</tr>
+		
+	
+	
+</table>
+</form>
+</body>
+</html>

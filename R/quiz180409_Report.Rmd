@@ -1,0 +1,214 @@
+---
+title: "Wason Selection"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("kable", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+library(xlsx)
+library(pander)
+library(knitr)
+library(printr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width = 180)
+```
+
+```{r, data, echo = FALSE, results = 'hide'}
+quiz0409 <- read.xlsx("../data/quiz180409.xlsx", 
+                      sheetIndex = 1, 
+                      startRow = 2, 
+                      endRow = 182, 
+                      colIndex = 1:6, 
+                      colClasses = c(rep("character", 6)), 
+                      encoding = "UTF-8",
+                      stringsAsFactors = FALSE)
+str(quiz0409)
+names(quiz0409) <- c("id", "Q1", "Q2", "Q3", "Q4", "group")
+quiz0409$group <- factor(quiz0409$group, 
+                         levels = c("Red", "Black"))
+quiz0409$Q1 <- factor(quiz0409$Q1, 
+                      levels = c("가", "나", "다", "라", "무응답"), 
+                      labels = c("랜덤화", "가짜약 대조군", "이중눈가림", "층화", "불참"))
+quiz0409$Q2 <- factor(quiz0409$Q2, 
+                      levels = c("가", "나", "다", "라"), 
+                      labels = c("28 vs 46", "28 vs 71", "28 vs 25", "25 vs 54"))
+quiz0409[c("Q3", "Q4", "group")]
+quiz0409$Q3.2 <- quiz0409$Q3
+Black <- quiz0409$group == "Black"
+Red <- quiz0409$group == "Red"
+quiz0409$Q3.2[Black] <- ifelse(quiz0409$Q3[Black] == "Beer,17", "Right", "Wrong")
+quiz0409$Q3.2[Red] <- ifelse(quiz0409$Q3[Red] == "A,3", "Right", "Wrong")
+# quiz0409$Q3.2[quiz0409$group == "Black" & quiz0409$Q3 == "Beer,17"] <- "Right"
+# quiz0409$Q3.2[quiz0409$group == "Black" & quiz0409$Q3 != "Beer,17"] <- "Wrong"
+# quiz0409$Q3.2[quiz0409$group == "Red" & quiz0409$Q3 == "A,3"] <- "Right"
+# quiz0409$Q3.2[quiz0409$group == "Red" & quiz0409$Q3 != "A,3"] <- "Wrong"
+quiz0409$Q3.2
+quiz0409$Q4.2 <- quiz0409$Q4
+quiz0409$Q4.2[Black] <- ifelse(quiz0409$Q4[Black] == "A,3", "Right", "Wrong")
+quiz0409$Q4.2[Red] <- ifelse(quiz0409$Q4[Red] == "Beer,17", "Right", "Wrong")
+# quiz0409$Q4.2[quiz0409$group == "Black" & quiz0409$Q4 == "A,3"] <- "Right"
+# quiz0409$Q4.2[quiz0409$group == "Black" & quiz0409$Q4 != "A,3"] <- "Wrong"
+# quiz0409$Q4.2[quiz0409$group == "Red" & quiz0409$Q4 == "Beer,17"] <- "Right"
+# quiz0409$Q4.2[quiz0409$group == "Red" & quiz0409$Q4 != "Beer,17"] <- "Wrong"
+quiz0409[c("Q3", "Q3.2", "Q4", "Q4.2", "group")]
+str(quiz0409)
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+kable(summary(quiz0409))
+```
+
+### Salk Vaccine Field Trial
+
+#### Randomized Placebo Control Approach의 특징 
+
+`r knitr::include_graphics("../pics/Quiz180409_01.png", dpi = NA)`
+
+##### Randomization
+
+```{r, randomized placebo control approach, echo = FALSE}
+tbl.q1 <- table(quiz0409$group, 
+                quiz0409$Q1, 
+                useNA = "ifany")
+tbl.q1.a <- addmargins(tbl.q1)
+colnames(tbl.q1.a)[6:7] <- c("결석", "계")
+rownames(tbl.q1.a)[3] <- "계"
+kable(tbl.q1.a)
+chisq.test(tbl.q1[, -c(4:5, 7)], 
+           simulate.p.value = TRUE)
+```
+
+##### Randomization (%)
+
+```{r, randomized placebo control approach in percentage, echo = FALSE}
+tbl.q1.a.p <- prop.table(tbl.q1.a[3, -(5:7)])
+tbl.q1.a.p.sum <- c(tbl.q1.a.p, 
+                    "계" = sum(tbl.q1.a.p))
+kable(t(round(tbl.q1.a.p.sum * 100,
+             digits = 1)), 
+       caption = "")
+```
+
+<P style = "page-break-before:always">
+
+#### Clear Evidence of Vaccine Effects
+
+`r knitr::include_graphics("../pics/Quiz180409_02.png", dpi = NA)`
+
+##### Treatment vs Control
+
+```{r, Treatment vs Control, echo = FALSE}
+tbl.q2 <- table(quiz0409$group, quiz0409$Q2, 
+                useNA = "ifany")
+tbl.q2.a <- addmargins(tbl.q2)
+colnames(tbl.q2.a)[5:6] <- c("결석", "계")
+rownames(tbl.q2.a)[3] <- "계"
+kable(tbl.q2.a)
+chisq.test(tbl.q2[, 1:5], 
+           simulate.p.value = TRUE)
+```
+
+##### Treatment vs Control (%)
+
+```{r, opposite in percentage, echo = FALSE}
+tbl.q2.a.p <- prop.table(tbl.q2.a[3, -(5:7)])
+tbl.q2.a.p.sum <- c(tbl.q2.a.p, 
+                    "계" = sum(tbl.q2.a.p))
+kable(round(tbl.q2.a.p.sum * 100, 
+             digits = 1), 
+       caption = "")
+# percentage.tbl.q2.a <- addmargins(round(prop.table(tbl.q2.a[, -5], margin = 1)*100, digits = 1))[3, ]
+# names(percentage.tbl.q2.a)[5] <- "계"
+# kable(percentage.tbl.q2.a, caption = "쏘오크 예방주사의 효과")
+```
+
+<P style = "page-break-before:always">
+
+### Wason Selection
+
+
+#### 추상적 표현과 구체적 표현?
+
+같은 내용의 문제를 추상적으로 물어볼 때와 구체적으로 사례를 들어서 물어볼 때의 정답률에 큰 차이가 있음에 유의. Red 집단에게는 추상적 질문을 먼저 던지고, 구체적 사례를 든 질문을 나중에 던졌으며 Black 집단에게는 구체적 사례를 든 질문을 먼저 던지고, 추상적 질문을 나중에 던졌다. 동일한 질문에 대해서 순서에 따른 차이는 거의 없지만 추상적이냐 구체적이냐에 따른 차이는 매우 높게 관찰된다. 추상적인 질문에 쩔쩔매는 게 정상이다.
+
+##### Red에 추상적 문제 먼저 질문
+
+`r knitr::include_graphics("../pics/Wason_Selection_1.png", dpi = NA)`
+
+`r knitr::include_graphics("../pics/Wason_Selection_2.png", dpi = NA)`
+
+```{r, Wason Selection 1 in Red, echo = FALSE}
+tbl.q3.a <- addmargins(table(quiz0409$group, quiz0409$Q3.2, 
+                             useNA = "ifany"))
+colnames(tbl.q3.a) <- c("정답", "오답", "결석", "계")
+rownames(tbl.q3.a) <- c("Red(추상적 질문 먼저)", "Black(구체적 질문 먼저)", "계") 
+kable(tbl.q3.a, caption = "Wason Selection 1 in red")
+```
+
+##### % 비교  
+
+```{r, Wason Selection 1 in Red in percentage, echo = FALSE}
+percentage.tbl.q3.a <- addmargins(round(prop.table(tbl.q3.a[, -(3:4)], 
+                                                   margin = 1) * 100, 
+                                        digits = 1))[1:2, ]
+colnames(percentage.tbl.q3.a) <- c("정답", "오답", "계")
+kable(percentage.tbl.q3.a, caption = "Wason Selection 1 in red")
+```
+
+<P style = "page-break-before:always">
+
+##### Black은 구체적 문제 먼저 질문 
+
+Red 의 그림 순서를 바꿔서 제시
+
+```{r, Wason Selection 1 in Black, echo = FALSE}
+tbl.q4.a <- addmargins(table(quiz0409$group, quiz0409$Q4.2, 
+                             useNA = "ifany"))
+colnames(tbl.q4.a) <- c("정답", "오답", "결석", "계")
+rownames(tbl.q4.a) <- c("Red(구체적 질문 먼저)", "Black(추상적 질문 먼저)", "계")
+kable(tbl.q4.a, caption = "Wason Selection 1 in Black")
+```
+
+##### % 비교.  
+
+```{r, Wason Selection 1 in Black in percentage, echo = FALSE}
+percentage.tbl.q4.a <- addmargins(round(prop.table(tbl.q4.a[, -(3:4)], 
+                                                   margin = 1)*100, 
+                                        digits = 1))[1:2, ]
+colnames(percentage.tbl.q4.a) <- c("정답", "오답", "계")
+kable(percentage.tbl.q4.a, caption = "Wason Selection 1 in Black")
+```
+
+#### 합산
+
+##### 집계표
+
+```{r, Wason Selection, echo = FALSE}
+wason_1 <- tbl.q3.a[1, ] + tbl.q4.a[2, ]
+wason_2 <- tbl.q3.a[2, ] + tbl.q4.a[1, ]
+wason_tbl <- as.table(rbind(wason_1, wason_2))
+rownames(wason_tbl) <- c("Wason 1(추상적 질문)", "Wason 2(구체적 질문)")
+kable(wason_tbl, caption = "Wason Selection")
+```
+
+##### % 비교
+
+```{r, Wason Selection in percentage, echo = FALSE}
+wason.tbl.p.a <- addmargins(round(prop.table(wason_tbl[, -(3:4)], 
+                                             margin = 1) * 100, 
+                                  digits = 1))[1:2, ]
+colnames(wason.tbl.p.a) <- c("정답", "오답", "계")
+kable(wason.tbl.p.a, caption = "Wason Selection")
+```
+
+
+
+```{r, save, echo = FALSE}
+#save.image("../R/quiz0409.RData")
+```
