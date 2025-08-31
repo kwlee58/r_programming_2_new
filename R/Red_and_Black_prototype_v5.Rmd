@@ -109,11 +109,11 @@ red_and_black <- function(k) {
 
 ## Search for Best Configuration
 
-```{r, for PC, echo = TRUE, eval = TRUE}
+```{r, for PC, echo = TRUE, eval = FALSE}
 #> Windows version
 library(parallel)
 M1 <- 1
-M2 <- 1000
+M2 <- 100
 
 # 클러스터 생성 (예: 4개의 코어 사용)
 cl <- makeCluster(detectCores() - 1)
@@ -146,11 +146,11 @@ Xmin <- names(Xsum[which(Xsum == min(Xsum))])
 Xmin
 ```
 
-```{r, for Mac, echo = TRUE, eval = FALSE}
+```{r, for Mac, echo = TRUE, eval = TRUE}
 #> Mac or Linux Version
 library(parallel)
 M1 <- 1
-M2 <- 1000
+M2 <- 100
 
 # Number of cores on your machine
 num_cores <- detectCores() - 1
@@ -165,7 +165,8 @@ Xsum <- sapply(results, function(res) res$Xsum)
 # Xsum <- Xsum_list$Xsum
 names(Xsum) <- M1:M2
 Xmin <- names(Xsum[which(Xsum == min(Xsum))])
-Xmin
+data.frame("Xmin" = Xmin) %>%
+  pander
 ```
 
 ## Summary
@@ -173,15 +174,19 @@ Xmin
 ```{r, summary, echo = TRUE}
 Xsum %>%
   summary %>%
-  round(2) 
+  round(2) %>%
+  pander
 Xsum %>%
   sd %>%
-  round(2)
+  round(2) %>% 
+  data.frame(SD = .) %>%
+  pander
 Xsum %>%
-  `<=`(9) %>%
+  `<=`(13) %>%
   which %>%
   `[`(Xsum, .) %>%
-  round(2)
+  round(2) %>%
+  pander
 
 best_config <- red_and_black(Xmin)
 X1_min <- best_config$X1
