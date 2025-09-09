@@ -406,8 +406,13 @@ Nature1_tbl <- Nature1 %>%
   t %>%
   as_tibble %>%
   mutate(Resemblance = row.names(t(Nature1))) %>%
-  gather(key = "Twins", 
-         value = "Counts", -Resemblance) %>%
+  pivot_longer(
+    cols = -Resemblance, 
+    names_to = "Twins", 
+    values_to = "Counts"
+  ) %>%
+#   gather(key = "Twins", 
+#          value = "Counts", -Resemblance) %>%
   mutate(Resemblance = factor(Resemblance, 
                               levels = c("Alike", 
                                          "Little_Alike",
@@ -419,8 +424,13 @@ Nature2_tbl <- Nature2 %>%
   t %>%
   as_tibble %>%
   mutate(Resemblance = row.names(t(Nature2))) %>%
-  gather(key = "Twins", 
-         value = "Counts", -Resemblance) %>%
+  pivot_longer(
+    cols = -Resemblance, 
+    names_to = "Twins", 
+    values_to = "Counts"
+  ) %>%
+#   gather(key = "Twins", 
+#          value = "Counts", -Resemblance) %>%
   mutate(Twins = factor(Twins, 
                         levels = c("Identical", "Fraternal")),
          Resemblance = factor(Resemblance)) %>%
@@ -429,8 +439,13 @@ Nature3_tbl <- Nature3 %>%
   t %>%
   as_tibble %>%
   mutate(Resemblance = row.names(t(Nature3))) %>%
-  gather(key = "Separation", 
-         value = "Counts", -Resemblance) %>%
+  pivot_longer(
+    cols = -Resemblance, 
+    names_to = "Separation", 
+    values_to = "Counts"
+  ) %>%
+#   gather(key = "Separation", 
+#          value = "Counts", -Resemblance) %>%
   mutate(Separation = factor(Separation),
          Resemblance = factor(Resemblance)) %>%
   print
