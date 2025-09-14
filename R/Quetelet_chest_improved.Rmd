@@ -1,0 +1,165 @@
+---
+title: "Stigler의 스코틀랜드 군인 가슴둘레: 정규분포 적합"
+author: "Kee-Won Lee (정리: ChatGPT)"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    df_print: paged
+---
+
+> 자료 출처: Stephen M. Stigler (1986), *The History of Statistics*, pp. 161–165 등.  
+> 단위는 인치(in)로 가정하며, 계급은 1인치 폭(32.5–48.5)로 설정했습니다.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
+suppressPackageStartupMessages({
+  library(tidyverse)
+})
+set.seed(711)
+```
+
+## 1) 데이터 입력과 점검
+
+```{r data}
+chest <- 33:48
+freq  <- c(3, 18, 81, 185, 420, 749, 1073, 1079, 934, 658, 370, 92, 50, 21, 4, 1)
+stopifnot(length(chest) == length(freq))
+n <- sum(freq); n
+# tibble로 정리
+chest_df <- tibble(chest = chest, freq = freq) %>% mutate(prop = freq / n)
+chest_df
+sum(chest_df$freq)
+```
+
+```{r expand}
+# 분석(최대우도, Q-Q plot 등) 편의를 위해 벡터로 확장
+chest_vec <- rep(chest_df$chest, chest_df$freq)
+length(chest_vec)
+```
+
+## 2) 모수 추정: 가중평균/가중표준편차 vs MLE
+
+```{r params}
+# (A) 그룹자료 기반 추정(계급값을 대표값으로 가정)
+mu_g  <- with(chest_df, sum(chest * freq) / n)
+sd_g  <- with(chest_df, sqrt(sum(freq * (chest - mu_g)^2) / (n - 1)))
+mu_g; sd_g
+
+# (B) 벡터(개별값) 기반 추정(MLE와 근사적으로 일치)
+mu_mle <- mean(chest_vec)
+sd_mle <- sd(chest_vec)
+mu_mle; sd_mle
+```
+
+> 두 방법은 거의 일치합니다. (정확히는 그룹대표값 가정에 따른 근사오차가 있으나, 이 자료에서는 매우 작습니다.)
+
+## 3) 히스토그램과 정규곡선
+
+### (a) 빈도 히스토그램(Counts)
+
+```{r hist-counts, fig.width=7, fig.height=4}
+bw <- 1
+breaks <- seq(32.5, 48.5, by = bw)
+ggplot(tibble(x = chest_vec), aes(x)) +
+  geom_histogram(breaks = breaks, closed = "right", color = "white") +
+  labs(title = "스코틀랜드 군인 가슴둘레 (Counts)",
+       x = "Chest circumference (inches)",
+       y = "Count",
+       subtitle = "Breaks: 32.5–48.5, width = 1") +
+  theme_bw()
+```
+
+### (b) 밀도 히스토그램 + 정규곡선
+
+밀도 히스토그램(`..density..`) 위에는 **그대로** 정규밀도 `dnorm`을 올립니다.
+
+```{r hist-density, fig.width=7, fig.height=4}
+ggplot(tibble(x = chest_vec), aes(x)) +
+  geom_histogram(aes(y = after_stat(density)), breaks = breaks,
+                 closed = "right", color = "white") +
+  stat_function(fun = dnorm, args = list(mean = mu_mle, sd = sd_mle), size = 1) +
+  labs(title = "Density + Normal fit",
+       subtitle = sprintf("Normal(mean=%.3f, sd=%.3f)", mu_mle, sd_mle),
+       x = "Chest circumference (inches)",
+       y = "Density") +
+  theme_bw()
+```
+
+> 만약 **Counts 히스토그램** 위에 정규곡선을 올리려면, `dnorm`을 `n * bw * dnorm(...)`로 스케일링해야 합니다.
+
+```{r counts-with-normal, fig.width=7, fig.height=4}
+ggplot(tibble(x = chest_vec), aes(x)) +
+  geom_histogram(breaks = breaks, closed = "right", color = "white") +
+  stat_function(fun = function(z) n * bw * dnorm(z, mu_mle, sd_mle),
+                size = 1) +
+  labs(title = "Counts + Scaled Normal curve",
+       subtitle = sprintf("Scaled by n*binwidth = %d*%g", n, bw),
+       x = "Chest circumference (inches)",
+       y = "Count") +
+  theme_bw()
+```
+
+## 4) 정규적합 진단: Q–Q Plot
+
+```{r qq, fig.width=6, fig.height=6}
+ggplot(tibble(sample = chest_vec), aes(sample = sample)) +
+  stat_qq(distribution = qnorm, dparams = list(mean = mu_mle, sd = sd_mle)) +
+  stat_qq_line(distribution = qnorm, dparams = list(mean = mu_mle, sd = sd_mle)) +
+  coord_equal() +
+  labs(title = "Normal Q–Q Plot",
+       subtitle = "큰 편차가 없는지, 꼬리에서 체계적 이탈이 있는지 확인") +
+  theme_bw()
+```
+
+## 5) 카이제곱 적합도 검정(그룹자료)
+
+카이제곱 검정에서는 **기대빈도 5 미만**이 없도록 꼬리를 합칩니다.  
+자유도(df)는 `(#그룹수 – 추정모수2개 – 1)`입니다.
+
+```{r chisq}
+# 꼬리 합치기 (32.5–34.5 구간과 46.5–48.5 구간을 각각 병합 예시)
+grp <- tibble(
+  bin = factor(33:48),
+  lower = 32.5:47.5,
+  upper = 33.5:48.5,
+  mid   = 33:48,
+  obs   = freq
+) %>%
+  mutate(group =
+           case_when(
+             mid <= 34 ~ "≤34.5",
+             mid >= 46 ~ "≥46.5",
+             TRUE ~ as.character(mid)
+           )) %>%
+  group_by(group) %>%
+  summarise(obs = sum(obs),
+            lower = min(lower),
+            upper = max(upper),
+            .groups = "drop") %>%
+  mutate(exp = n * (pnorm(upper, mu_mle, sd_mle) - pnorm(lower, mu_mle, sd_mle)))
+
+grp
+all(grp$exp >= 5)  # 기대빈도 확인
+
+chisq <- sum((grp$obs - grp$exp)^2 / grp$exp)
+df <- nrow(grp) - 3  # (그룹수 - 모수 2개 - 1)
+pval <- pchisq(chisq, df = df, lower.tail = FALSE)
+c(statistic = chisq, df = df, p.value = pval)
+```
+
+> 이 결과는 “정규분포가 데이터에 잘 들어맞는지”를 정량적으로 보여줍니다.  
+> 수업에서는 **꼬리 병합의 기준을 바꾸어도 결론이 크게 바뀌지 않는지**를 추가로 확인해 보세요.
+
+## 6) 결론 요약
+
+- 스코틀랜드 군인 가슴둘레(총 `r n`명)는 1인치 폭의 계급에서 **정규분포에 매우 잘 부합**합니다.  
+- 그룹자료 기반 추정과 벡터(개별값) 기반 추정의 모수는 **거의 동일**합니다.  
+- Q–Q plot과 카이제곱 검정 모두 **정규 가정의 타당성**을 뒷받침합니다.
+
+## 부록: 세션 정보
+
+```{r}
+sessionInfo()
+```
