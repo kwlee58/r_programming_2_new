@@ -5,9 +5,9 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-## Data
+# Data
 
-### From Stigler's
+## From Stigler's
 
 ```{r, packages, echo = FALSE}
 library(knitr)
@@ -25,7 +25,7 @@ knitr::include_graphics("../pics/quetelet_soldiers.png")
 ```
 
 
-### Frequency Table
+## Frequency Table
 
 * 케틀레가 작성한 스코틀랜드 군인 5738명의 가슴둘레(인치) 분포표를 옮기면 
 
@@ -39,7 +39,7 @@ chest_df
 str(chest_df)
 ```
 
-#### Extract Parts of an Object
+### Extract Parts of an Object
 
 ```{r, extract parts }
 chest_df$Freq
@@ -94,7 +94,7 @@ str(chest_df[[2]])
 * 33인치인 사람이 3명, 34인치인 사람이 18명 등으로 기록되어 있으나 이는 구간의 가운데로 이해하여야 함.
 
 
-### Probability Histogram
+## Probability Histogram
 
 * `barplot(height, ...)` 은 기본적으로 `height`만 주어지면 그릴 수 있음. 확률 히스토그램의 기둥 면적의 합은 1이므로, 각 기둥의 높이는 각 계급의 돗수를 전체 돗수, `r sum(chest_df$Freq)`명으로 나눠준 값임.
 
@@ -132,7 +132,7 @@ chest_df$Freq %>%
 
 * 확률 히스토그램의 정의에 따라 이 막대들의 면적을 합하면 1이 됨에 유의.
 
-### Summary statistics and SD
+## Summary statistics and SD
 
 * 33인치가 3명, 34인치가 18명 등을 한 줄의 긴 벡터로 나타내어야 평균과 표준편차를 쉽게 계산할 수 있으므로 long format으로 바꾸면,
 
@@ -143,7 +143,7 @@ chest_vec <- chest_df %$%
 str(chest_vec)
 ```
 
-#### `rep()`
+### `rep()`
 
 ```{r, rep()}
 rep(1:3, times = 3)
@@ -159,7 +159,7 @@ summary(chest_vec)
 sd(chest_vec)
 ```
 
-### Histogram
+## Histogram
 
 * 히스토그램을 직관적으로 그려보면 $y$축은 돗수가 기본값임을 알 수 있음.
 
@@ -178,7 +178,7 @@ chest_vec %>%
   hist(probability = TRUE)
 ```
 
-#### Inside the histogram
+### Inside the histogram
 
 * 실제로 이 히스토그램을 그리는 데 계산된 값들은?
 
@@ -240,7 +240,7 @@ hist(chest_vec,
      ylab = y_lab)
 ```
 
-### Mean $\pm$ SD contains 2/3 of total number of counts 
+## Mean $\pm$ SD contains 2/3 of total number of counts 
 
 * 평균을 중심으로 $\pm$표준편차 만큼 떨어진 자료를 붉은 색 수직점선으로 표시.
 
@@ -313,7 +313,7 @@ area_R
 area_R(x_coord, y_coord)
 ```
 
-### Comparison with normal curve
+## Comparison with normal curve
 
 *  이론적인 정규분포 밀도함수 곡선을 히스토그램에 덧붙여 그림.
 
@@ -340,7 +340,7 @@ polygon(poly_df,
 lines(x_chest, y_norm, col = "red")
 ```
 
-### Changing tick marks of x axis
+## Changing tick marks of x axis
 
 * default로 주어지는 $x$축의 눈금을 제대로 볼 수 있게 고치려면,
 
@@ -366,11 +366,11 @@ axis(side = 1,
 axis(side = 2)
 ```
 
-### ggplot
+## ggplot
 
 * data frame으로 작업. 
 
-#### Basic histogram
+### Basic histogram
 
 ```{r, ggplots, fig.width = 8, fig.height = 4.5}
 library(ggplot2)
@@ -399,7 +399,7 @@ g0 <- ggplot(data = data.frame(chest_vec),
 #                colour = "black"))
 ```
 
-####  Mean $\pm$ SD 
+###  Mean $\pm$ SD 
 
 ```{r, mean plus minus sd, fig.width = 8, fig.height = 4.5}
 (g2 <- g1 + 
@@ -408,7 +408,7 @@ g0 <- ggplot(data = data.frame(chest_vec),
               colour = "red")) 
 ```
 
-#### x-axis label and main title
+### x-axis label and main title
 
 ```{r, xlab and ggtitle, fig.width = 8, fig.height = 4.5}
 (g3 <- g2 + 
@@ -423,7 +423,7 @@ g0 <- ggplot(data = data.frame(chest_vec),
                                    size = 20)))
 ```
 
-#### Shading the area
+### Shading the area
 
 ```{r, polygon, fig.width = 8, fig.height = 4.5}
 (g4 <- g3 + 
@@ -433,7 +433,7 @@ g0 <- ggplot(data = data.frame(chest_vec),
                 fill = "grey"))
 ```
 
-#### Normal curve added
+### Normal curve added
 
 ```{r, normal curve, fig.width = 8, fig.height = 4.5}
 # x_curve <- seq(32.5, 48.5, length = 100)
@@ -445,7 +445,7 @@ curve_df <- data.frame(x = x_chest, y = y_norm)
             colour = "blue"))
 ```
 
-#### x-axis tick marks 
+### x-axis tick marks 
 
 ```{r, tick marks, fig.width = 8, fig.height = 4.5}
 (g6 <- g5 + 
@@ -453,7 +453,7 @@ curve_df <- data.frame(x = x_chest, y = y_norm)
                       labels = seq(32, 48, by = 2)))
 ```
 
-### Save
+## Save
 
 ```{r, save}
 getwd()
