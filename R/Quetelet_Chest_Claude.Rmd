@@ -1,0 +1,306 @@
+---
+title: "Fitting Normal Distribution - Quetelet's Chest Data"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+# 케틀레의 스코틀랜드 군인 가슴둘레 데이터 분석
+
+## 라이브러리 로딩
+
+```{r packages}
+library(knitr)
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+library(tibble)
+```
+
+## 데이터 소개
+
+```{r, out.width = "50%", fig.align = "center"}
+knitr::include_graphics("../pics/quetelet_soldiers.png")
+```
+
+케틀레가 작성한 스코틀랜드 군인 5,738명의 가슴둘레(인치) 분포표입니다.
+
+## 데이터 설정
+
+```{r chest_data_setup}
+# 원본 데이터
+chest_inches <- 33:48
+frequencies <- c(3, 18, 81, 185, 420, 749, 1073, 1079, 934, 658, 370, 92, 50, 21, 4, 1)
+
+# 데이터프레임 생성 (tibble 사용으로 더 깔끔한 출력)
+chest_df <- tibble(
+  chest = chest_inches,
+  freq = frequencies,
+  proportion = freq / sum(freq)
+)
+
+print(chest_df)
+
+# 전체 표본 수 확인
+total_n <- sum(chest_df$freq)
+cat("총 표본 수:", total_n, "명\n")
+```
+
+## 개별 데이터 벡터 생성
+
+```{r chest_long_format}
+# long format으로 변환 (각 개인의 측정값)
+chest_vec <- rep(chest_df$chest, chest_df$freq)
+
+# 기초 통계량
+stats_summary <- list(
+  n = length(chest_vec),
+  mean = mean(chest_vec),
+  median = median(chest_vec),
+  sd = sd(chest_vec),
+  min = min(chest_vec),
+  max = max(chest_vec),
+  q1 = quantile(chest_vec, 0.25),
+  q3 = quantile(chest_vec, 0.75)
+)
+
+print(stats_summary)
+```
+
+## 기본 히스토그램 분석
+
+### Base R 히스토그램
+
+```{r base_histogram, fig.width = 10, fig.height = 6}
+# 히스토그램 설정
+breaks_seq <- 32.5:48.5
+main_title <- "케틀레의 스코틀랜드 군인 가슴둘레 분포"
+x_lab <- "가슴둘레 (인치)"
+y_lab <- "밀도"
+
+# 히스토그램 그리기
+hist(chest_vec, 
+     breaks = breaks_seq,
+     probability = TRUE,
+     main = main_title,
+     xlab = x_lab,
+     ylab = y_lab,
+     col = "lightblue",
+     border = "black",
+     axes = FALSE)
+
+# 축 설정
+axis(1, at = seq(32, 48, by = 2))
+axis(2)
+
+# 평균과 표준편차 표시
+mean_chest <- mean(chest_vec)
+sd_chest <- sd(chest_vec)
+x_lower <- mean_chest - sd_chest
+x_upper <- mean_chest + sd_chest
+
+abline(v = mean_chest, col = "red", lwd = 2, lty = 1)
+abline(v = c(x_lower, x_upper), col = "red", lwd = 1, lty = 2)
+
+# 정규분포 곡선 추가
+x_norm <- seq(32, 49, length = 1000)
+y_norm <- dnorm(x_norm, mean = mean_chest, sd = sd_chest)
+lines(x_norm, y_norm, col = "red", lwd = 2)
+
+# 범례 추가
+legend("topright", 
+       legend = c("관측 데이터", "정규분포 곡선", "평균", "평균 ± 1SD"),
+       col = c("lightblue", "red", "red", "red"),
+       lty = c(1, 1, 1, 2),
+       lwd = c(1, 2, 2, 1),
+       fill = c("lightblue", NA, NA, NA),
+       border = c("black", NA, NA, NA))
+```
+
+### 평균 ± 1 표준편차 영역 음영처리
+
+```{r shaded_area, fig.width = 10, fig.height = 6}
+# 히스토그램 정보 추출
+h_chest <- hist(chest_vec, breaks = breaks_seq, plot = FALSE)
+
+# 음영 영역 좌표 계산 (평균 ± 1SD 범위)
+shade_indices <- which(h_chest$mids >= x_lower & h_chest$mids <= x_upper)
+x_coords <- c(x_lower, 
+              rep(h_chest$breaks[shade_indices + 1], each = 2)[-length(shade_indices) * 2],
+              x_upper)
+y_coords <- c(0, rep(h_chest$density[shade_indices], each = 2), 0)
+
+# 히스토그램 그리기
+hist(chest_vec, 
+     breaks = breaks_seq,
+     probability = TRUE,
+     main = main_title,
+     xlab = x_lab,
+     ylab = y_lab,
+     col = "lightblue",
+     border = "black",
+     axes = FALSE)
+
+# 음영 영역
+polygon(x_coords, y_coords, col = "yellow", border = NA, density = 15)
+
+# 축과 선들
+axis(1, at = seq(32, 48, by = 2))
+axis(2)
+abline(v = mean_chest, col = "red", lwd = 2)
+abline(v = c(x_lower, x_upper), col = "red", lwd = 1, lty = 2)
+lines(x_norm, y_norm, col = "red", lwd = 2)
+
+# 통계 정보 텍스트 추가
+text(35, max(h_chest$density) * 0.8, 
+     paste0("평균: ", round(mean_chest, 2), " 인치\n",
+            "표준편차: ", round(sd_chest, 2), " 인치\n",
+            "표본수: ", total_n, "명"),
+     adj = 0, cex = 0.9, bg = "white")
+```
+
+## ggplot2를 이용한 시각화
+
+```{r ggplot_analysis, fig.width = 12, fig.height = 8}
+# 데이터 준비
+chest_data <- tibble(chest = chest_vec)
+normal_curve <- tibble(
+  x = x_norm,
+  y = y_norm
+)
+
+# ggplot 생성
+p <- ggplot(chest_data, aes(x = chest)) +
+  # 히스토그램
+  geom_histogram(aes(y = after_stat(density)), 
+                 binwidth = 1, 
+                 breaks = breaks_seq,
+                 fill = "lightblue", 
+                 color = "black", 
+                 alpha = 0.7) +
+  
+  # 정규분포 곡선
+  geom_line(data = normal_curve, 
+            aes(x = x, y = y), 
+            color = "red", 
+            linewidth = 1.2) +
+  
+  # 평균선
+  geom_vline(xintercept = mean_chest, 
+             color = "red", 
+             linewidth = 1.2) +
+  
+  # 평균 ± 1SD 선
+  geom_vline(xintercept = c(x_lower, x_upper), 
+             color = "red", 
+             linetype = "dashed", 
+             linewidth = 1) +
+  
+  # 평균 ± 1SD 영역 음영
+  annotate("rect", 
+           xmin = x_lower, xmax = x_upper, 
+           ymin = 0, ymax = Inf,
+           alpha = 0.2, fill = "yellow") +
+  
+  # 테마 및 라벨
+  theme_minimal() +
+  labs(title = main_title,
+       subtitle = paste0("N = ", total_n, ", 평균 = ", round(mean_chest, 2), 
+                        ", 표준편차 = ", round(sd_chest, 2)),
+       x = x_lab,
+       y = y_lab) +
+  
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 12),
+        axis.text = element_text(size = 11),
+        axis.title = element_text(size = 12)) +
+  
+  # x축 눈금 설정
+  scale_x_continuous(breaks = seq(32, 48, by = 2),
+                     limits = c(32, 49))
+
+print(p)
+```
+
+## 정규성 검정
+
+```{r normality_tests}
+# 샤피로-윌크 검정 (표본이 너무 커서 일부만 사용)
+set.seed(123)
+sample_data <- sample(chest_vec, 5000)  # 5000개 표본 추출
+
+shapiro_test <- shapiro.test(sample_data)
+cat("Shapiro-Wilk 정규성 검정 결과:\n")
+cat("W =", round(shapiro_test$statistic, 4), ", p-value =", 
+    format(shapiro_test$p.value, scientific = TRUE), "\n\n")
+
+# 콜모고로프-스미르노프 검정
+ks_test <- ks.test(chest_vec, "pnorm", mean = mean_chest, sd = sd_chest)
+cat("Kolmogorov-Smirnov 검정 결과:\n")
+cat("D =", round(ks_test$statistic, 4), ", p-value =", 
+    format(ks_test$p.value, scientific = TRUE), "\n\n")
+
+# Q-Q plot
+qqnorm(sample_data, main = "Q-Q Plot (정규분포와의 비교)")
+qqline(sample_data, col = "red", lwd = 2)
+```
+
+## 평균 ± 1SD 범위 분석
+
+```{r one_sd_analysis}
+# 이론적 비율 (정규분포에서 평균 ± 1SD 범위)
+theoretical_prop <- pnorm(1) - pnorm(-1)
+
+# 실제 관측된 비율
+observed_count <- sum(chest_vec >= x_lower & chest_vec <= x_upper)
+observed_prop <- observed_count / total_n
+
+cat("평균 ± 1 표준편차 범위 분석:\n")
+cat("범위:", round(x_lower, 2), "-", round(x_upper, 2), "인치\n")
+cat("이론적 비율:", round(theoretical_prop, 3), "(", round(theoretical_prop * 100, 1), "%)\n")
+cat("관측된 비율:", round(observed_prop, 3), "(", round(observed_prop * 100, 1), "%)\n")
+cat("관측된 인원:", observed_count, "명 /", total_n, "명\n")
+cat("차이:", round(abs(theoretical_prop - observed_prop), 3), "\n")
+```
+
+## 요약 및 결론
+
+```{r summary}
+cat("=== 케틀레 데이터 분석 결과 요약 ===\n\n")
+cat("1. 기본 통계량:\n")
+cat("   - 평균:", round(mean_chest, 2), "인치\n")
+cat("   - 표준편차:", round(sd_chest, 2), "인치\n")
+cat("   - 표본수:", total_n, "명\n\n")
+
+cat("2. 정규분포 적합성:\n")
+cat("   - 히스토그램이 정규분포 모양과 유사\n")
+cat("   - 평균 ± 1SD 범위의 실제 비율이 이론치와 근사\n")
+cat("   - 이는 케틀레의 '평균인' 개념과 정규분포 이론을 뒷받침\n\n")
+
+cat("3. 역사적 의의:\n")
+cat("   - 최초의 대규모 인체측정학 연구 중 하나\n")
+cat("   - 생물학적 특성의 정규분포성을 보여준 초기 사례\n")
+cat("   - 현대 통계학과 사회과학 방법론의 기초가 됨\n")
+```
+
+## 데이터 저장
+
+```{r}
+# 작업공간 저장
+save.image(file = "./Quetelet_chest_improved.RData")
+
+# CSV 파일로도 저장
+write.csv(chest_df, file = "./quetelet_chest_data.csv", row.names = FALSE)
+
+cat("데이터가 저장되었습니다.\n")
+cat("- RData: Quetelet_chest_improved.RData\n")
+cat("- CSV: quetelet_chest_data.csv\n")
+```

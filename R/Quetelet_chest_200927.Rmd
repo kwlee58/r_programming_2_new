@@ -41,7 +41,7 @@ str(chest_df)
 
 ### Extract Parts of an Object
 
-```{r, extract parts }
+```{r, extract parts}
 chest_df$Freq
 chest_df %>%
   .$Freq
@@ -101,6 +101,7 @@ str(chest_df[[2]])
 ```{r, barplot first, fig.width = 8, fig.height = 4.5}
 total <- sum(chest_df$Freq)
 barplot(chest_df$Freq / total)
+#> 위의 두 줄을 %>% 로 흘려보내면 `total`을 만들지 않아도 되는 데 ...
 chest_df$Freq %>%
   `/`(., sum(.)) %>%
   barplot
@@ -379,10 +380,11 @@ g0 <- ggplot(data = data.frame(chest_vec),
              mapping = aes(x = chest_vec)) 
 (g1 <- g0 +
     stat_bin(aes(y = after_stat(density)),
-#   stat_bin(aes(y = ..density..), 
+#   stat_bin(aes(y = ..density..), #> ggplot 새 버전에서 퇴출된 코드
              binwidth = 1, 
              fill = "white", 
              colour = "black"))
+#> 다음 방법들도 동일한 결과 
 # (g1 <- g0 + 
 #   stat_count(fill = "white", 
 #              colour = "black"))
@@ -416,6 +418,7 @@ g0 <- ggplot(data = data.frame(chest_vec),
 #   xlab(x_lab) + 
 #   ylab(y_lab) +
 #   ggtitle(main_title) +
+#> 위의 세 코드를 한 번에 
    labs(title = main_title,
         x = x_lab, 
         y = y_lab) + 
@@ -453,9 +456,8 @@ curve_df <- data.frame(x = x_chest, y = y_norm)
                       labels = seq(32, 48, by = 2)))
 ```
 
-## Save
+## Comments
 
-```{r, save}
-getwd()
-save.image(file = "./Quetelet_chest.RData")
-```
+R 코드에 대하여 학습한 내용
+
+케틀레가 스코틀랜드 군인 5738명의 가슴둘레 자료를 정규분포에 적합시킨 이야기
