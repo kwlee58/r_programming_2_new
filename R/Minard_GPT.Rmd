@@ -1,0 +1,69 @@
+---
+title: "Minard"
+author: "Kee-Won Lee"
+date: "2025-09-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, out.width = "75%", fig.align = "left"}
+knitr::include_graphics("../pics/minard.gif")
+```
+
+# 패키지
+
+```{r, fig.width = 10, fig.height = 5}
+library(HistData)
+library(ggplot2)
+library(dplyr)
+library(patchwork)   # 그래프 결합용 (설치 필요시: install.packages("patchwork"))
+
+# 1) 공통 x축(경도) 범위 계산: 두 패널의 가로축을 정확히 맞추기 위함
+xr <- range(Minard.troops$long, na.rm = TRUE)
+
+# 2) 위쪽: 경로 + 병력두께 + 도시
+p_map <- ggplot(Minard.troops, aes(x = long, y = lat)) +
+  # 병력 두께가 선 굵기로 표현되도록 path
+  geom_path(aes(size = survivors, color = direction), lineend = "round") +
+  # 도시 위치/라벨
+  geom_point(data = Minard.cities,
+             aes(x = long, y = lat),
+             inherit.aes = FALSE, size = 2) +
+  geom_text(data = Minard.cities,
+            aes(x = long, y = lat, label = city),
+            inherit.aes = FALSE, vjust = -1, size = 3) +
+  # 병력 두께 스케일(원본 감각 보존: 범위는 적당히 조정 가능)
+  scale_size(range = c(0.5, 12), guide = "none") +
+  # 진군/후퇴 색상 (A=Advance, R=Retreat)
+  scale_color_manual(values = c(A = "#c79a56", R = "#333333"),
+                     labels = c(A = "Advance", R = "Retreat"),
+                     name = NULL) +
+  # 가로축 경도 동일 범위 사용
+  scale_x_continuous(limits = xr, expand = expansion(mult = 0.02)) +
+  # 지리 좌표 왜곡 줄이기
+  coord_quickmap() +
+  labs(title = "Napoleon's Russian Campaign (1812–1813) — Minard",
+       subtitle = "Path thickness = survivors; Color = advance/retreat",
+       x = NULL, y = NULL) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "top",
+        plot.title.position = "plot")
+
+# 3) 아래쪽: 기온(섭씨) — 경도에 따른 변화
+# Minard.temp에는 종종 날짜가 포함되어 있으므로 라벨에 온도/날짜를 함께 표시(과도하면 생략 가능)
+p_temp <- ggplot(Minard.temp, aes(x = long, y = temp)) +
+  geom_path() +
+  geom_point(size = 2) +
+  # 필요하다면 주석(라벨) 표시 — 복잡하면 주석 부분은 주석처리해 쓰세요.
+  # geom_text(aes(label = paste0(temp, "°C\n", date)), vjust = -0.6, size = 3) +
+  scale_x_continuous(limits = xr, expand = expansion(mult = 0.02)) +
+  labs(x = "Longitude", y = "Temperature (°C)",
+       caption = "Source: HistData::Minard.* (after C.J. Minard, 1869)") +
+  theme_minimal(base_size = 12)
+
+# 4) 결합: 위(경로) : 아래(기온) = 3 : 1 비율
+p_map / p_temp + plot_layout(heights = c(3, 1))
+```
