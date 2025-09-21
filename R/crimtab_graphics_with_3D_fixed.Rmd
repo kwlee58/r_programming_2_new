@@ -110,8 +110,57 @@ persp(crimtab_2,
 par(mfrow = c(1, 1))
 ```
 
+```{r plotly-surface-from-crimtab, message=FALSE, warning=FALSE}
+# ---- plotly 3D surface (interactive) ----
+# Uses the built-in 'crimtab' dataset (counts of male criminals by height x finger length)
+library(plotly)
+
+z <- as.matrix(crimtab)
+# Create numeric axes from the dimnames (if present)
+x_vals <- suppressWarnings(as.numeric(colnames(z)))
+y_vals <- suppressWarnings(as.numeric(rownames(z)))
+
+# Fallback if conversion to numeric produces NAs
+if (any(is.na(x_vals))) x_vals <- seq_len(ncol(z))
+if (any(is.na(y_vals))) y_vals <- seq_len(nrow(z))
+
+plot_ly(x = ~x_vals, y = ~y_vals, z = ~z) |>
+  add_surface() |>
+  layout(
+    scene = list(
+      xaxis = list(title = "Finger length (cols)"),
+      yaxis = list(title = "Height (rows)"),
+      zaxis = list(title = "Count")
+    ),
+    title = "crimtab as 3D surface (plotly)"
+  )
+```
+  
+```{r rgl-persp3d-from-crimtab, message=FALSE, warning=FALSE}
+# ---- rgl 3D perspective (interactive, OpenGL) ----
+# Safer defaults to avoid "Bad dimension for z" and headless issues in knitr
+library(rgl)
+
+# Use NULL device for headless rendering (e.g., Rmd renderers without X server)
+if (!rgl::rgl.useNULL()) rgl::rgl.useNULL(TRUE)
+
+z <- as.matrix(crimtab)
+
+# Minimal guaranteed-correct mapping: let rgl infer x/y from matrix indices
+# This avoids dimension mismatches between x/y and z.
+open3d()
+persp3d(z = z,
+        xlab = "Column index",
+        ylab = "Row index",
+        zlab = "Count",
+        col  = "lightgray")
+# For HTML output with knitr, this embeds the widget
+if (requireNamespace("htmlwidgets", quietly = TRUE)) {
+  rglwidget()
+}
+```
+
+
 ## Comments 
 
 Student(W.S. Gosset)이 수행한 바 있는 ...
-
-이번 과제에서 하급한 R 함수는 ...

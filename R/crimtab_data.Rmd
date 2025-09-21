@@ -27,7 +27,12 @@ crimtab
 str(crimtab)
 ```
 
-자료구조에서 살필 수 있다시피 손가락 길이와 키를 계급으로 나누고 손가락 길이와 키의 조합을 이름으로 갖는 `table`이다. 각 cell의 값은 길이와 키의 조합이 나타나는 빈도이다. 여기서 키를 인치 단위로 환원하면 어떤 모양이 드러나는지 살펴보자. 
+자료구조에서 살필 수 있다시피 `crimtab`은  (왼손 가운데)손가락 길이와 키를 계급으로 나누고 손가락 길이와 키의 조합을 이름으로 갖는 `table`이다. 
+
+각 cell의 값은 길이와 키의 조합이 나타나는 빈도이다. 
+
+여기서 키를 인치 단위로 환원하면 어떤 모양이 드러나는지 살펴보자. 
+
 cm 단위로 되어 있는 키의 계급을 인치 단위로 변환하면 숨어있던 자료구조가 드러난다.
 (1인치 = 2.54cm)
 
@@ -57,6 +62,7 @@ str(crimtab_2)
 * `sapply`를 이용하여 두 변수의 속성을 한번에 글자(character)에서 숫자(numeric)으로 변환함.
 
 ```{r, data frame}
+#> R 4.0.0 이후 버전부터는 `stringsAsFactors = FALSE`가 디폴트이어서 굳이 드러내어 설정하지 않아도 됨.
 crimtab_df <- as.data.frame(crimtab_2, 
                             stringsAsFactors = FALSE)
 str(crimtab_df)

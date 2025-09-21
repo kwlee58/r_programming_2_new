@@ -110,8 +110,54 @@ persp(crimtab_2,
 par(mfrow = c(1, 1))
 ```
 
+```{r plotly-surface-from-crimtab, message=FALSE, warning=FALSE}
+# ---- plotly 3D surface (interactive) ----
+# Uses the built-in 'crimtab' dataset (counts of male criminals by height x finger length)
+library(plotly)
+
+z <- as.matrix(crimtab)
+# Create numeric axes from the dimnames (if present)
+x_vals <- suppressWarnings(as.numeric(colnames(z)))
+y_vals <- suppressWarnings(as.numeric(rownames(z)))
+
+# Fallback if conversion to numeric produces NAs
+if (any(is.na(x_vals))) x_vals <- seq_len(ncol(z))
+if (any(is.na(y_vals))) y_vals <- seq_len(nrow(z))
+
+plot_ly(x = ~x_vals, y = ~y_vals, z = ~z) |>
+  add_surface() |>
+  layout(
+    scene = list(
+      xaxis = list(title = "Finger length (cols)"),
+      yaxis = list(title = "Height (rows)"),
+      zaxis = list(title = "Count")
+    ),
+    title = "crimtab as 3D surface (plotly)"
+  )
+```
+  
+```{r rgl-persp3d-from-crimtab, message=FALSE, warning=FALSE}
+# ---- rgl 3D perspective (interactive, OpenGL) ----
+# On headless servers you may need rgl::rgl.useNULL(TRUE)
+library(rgl)
+
+z <- as.matrix(crimtab)
+x_vals <- suppressWarnings(as.numeric(colnames(z)))
+y_vals <- suppressWarnings(as.numeric(rownames(z)))
+if (any(is.na(x_vals))) x_vals <- seq_len(ncol(z))
+if (any(is.na(y_vals))) y_vals <- seq_len(nrow(z))
+
+# persp3d expects x, y as vectors and z as a matrix
+open3d()
+persp3d(x = x_vals, y = y_vals, z = z,
+        xlab = "Finger length (cols)",
+        ylab = "Height (rows)",
+        zlab = "Count",
+        col = "lightgray")
+rglwidget()
+```
+
+
 ## Comments 
 
 Student(W.S. Gosset)이 수행한 바 있는 ...
-
-이번 과제에서 하급한 R 함수는 ...
