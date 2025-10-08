@@ -1,0 +1,956 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{fontspec}
+\setmainfont{NanumGothic}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Twin Studies on Smoking},
+  pdfauthor={coop711},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Twin Studies on Smoking}
+\author{coop711}
+\date{2025-10-08}
+
+\begin{document}
+\maketitle
+
+흡연과 건강의 논쟁 가운데 관찰로 수행된 연구 결과가 인과 관계를
+이끌어내기 어렵다는 피셔 선생님과 버어크슨 선생님의 반론에서 흡연과
+건강의 양쪽에 영향을 미치는 요인으로 유전이 거론되었다. 그에 따라 여러
+가지의 쌍둥이연구가 수행되었는데 그 중 1958년 Nature 지에 실린 자료들을
+소개한다.
+
+\subsection{Nature 1958 version 1}\label{nature-1958-version-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"../pics/Nature\_1958v1.png"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{flushleft}\includegraphics[width=0.35\linewidth]{../pics/Nature_1958v1} \end{flushleft}
+
+첫번째 자료는 R.A. Fisher 선생님이 Nature 지에 기고한 논문에 인용된
+것으로 일란성쌍둥이 51쌍과 이란성쌍둥이 33쌍에게 흡연습관을 묻고 얼마나
+닮았는지를 집계하였다. 일란성 쌍둥이 51쌍 중에 39쌍의 흡연 습관이 닮거나
+약간 닮았던 데 비하여 이란성 쌍둥이 33쌍 중에는 17쌍의 흡연습관이 많이
+닮거나 약간 닮은 것으로 조사되었다. 이로부터 유전적 요인을 흡연과 폐암
+연구에서 중요한 요소로 간주해야 한다고 결론을 내리고 있다.
+
+\subsubsection{막대그래프}\label{uxb9c9uxb300uxadf8uxb798uxd504}
+
+막대그래프로 표현하는 데 있어서 현재의 테이블 구조가 어떻게 나오는지
+\texttt{barplot()} 의 도움말을 반드시 읽어볼 필요가 있다. 매트릭스를
+막대그래프로 그릴 때 매트릭스 모양 그대로 표현하려 함에 유의하여야 한다.
+즉, 각 열을 각 막대에 대응시키면서 행으로 주어지는 각각의 값들을 각
+막대에 나누어 배분하는 디폴트로 한다(\texttt{beside\ =\ FALSE}). 따라서
+흡연 습관에 대한 쌍둥이 연구의 집계 표를 우리가 원하는 막대 그래프로
+표현하려면, 즉 쌍둥이의 유형에 따라 닮은 정도를 표현하려면, 현재 나와
+있는 표 구조를 전치(transpose)시켜야 한다.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(magrittr)}
+\FunctionTok{library}\NormalTok{(tidyverse)}
+\CommentTok{\# par(mfrow = c(1, 2))}
+\CommentTok{\#\textgreater{} 제시된 표와 닮은 행열 생성}
+\NormalTok{Nature1 }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{33}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{16}\NormalTok{), }
+                  \AttributeTok{nrow =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(Nature1) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Identical"}\NormalTok{, }\StringTok{"Fraternal"}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(Nature1) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Alike"}\NormalTok{, }\StringTok{"Little\_Alike"}\NormalTok{, }\StringTok{"Not\_Alike"}\NormalTok{)}
+\NormalTok{Nature1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           Alike Little_Alike Not_Alike
+## Identical    33            6        12
+## Fraternal    11            6        16
+\end{verbatim}
+
+\paragraph{행렬 구조와
+barplot}\label{uxd589uxb82c-uxad6cuxc870uxc640-barplot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature1 }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  barplot}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.5\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-3-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature1 }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  barplot}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.5\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-3-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# par(mfrow = c(1, 1))}
+\end{Highlighting}
+\end{Shaded}
+
+\texttt{Nature1}의 구조를 전치(transpose)해 주어야 원하는 모양의
+막대그래프가 나올 것임을 알 수 있다. 나머지 이러한 점을 염두에 두고
+작성한다.
+
+\subsubsection{Stack}\label{stack}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{options}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\CommentTok{\#\textgreater{} RColorBrewer 패키지를 이용하여 컬러 생성}
+\FunctionTok{library}\NormalTok{(RColorBrewer)}
+\CommentTok{\#\textgreater{} "Accent" palette 채택}
+\NormalTok{cols }\OtherTok{\textless{}{-}} \FunctionTok{brewer.pal}\NormalTok{(}\DecValTok{8}\NormalTok{, }\StringTok{"Accent"}\NormalTok{)}
+\CommentTok{\#\textgreater{} 막대의 가운데에 추가 정보를 넣기 위한 좌표 설정 함수. }
+\CommentTok{\# pos \textless{}{-} function(x)\{}
+\CommentTok{\#   cumsum(x) {-} x / 2}
+\CommentTok{\# \}}
+\NormalTok{pos }\OtherTok{\textless{}{-}}\NormalTok{ . }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ \{}\StringTok{\textasciigrave{}}\AttributeTok{{-}}\StringTok{\textasciigrave{}}\NormalTok{(}\FunctionTok{cumsum}\NormalTok{(.), . }\SpecialCharTok{/} \DecValTok{2}\NormalTok{)\}}
+\CommentTok{\# pos \textless{}{-} . \%\textgreater{}\% \{cumsum(.) {-} . / 2\}}
+\CommentTok{\#\textgreater{} 아래와 같이 작성하면 오류 발생}
+\CommentTok{\# pos \textless{}{-} . \%\textgreater{}\% cumsum(.) {-} . / 2}
+\CommentTok{\#\textgreater{} 텍스트 정보 넣을 좌표를 계산한다. }
+\NormalTok{y1\_text }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(Nature1, }
+                 \AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                 \AttributeTok{FUN =}\NormalTok{ pos)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{\texorpdfstring{\#\texttt{pos()} 의
+이해}{\#pos() 의 이해}}\label{pos-uxc758-uxc774uxd574}
+
+벡터 \(\overrightarrow{x} = (x_1, x_2, x_3)\) 에 대하여
+\(pos(\overrightarrow{x}) = cumsum(\overrightarrow{x}) - \overrightarrow{x} / 2\).
+\(pos\) 함수는 다음 각 막대 중점(x로 표시)의 \(y\) 좌표를 찾아주는
+역할을 한다는 것을 쉽게 파악할 수 있다.
+
+\pandocbounded{\includegraphics[keepaspectratio]{Twin_Studies_pdf_files/figure-latex/pos-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{b1 }\OtherTok{\textless{}{-}}\NormalTok{ Nature1 }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{barplot}\NormalTok{(}\AttributeTok{width =} \DecValTok{1}\NormalTok{, }
+          \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{), }
+          \AttributeTok{space =} \FloatTok{0.3}\NormalTok{, }
+          \AttributeTok{col =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], }
+          \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{)}
+\CommentTok{\#\textgreater{} 쌍둥이유형 별로 한 막대에 흡연습관의 닮음 정도를 나타낼 것이므로 \textasciigrave{}cumsum\textasciigrave{}함수를 이용하여 막대들이 위치할 좌표를 계산한다. 일란성과 이란성 각각의 수효부터 비교할 수 있도록  막대 높이로 나타내고, 막대 중심에는 해당 속성의 돗수를 표시한다. 원점을 나타내기 위하여 0을 \textasciigrave{}c\textasciigrave{}함수 안에 추가하였다. 이를 추가하지 않으면 축이 어떻게 표시되는지 비교한다.}
+\CommentTok{\#\textgreater{} \textasciigrave{}format\textasciigrave{}함수의 용법에 익숙해지고, \textasciigrave{}las = 2\textasciigrave{}가 왜 필요한지 여러 경우를 비교하라.}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{at =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1),}
+                     \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                     \AttributeTok{FUN =}\NormalTok{ cumsum)),}
+     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1), }
+                                \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                     \AttributeTok{nsmall =} \DecValTok{0}\NormalTok{), }
+     \AttributeTok{las =} \DecValTok{2}\NormalTok{)}
+
+\CommentTok{\#\textgreater{} 막대그래프 작성 과정에서 나온 막대의 좌표와 \textasciigrave{}pos\textasciigrave{}함수로 계산한 y좌표를 이용하여 실제 관찰된 쌍둥이 페어의 수효를 표시한다.\textasciigrave{}y\_text\textasciigrave{}의 구조에 맞추어 \textasciigrave{}rep()\textasciigrave{}에서 \textasciigrave{}each = 3\textasciigrave{}으로 설정하였다. \textasciigrave{}bty = \textasciigrave{} \textasciigrave{}"o" 또는 "n"으로 정할 수 있다. }
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FunctionTok{rep}\NormalTok{(b1, }\AttributeTok{each =} \DecValTok{3}\NormalTok{), }
+     \AttributeTok{y =}\NormalTok{ y1\_text, }
+     \AttributeTok{labels =} \FunctionTok{t}\NormalTok{(Nature1))}
+\CommentTok{\#\textgreater{} 범례 표시}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{inset =} \FloatTok{0.01}\NormalTok{, }
+       \AttributeTok{fill =}\NormalTok{ cols[}\DecValTok{3}\SpecialCharTok{:}\DecValTok{1}\NormalTok{], }
+       \AttributeTok{legend =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(Nature1)), }
+       \AttributeTok{bty =} \StringTok{"o"}\NormalTok{)}
+\CommentTok{\#\textgreater{} 메인 타이틀 }
+\FunctionTok{title}\NormalTok{(}\AttributeTok{main =} \StringTok{"Smoking Habits of Twins"}\NormalTok{, }
+      \AttributeTok{cex.main =} \FloatTok{1.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-5-1} \end{center}
+
+\subsubsection{Fill}\label{fill}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\textgreater{} 쌍둥이유형(일란성/이란성) 별로 흡연습관을 구분하여 각 습관의 백분율을 계산한다. 일란성 쌍둥이와 이란성 쌍둥이의 숫자가 다르기 때문에 공평하게 비교하려면 백분율을 비교하는 것이 타당하다.}
+\NormalTok{Nature1\_p }\OtherTok{\textless{}{-}}\NormalTok{ Nature1 }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{prop.table}\NormalTok{(}\AttributeTok{margin =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{*}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{100}\NormalTok{)}
+\CommentTok{\# Nature1\_p \textless{}{-} prop.table(Natrue1, margin = 1) * 100}
+\CommentTok{\#\textgreater{} 차곡차곡 쌓아놓은 막대그래프를 그리고(\textasciigrave{}beside = FALSE\textasciigrave{}가 디폴트) 추가 정보를 표시할 부분 막대의 가운데 좌표를 저장한다.}
+\CommentTok{\#\textgreater{} \textasciigrave{}width\textasciigrave{}를 설정하려면 \textasciigrave{}xlim\textasciigrave{}도 함께 설정하여야 함에 유의한다.}
+\CommentTok{\#\textgreater{} 아래 예시의 경우 막대그래프의 범위를 0에서 4까지로 하면서 첫번째 막대의 중심은 1.5,}
+\CommentTok{\#\textgreater{} 두번째 막대의 중심은 3.5에 위치한다.(b1 값으로 파악) 막대의 폭(width)을 1, }
+\CommentTok{\#\textgreater{} 두 막대 간의 간격(space) 또한 1로 하여 width, xlim, space 간의 관계를 쉽게 알 수 있도록 하였다.}
+\CommentTok{\#\textgreater{} 쌍둥이유형별로 비교하여야 하므로 행렬을 전치시켜서 막대그래프를 그려야 한다.}
+\CommentTok{\#\textgreater{}  \textasciigrave{}yaxt = "n" \textasciigrave{}을 설정하여 y축에 추가 정보를 넣을 수 있도록 하였다.}
+\CommentTok{\#\textgreater{} 텍스트 정보 넣을 좌표를 계산한다. }
+\NormalTok{y1\_text\_p }\OtherTok{\textless{}{-}}\NormalTok{ Nature1\_p }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{apply}\NormalTok{(}\AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+        \AttributeTok{FUN =}\NormalTok{ pos)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{b1\_p }\OtherTok{\textless{}{-}}\NormalTok{ Nature1\_p }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{barplot}\NormalTok{(}\AttributeTok{width =} \DecValTok{1}\NormalTok{, }
+          \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{), }
+          \AttributeTok{space =} \FloatTok{0.3}\NormalTok{, }
+          \AttributeTok{col =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], }
+          \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{)}
+\CommentTok{\#\textgreater{} 쌍둥이유형 별로 한 막대에 흡연습관의 닮음 정도를 나타낼 것이므로 \textasciigrave{}cumsum\textasciigrave{}함수를 이용하여 막대들이 위치할 좌표를 계산한다. 일란성과 이란성을 각각 100\%로 하고 닮음 정도의 백분율을 막대 높이로 비교할 수 있도록 하되, 막대 중심에는 해당 속성의 돗수를 표시한다. 원점을 나타내기 위하여 0을 \textasciigrave{}c\textasciigrave{}함수 안에 추가하였다. 이를 추가하지 않으면 축이 어떻게 표시되는지 비교한다.}
+\CommentTok{\#\textgreater{} \textasciigrave{}format\textasciigrave{}함수의 용법에 익숙해지고, \textasciigrave{}las = 2\textasciigrave{}가 왜 필요한지 여러 경우를 비교하라.}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{at =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1\_p),}
+                     \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                     \AttributeTok{FUN =}\NormalTok{ cumsum)),}
+     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1\_p), }
+                                \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{), }
+     \AttributeTok{las =} \DecValTok{2}\NormalTok{)}
+\CommentTok{\#\textgreater{} 막대그래프 작성 과정에서 나온 막대의 좌표와 \textasciigrave{}pos\textasciigrave{}함수로 계산한 y좌표를 이용하여 실제 관찰된 쌍둥이 페어의 수효를 표시한다.\textasciigrave{}y1\_text\_p\textasciigrave{}의 구조에 맞추어 \textasciigrave{}rep()\textasciigrave{}에서 \textasciigrave{}each = 3\textasciigrave{}으로 설정하였다. \textasciigrave{}bty = \textasciigrave{} \textasciigrave{}"o" 또는 "n"으로 정할 수 있다. }
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FunctionTok{rep}\NormalTok{(b1\_p, }\AttributeTok{each =} \DecValTok{3}\NormalTok{), }
+     \AttributeTok{y =}\NormalTok{ y1\_text\_p, }
+     \AttributeTok{labels =} \FunctionTok{t}\NormalTok{(Nature1))}
+\CommentTok{\#\textgreater{} 범례 표시}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{inset =} \FloatTok{0.01}\NormalTok{, }
+       \AttributeTok{fill =}\NormalTok{ cols[}\DecValTok{3}\SpecialCharTok{:}\DecValTok{1}\NormalTok{], }
+       \AttributeTok{legend =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(Nature1)), }
+       \AttributeTok{bty =} \StringTok{"o"}\NormalTok{)}
+\CommentTok{\#\textgreater{} 메인 타이틀 }
+\FunctionTok{title}\NormalTok{(}\AttributeTok{main =} \StringTok{"Smoking Habits of Twins"}\NormalTok{, }
+      \AttributeTok{cex.main =} \FloatTok{1.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-7-1} \end{center}
+
+\subsubsection{Mosaic Plot}\label{mosaic-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mosaicplot}\NormalTok{(Nature1, }
+           \AttributeTok{main =} \StringTok{"Smoking Habits of Twins"}\NormalTok{, }
+           \AttributeTok{xlab =} \StringTok{"Twins"}\NormalTok{, }
+           \AttributeTok{ylab =} \StringTok{"Resemblance"}\NormalTok{,}
+           \AttributeTok{off =} \FunctionTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{),}
+           \AttributeTok{color =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{], }
+           \AttributeTok{cex.axis =} \DecValTok{1}\NormalTok{,}
+           \AttributeTok{las =} \DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-8-1.pdf}}
+
+\subsection{Nature 1958 version 2}\label{nature-1958-version-2}
+
+피셔의 논문이 실려 있는 Nature 지의 596쪽에서는 그와 비슷한 연구 결과가
+실려 있었다. 피셔가 인용한 보고서가 흡연습관을 세 단계로 구분한 것과는
+달리 닮았거나 그렇지 않거나의 이분법으로 나누었다. 이 보고서가 흥미로운
+것은 단순히 일란성 쌍둥이와 이란성 쌍둥이의 흡연습관을 비교한 것이
+아니라 일란성 쌍둥이들을 다시 어려서 헤어진 경우와 함께 산 경우로 나눠
+본 것이다. 일란성 쌍둥이들은 함께 살았든, 헤어져 살았든 흡연습관에
+있어서도 놀라울 정도로 닮은 점을 보여 준다.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"../pics/Nature\_1958v2.png"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{flushleft}\includegraphics[width=0.35\linewidth]{../pics/Nature_1958v2} \end{flushleft}
+
+\subsubsection{막대그래프 :
+Stack}\label{uxb9c9uxb300uxadf8uxb798uxd504-stack}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature2 }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{44}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{9}\NormalTok{, }\DecValTok{9}\NormalTok{), }
+                  \AttributeTok{nrow =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(Nature2) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Identical"}\NormalTok{, }\StringTok{"Fraternal"}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(Nature2) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Alike"}\NormalTok{, }\StringTok{"Not\_Alike"}\NormalTok{)}
+\NormalTok{Nature2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           Alike Not_Alike
+## Identical    44         9
+## Fraternal     9         9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y2\_text }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(Nature2, }
+                 \AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                 \AttributeTok{FUN =}\NormalTok{ pos)}
+\NormalTok{b2 }\OtherTok{\textless{}{-}} \FunctionTok{barplot}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2),}
+              \AttributeTok{width =} \DecValTok{1}\NormalTok{,}
+              \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+              \AttributeTok{space =} \FloatTok{0.5}\NormalTok{, }
+              \AttributeTok{col =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], }
+              \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{)}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{at =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2),}
+                     \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                     \AttributeTok{FUN =}\NormalTok{ cumsum)),}
+     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2), }
+                                \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{), }
+     \AttributeTok{las =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FunctionTok{rep}\NormalTok{(b2, }\AttributeTok{each =} \DecValTok{2}\NormalTok{), }
+     \AttributeTok{y =}\NormalTok{ y2\_text, }
+     \AttributeTok{labels =} \FunctionTok{t}\NormalTok{(Nature2))}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{inset =} \FloatTok{0.01}\NormalTok{, }
+       \AttributeTok{fill =}\NormalTok{ cols[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{], }
+       \AttributeTok{legend =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(Nature2)))}
+\FunctionTok{title}\NormalTok{(}\AttributeTok{main =} \StringTok{"Smoking Habits of Twins 2"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-10-1} \end{center}
+
+\subsubsection{막대그래프 :
+Fill}\label{uxb9c9uxb300uxadf8uxb798uxd504-fill}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature2\_p }\OtherTok{\textless{}{-}} \FunctionTok{prop.table}\NormalTok{(Nature2, }
+                        \AttributeTok{margin =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{*} \DecValTok{100}
+\NormalTok{y2\_text\_p }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(Nature2\_p, }
+                   \AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                   \AttributeTok{FUN =}\NormalTok{ pos)}
+\NormalTok{b2\_p }\OtherTok{\textless{}{-}} \FunctionTok{barplot}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2\_p),}
+                \AttributeTok{width =} \DecValTok{1}\NormalTok{,}
+                \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+                \AttributeTok{space =} \FloatTok{0.5}\NormalTok{, }
+                \AttributeTok{col =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], }
+                \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{)}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{at =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2\_p),}
+                     \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                     \AttributeTok{FUN =}\NormalTok{ cumsum)),}
+     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2\_p), }
+                                \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{), }
+     \AttributeTok{las =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FunctionTok{rep}\NormalTok{(b2\_p, }\AttributeTok{each =} \DecValTok{2}\NormalTok{), }
+     \AttributeTok{y =}\NormalTok{ y2\_text\_p, }
+     \AttributeTok{labels =} \FunctionTok{t}\NormalTok{(Nature2))}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{inset =} \FloatTok{0.01}\NormalTok{, }
+       \AttributeTok{fill =}\NormalTok{ cols[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{], }
+       \AttributeTok{legend =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(Nature2)))}
+\FunctionTok{title}\NormalTok{(}\AttributeTok{main =} \StringTok{"Smoking Habits of Twins 2"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-11-1} \end{center}
+
+\subsubsection{Mosaic Plot}\label{mosaic-plot-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mosaicplot}\NormalTok{(Nature2,}
+           \AttributeTok{main =} \StringTok{"Smoking Habits of Twins 2"}\NormalTok{, }
+           \AttributeTok{xlab =} \StringTok{"Twins"}\NormalTok{, }
+           \AttributeTok{ylab =} \StringTok{"Resemblance"}\NormalTok{,}
+           \AttributeTok{off =} \DecValTok{1}\NormalTok{,}
+           \AttributeTok{color =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{],}
+           \AttributeTok{cex.axis =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-12-1.pdf}}
+
+\subsection{Nature 1958 version 2 : Identical
+Twins}\label{nature-1958-version-2-identical-twins}
+
+일란성 쌍둥이들만을 대상으로 어렸을 때 헤어졌는지, 함께 살았는지 여부와
+흡연습관을 비교한 결과는 놀라울 정도 닮았다는 것을 보여준다.
+
+\subsubsection{막대그래프 :
+stack}\label{uxb9c9uxb300uxadf8uxb798uxd504-stack-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature3 }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{23}\NormalTok{, }\DecValTok{21}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{), }
+                  \AttributeTok{nrow =} \DecValTok{2}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(Nature3) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Lived Together"}\NormalTok{, }\StringTok{"Separated"}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(Nature3) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Alike"}\NormalTok{, }\StringTok{"Not\_Alike"}\NormalTok{)}
+\NormalTok{Nature3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                Alike Not_Alike
+## Lived Together    23         4
+## Separated         21         5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{c3 }\OtherTok{\textless{}{-}} \FunctionTok{ncol}\NormalTok{(Nature3)}
+\NormalTok{b3 }\OtherTok{\textless{}{-}} \FunctionTok{barplot}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3),}
+              \AttributeTok{width =} \DecValTok{1}\NormalTok{,}
+              \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+              \AttributeTok{space =} \FloatTok{0.5}\NormalTok{, }
+              \AttributeTok{col =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], }
+              \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{)}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{at =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3), }
+                     \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                     \AttributeTok{FUN =}\NormalTok{ cumsum)),}
+     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3), }
+                                \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                     \AttributeTok{nsmall =} \DecValTok{0}\NormalTok{), }
+     \AttributeTok{las =} \DecValTok{2}\NormalTok{)}
+\NormalTok{y3\_text }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(Nature3, }
+                 \AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                 \AttributeTok{FUN =}\NormalTok{ pos)}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FunctionTok{rep}\NormalTok{(b3, }\AttributeTok{each =} \DecValTok{2}\NormalTok{), }
+     \AttributeTok{y =}\NormalTok{ y3\_text, }
+     \AttributeTok{labels =} \FunctionTok{t}\NormalTok{(Nature3))}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{inset =} \FloatTok{0.01}\NormalTok{, }
+       \AttributeTok{fill =}\NormalTok{ cols[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{], }
+       \AttributeTok{legend =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(Nature2)))}
+\FunctionTok{title}\NormalTok{(}\AttributeTok{main =} \StringTok{"Smoking Habits of Identical Twins"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-13-1} \end{center}
+
+\subsubsection{막대그래프 :
+Fill}\label{uxb9c9uxb300uxadf8uxb798uxd504-fill-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature3\_p }\OtherTok{\textless{}{-}} \FunctionTok{prop.table}\NormalTok{(Nature3, }
+                        \AttributeTok{margin =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{*} \DecValTok{100}
+\NormalTok{b3\_p }\OtherTok{\textless{}{-}} \FunctionTok{barplot}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3\_p),}
+                \AttributeTok{width =} \DecValTok{1}\NormalTok{,}
+                \AttributeTok{xlim =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{4}\NormalTok{),}
+                \AttributeTok{space =} \FloatTok{0.5}\NormalTok{, }
+                \AttributeTok{col =}\NormalTok{ cols[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{2}\NormalTok{], }
+                \AttributeTok{yaxt =} \StringTok{"n"}\NormalTok{)}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{,}
+     \AttributeTok{at =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3\_p), }
+                     \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                     \AttributeTok{FUN =}\NormalTok{ cumsum)),}
+     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3\_p), }
+                                \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{), }
+     \AttributeTok{las =} \DecValTok{2}\NormalTok{)}
+\NormalTok{y3\_text\_p }\OtherTok{\textless{}{-}} \FunctionTok{apply}\NormalTok{(Nature3\_p, }
+                   \AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                   \AttributeTok{FUN =}\NormalTok{ pos)}
+\FunctionTok{text}\NormalTok{(}\AttributeTok{x =} \FunctionTok{rep}\NormalTok{(b3, }\AttributeTok{each =} \DecValTok{2}\NormalTok{), }
+     \AttributeTok{y =}\NormalTok{ y3\_text\_p, }
+     \AttributeTok{labels =} \FunctionTok{t}\NormalTok{(Nature3))}
+\FunctionTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
+       \AttributeTok{inset =} \FloatTok{0.01}\NormalTok{, }
+       \AttributeTok{fill =}\NormalTok{ cols[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{], }
+       \AttributeTok{legend =} \FunctionTok{rev}\NormalTok{(}\FunctionTok{colnames}\NormalTok{(Nature2)))}
+\FunctionTok{title}\NormalTok{(}\AttributeTok{main =} \StringTok{"Smoking Habits of Identical Twins"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-14-1} \end{center}
+
+\subsubsection{Mosaic Plot}\label{mosaic-plot-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mosaicplot}\NormalTok{(Nature3, }
+           \AttributeTok{main =} \StringTok{"Smoking Habits of Identical Twins"}\NormalTok{, }
+           \AttributeTok{xlab =} \StringTok{"Lived Together?"}\NormalTok{, }
+           \AttributeTok{ylab =} \StringTok{"Resemblance"}\NormalTok{,}
+           \AttributeTok{off =} \DecValTok{1}\NormalTok{,}
+           \AttributeTok{color =}\NormalTok{ cols[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{],}
+           \AttributeTok{cex.axis =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{flushleft}\includegraphics[width=0.5\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-15-1} \end{flushleft}
+
+\subsection{ggplot}\label{ggplot}
+
+\subsubsection{tidyverse}\label{tidyverse}
+
+깔끔한 데이터 바꾸는 과정에서 유의할 점은 ggplot으로 그릴 때 어떤 변수가
+x, y, fill 역할을 할 것인지를 명확히 하여야한다. 어떤 변수를 맨 앞에
+위치시키고, 어떤 변수를 그 다음 자리에 위치시키고, 그 다음에 Counts를
+위치시킨다. 즉, fill 에 해당하는 변수를 맨 앞에, 그리고 x에 해당하는
+변수를 그 다음에, 마지막으로 세번째 변수로 Freq 또는 Counts가 위치하도록
+tidy를 적용하면 ggplot으로 그릴 때 상당히 체계적인 접근이 가능해진다.
+특히, 막대들의 중간에 추가적인 정보를 삽입하기 위하여 좌표를 계산할
+필요가 있을 때 크게 도움이 된다.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature1\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ Nature1 }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as\_tibble }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Resemblance =} \FunctionTok{row.names}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}
+    \AttributeTok{cols =} \SpecialCharTok{{-}}\NormalTok{Resemblance, }
+    \AttributeTok{names\_to =} \StringTok{"Twins"}\NormalTok{, }
+    \AttributeTok{values\_to =} \StringTok{"Counts"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\CommentTok{\#   gather(key = "Twins", }
+\CommentTok{\#          value = "Counts", {-}Resemblance) \%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Resemblance =} \FunctionTok{factor}\NormalTok{(Resemblance, }
+                              \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Alike"}\NormalTok{, }
+                                         \StringTok{"Little\_Alike"}\NormalTok{,}
+                                         \StringTok{"Not\_Alike"}\NormalTok{)),}
+         \AttributeTok{Twins =} \FunctionTok{factor}\NormalTok{(Twins, }
+                        \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Identical"}\NormalTok{, }\StringTok{"Fraternal"}\NormalTok{)))}
+\NormalTok{Nature1\_tbl}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 3
+##   Resemblance  Twins     Counts
+##   <fct>        <fct>      <dbl>
+## 1 Alike        Identical     33
+## 2 Alike        Fraternal     11
+## 3 Little_Alike Identical      6
+## 4 Little_Alike Fraternal      6
+## 5 Not_Alike    Identical     12
+## 6 Not_Alike    Fraternal     16
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature2\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ Nature2 }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as\_tibble }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Resemblance =} \FunctionTok{row.names}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}
+    \AttributeTok{cols =} \SpecialCharTok{{-}}\NormalTok{Resemblance, }
+    \AttributeTok{names\_to =} \StringTok{"Twins"}\NormalTok{, }
+    \AttributeTok{values\_to =} \StringTok{"Counts"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\CommentTok{\#   gather(key = "Twins", }
+\CommentTok{\#          value = "Counts", {-}Resemblance) \%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Twins =} \FunctionTok{factor}\NormalTok{(Twins, }
+                        \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Identical"}\NormalTok{, }\StringTok{"Fraternal"}\NormalTok{)),}
+         \AttributeTok{Resemblance =} \FunctionTok{factor}\NormalTok{(Resemblance)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  print}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+##   Resemblance Twins     Counts
+##   <fct>       <fct>      <dbl>
+## 1 Alike       Identical     44
+## 2 Alike       Fraternal      9
+## 3 Not_Alike   Identical      9
+## 4 Not_Alike   Fraternal      9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature3\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ Nature3 }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as\_tibble }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Resemblance =} \FunctionTok{row.names}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3))) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}
+    \AttributeTok{cols =} \SpecialCharTok{{-}}\NormalTok{Resemblance, }
+    \AttributeTok{names\_to =} \StringTok{"Separation"}\NormalTok{, }
+    \AttributeTok{values\_to =} \StringTok{"Counts"}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+\CommentTok{\#   gather(key = "Separation", }
+\CommentTok{\#          value = "Counts", {-}Resemblance) \%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Separation =} \FunctionTok{factor}\NormalTok{(Separation),}
+         \AttributeTok{Resemblance =} \FunctionTok{factor}\NormalTok{(Resemblance)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  print}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+##   Resemblance Separation     Counts
+##   <fct>       <fct>           <dbl>
+## 1 Alike       Lived Together     23
+## 2 Alike       Separated          21
+## 3 Not_Alike   Lived Together      4
+## 4 Not_Alike   Separated           5
+\end{verbatim}
+
+\subsubsection{\texorpdfstring{Good old
+\texttt{as.data.frame}}{Good old as.data.frame}}\label{good-old-as.data.frame}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Nature1\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ Nature1 }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as.data.frame.table }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{colnames\textless{}{-}}\StringTok{\textasciigrave{}}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"Resemblance"}\NormalTok{, }\StringTok{"Twins"}\NormalTok{, }\StringTok{"Counts"}\NormalTok{))}
+\NormalTok{Nature2\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ Nature2 }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as.data.frame.table }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{colnames\textless{}{-}}\StringTok{\textasciigrave{}}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"Resemblance"}\NormalTok{, }\StringTok{"Twins"}\NormalTok{, }\StringTok{"Counts"}\NormalTok{))}
+\NormalTok{Nature3\_tbl }\OtherTok{\textless{}{-}}\NormalTok{ Nature3 }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  t }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  as.data.frame.table }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{colnames\textless{}{-}}\StringTok{\textasciigrave{}}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"Resemblance"}\NormalTok{, }\StringTok{"Separation"}\NormalTok{, }\StringTok{"Counts"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Nature 1958 Version 1}\label{nature-1958-version-1-1}
+
+\subsubsection{stack}\label{stack-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y1\_breaks }\OtherTok{\textless{}{-}}\NormalTok{ Nature1\_tbl }\SpecialCharTok{\%$\%}
+  \FunctionTok{tapply}\NormalTok{(Counts,}
+         \AttributeTok{INDEX =}\NormalTok{ Twins,}
+         \AttributeTok{FUN =}\NormalTok{ cumsum) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  unlist}
+\NormalTok{y1\_text }\OtherTok{\textless{}{-}}\NormalTok{ Nature1\_tbl }\SpecialCharTok{\%$\%}
+  \FunctionTok{tapply}\NormalTok{(Counts,}
+         \AttributeTok{INDEX =}\NormalTok{ Twins,}
+         \AttributeTok{FUN =}\NormalTok{ pos) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  unlist}
+\NormalTok{Nature1\_tbl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ., }
+         \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Twins, }
+                       \AttributeTok{y =}\NormalTok{ Counts, }
+                       \AttributeTok{fill =}\NormalTok{ Resemblance)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }
+           \AttributeTok{width =} \FloatTok{0.5}\NormalTok{, }
+           \AttributeTok{position =} \FunctionTok{position\_stack}\NormalTok{(}\AttributeTok{reverse =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ y1\_text), }
+            \AttributeTok{label =}\NormalTok{ Nature1\_tbl}\SpecialCharTok{$}\NormalTok{Counts, }
+            \AttributeTok{position =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{type =} \StringTok{"qual"}\NormalTok{, }
+                    \AttributeTok{palette =} \StringTok{"Accent"}\NormalTok{, }
+                    \AttributeTok{direction =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ y1\_breaks, }
+                     \AttributeTok{labels =}\NormalTok{ y1\_breaks)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-18-1} \end{center}
+
+\subsubsection{fill}\label{fill-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y1\_fill }\OtherTok{\textless{}{-}}\NormalTok{ y1\_text }\SpecialCharTok{/}\NormalTok{ (Nature1 }\SpecialCharTok{\%\textgreater{}\%} 
+                        \FunctionTok{apply}\NormalTok{(}\AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                              \AttributeTok{FUN =}\NormalTok{ sum) }\SpecialCharTok{\%\textgreater{}\%}
+                        \FunctionTok{rep}\NormalTok{(}\AttributeTok{each =} \DecValTok{3}\NormalTok{))}
+\NormalTok{Nature1\_tbl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ., }
+         \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Twins, }
+                       \AttributeTok{y =}\NormalTok{ Counts, }
+                       \AttributeTok{fill =}\NormalTok{ Resemblance)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }
+           \AttributeTok{width =} \FloatTok{0.5}\NormalTok{, }
+           \AttributeTok{position =} \FunctionTok{position\_fill}\NormalTok{(}\AttributeTok{reverse =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ y1\_fill), }
+            \AttributeTok{label =}\NormalTok{ Nature1\_tbl}\SpecialCharTok{$}\NormalTok{Counts, }
+            \AttributeTok{position =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{type =} \StringTok{"qual"}\NormalTok{, }
+                    \AttributeTok{palette =} \StringTok{"Accent"}\NormalTok{, }
+                    \AttributeTok{direction =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{"Cumulative Percentage"}\NormalTok{, }
+                     \AttributeTok{breaks =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }
+                                \FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1\_p), }
+                                      \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                      \AttributeTok{FUN =}\NormalTok{ cumsum) }\SpecialCharTok{/} \DecValTok{100}\NormalTok{), }
+                     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }
+                                       \FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature1\_p), }
+                                             \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                             \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Smoking Habits of Twins"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-19-1} \end{center}
+
+\subsection{Nature 1958 version 2 : Twin
+Study}\label{nature-1958-version-2-twin-study}
+
+\subsubsection{stack}\label{stack-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y2\_breaks }\OtherTok{\textless{}{-}}\NormalTok{ Nature2\_tbl }\SpecialCharTok{\%$\%}
+  \FunctionTok{tapply}\NormalTok{(Counts,}
+         \AttributeTok{INDEX =}\NormalTok{ Twins,}
+         \AttributeTok{FUN =}\NormalTok{ cumsum) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  unlist}
+\NormalTok{y2\_text }\OtherTok{\textless{}{-}}\NormalTok{ Nature2\_tbl }\SpecialCharTok{\%$\%}
+  \FunctionTok{tapply}\NormalTok{(Counts,}
+         \AttributeTok{INDEX =}\NormalTok{ Twins,}
+         \AttributeTok{FUN =}\NormalTok{ pos) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  unlist}
+\NormalTok{Nature2\_tbl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ., }
+         \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Twins, }
+                       \AttributeTok{y =}\NormalTok{ Counts, }
+                       \AttributeTok{fill =}\NormalTok{ Resemblance)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }
+           \AttributeTok{width =} \FloatTok{0.5}\NormalTok{, }
+           \AttributeTok{position =} \FunctionTok{position\_stack}\NormalTok{(}\AttributeTok{reverse =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ y2\_text), }
+            \AttributeTok{label =}\NormalTok{ Nature2\_tbl}\SpecialCharTok{$}\NormalTok{Counts, }
+            \AttributeTok{position =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{type =} \StringTok{"qual"}\NormalTok{, }
+                    \AttributeTok{palette =} \StringTok{"Accent"}\NormalTok{, }
+                    \AttributeTok{direction =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ y2\_breaks, }
+                     \AttributeTok{labels =}\NormalTok{ y2\_breaks)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-20-1} \end{center}
+
+\subsubsection{fill}\label{fill-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y2\_fill }\OtherTok{\textless{}{-}}\NormalTok{ y2\_text }\SpecialCharTok{/}\NormalTok{ (Nature2 }\SpecialCharTok{\%\textgreater{}\%} 
+                        \FunctionTok{apply}\NormalTok{(}\AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                              \AttributeTok{FUN =}\NormalTok{ sum) }\SpecialCharTok{\%\textgreater{}\%}
+                        \FunctionTok{rep}\NormalTok{(}\AttributeTok{each =} \DecValTok{2}\NormalTok{))}
+\NormalTok{Nature2\_tbl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ., }
+         \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Twins, }
+                       \AttributeTok{y =}\NormalTok{ Counts, }
+                       \AttributeTok{fill =}\NormalTok{ Resemblance)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }
+           \AttributeTok{width =} \FloatTok{0.5}\NormalTok{, }
+           \AttributeTok{position =} \FunctionTok{position\_fill}\NormalTok{(}\AttributeTok{reverse =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ y2\_fill), }
+            \AttributeTok{label =}\NormalTok{ Nature2\_tbl}\SpecialCharTok{$}\NormalTok{Counts, }
+            \AttributeTok{position =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{type =} \StringTok{"qual"}\NormalTok{, }
+                    \AttributeTok{palette =} \StringTok{"Accent"}\NormalTok{, }
+                    \AttributeTok{direction =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{"Cumulative Percentage"}\NormalTok{, }
+                     \AttributeTok{breaks =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }
+                                \FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2\_p), }
+                                      \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                      \AttributeTok{FUN =}\NormalTok{ cumsum) }\SpecialCharTok{/} \DecValTok{100}\NormalTok{), }
+                     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }
+                                       \FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature2\_p), }
+                                             \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                             \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Smoking Habits of Twins"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-21-1} \end{center}
+
+\subsection{Nature 1958 version 2 : Identical
+Twins}\label{nature-1958-version-2-identical-twins-1}
+
+\subsubsection{stack}\label{stack-3}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y3\_breaks }\OtherTok{\textless{}{-}}\NormalTok{ Nature3\_tbl }\SpecialCharTok{\%$\%}
+  \FunctionTok{tapply}\NormalTok{(Counts,}
+         \AttributeTok{INDEX =}\NormalTok{ Separation,}
+         \AttributeTok{FUN =}\NormalTok{ cumsum) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  unlist}
+\NormalTok{y3\_text }\OtherTok{\textless{}{-}}\NormalTok{ Nature3\_tbl }\SpecialCharTok{\%$\%}
+  \FunctionTok{tapply}\NormalTok{(Counts,}
+         \AttributeTok{INDEX =}\NormalTok{ Separation,}
+         \AttributeTok{FUN =}\NormalTok{ pos) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  unlist}
+\NormalTok{Nature3\_tbl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ., }
+         \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Separation, }
+                       \AttributeTok{y =}\NormalTok{ Counts, }
+                       \AttributeTok{fill =}\NormalTok{ Resemblance)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }
+           \AttributeTok{width =} \FloatTok{0.5}\NormalTok{, }
+           \AttributeTok{position =} \FunctionTok{position\_stack}\NormalTok{(}\AttributeTok{reverse =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ y3\_text), }
+            \AttributeTok{label =}\NormalTok{ Nature3\_tbl}\SpecialCharTok{$}\NormalTok{Counts, }
+            \AttributeTok{position =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{type =} \StringTok{"qual"}\NormalTok{, }
+                    \AttributeTok{palette =} \StringTok{"Accent"}\NormalTok{, }
+                    \AttributeTok{direction =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ y3\_breaks, }
+                     \AttributeTok{labels =}\NormalTok{ y3\_breaks)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-22-1} \end{center}
+
+\subsubsection{fill}\label{fill-3}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y3\_fill }\OtherTok{\textless{}{-}}\NormalTok{ y3\_text }\SpecialCharTok{/}\NormalTok{ (Nature3 }\SpecialCharTok{\%\textgreater{}\%} 
+                        \FunctionTok{apply}\NormalTok{(}\AttributeTok{MARGIN =} \DecValTok{1}\NormalTok{, }
+                              \AttributeTok{FUN =}\NormalTok{ sum) }\SpecialCharTok{\%\textgreater{}\%}
+                        \FunctionTok{rep}\NormalTok{(}\AttributeTok{each =} \DecValTok{2}\NormalTok{))}
+\NormalTok{Nature3\_tbl }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ ., }
+         \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Separation, }
+                       \AttributeTok{y =}\NormalTok{ Counts, }
+                       \AttributeTok{fill =}\NormalTok{ Resemblance)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }
+           \AttributeTok{width =} \FloatTok{0.5}\NormalTok{, }
+           \AttributeTok{position =} \FunctionTok{position\_fill}\NormalTok{(}\AttributeTok{reverse =} \ConstantTok{TRUE}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ y3\_fill), }
+            \AttributeTok{label =}\NormalTok{ Nature3\_tbl}\SpecialCharTok{$}\NormalTok{Counts, }
+            \AttributeTok{position =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{type =} \StringTok{"qual"}\NormalTok{, }
+                    \AttributeTok{palette =} \StringTok{"Accent"}\NormalTok{, }
+                    \AttributeTok{direction =} \SpecialCharTok{{-}}\DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{"Cumulative Percentage"}\NormalTok{, }
+                     \AttributeTok{breaks =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }
+                                \FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3\_p), }
+                                      \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                      \AttributeTok{FUN =}\NormalTok{ cumsum) }\SpecialCharTok{/} \DecValTok{100}\NormalTok{), }
+                     \AttributeTok{labels =} \FunctionTok{format}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }
+                                       \FunctionTok{apply}\NormalTok{(}\FunctionTok{t}\NormalTok{(Nature3\_p), }
+                                             \AttributeTok{MARGIN =} \DecValTok{2}\NormalTok{, }
+                                             \AttributeTok{FUN =}\NormalTok{ cumsum)), }
+                                     \AttributeTok{digits =} \DecValTok{3}\NormalTok{, }
+                                     \AttributeTok{nsmall =} \DecValTok{1}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Smoking Habits of Identical Twins"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics[width=0.75\linewidth]{Twin_Studies_pdf_files/figure-latex/unnamed-chunk-23-1} \end{center}
+
+\end{document}

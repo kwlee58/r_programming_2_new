@@ -1,0 +1,1320 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{fontspec}
+\setmainfont{NanumGothic}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={관광두레 주민공동체 현황분석},
+  pdfauthor={한림대학교 이기원},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{관광두레 주민공동체 현황분석}
+\author{한림대학교 이기원}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection{자료 구조}\label{uxc790uxb8cc-uxad6cuxc870}
+
+\subsubsection{기초자료}\label{uxae30uxcd08uxc790uxb8cc}
+
+\begin{verbatim}
+## 'data.frame':    97 obs. of  24 variables:
+##  $ 조직명      : chr  "수원누리" "수원화성공예_협" "행궁맛촌" "이웃문화협동조합" ...
+##  $ 시도        : chr  "경기" "경기" "경기" "경기" ...
+##  $ 시군        : chr  "수원" "수원" "수원" "수원" ...
+##  $ PD.1        : chr  "김용균" "김용균" "김용균" "김용균" ...
+##  $ PD.2        : chr  "박호철" "박호철" "박호철" "박호철" ...
+##  $ 공동체상태  : chr  "창업준비" "창업준비" "창업준비" "경영개선" ...
+##  $ 조직형태    : chr  "임의단체" "임의단체" "임의단체" "법인" ...
+##  $ 조직원      : num  4 4 4 5 5 5 40 67 5 5 ...
+##  $ 법인유형    : chr  "임의단체" "임의단체" "임의단체" "협동조합" ...
+##  $ 설립일      : POSIXct, format: "2014-05-01" "2015-03-01" ...
+##  $ 사업자등록  : chr  "NA" "513-80-29465" "NA" "124-87-43816" ...
+##  $ 업태        : chr  "NA" "NA" "NA" "서비스" ...
+##  $ 종목        : chr  "NA" "NA" "NA" "문화기획" ...
+##  $ 소재지      : chr  "수원" "수원" "수원" "수원" ...
+##  $ 인적자원    : chr  "하" "중" "중" "상" ...
+##  $ 물적자원    : chr  "중" "중" "중" "중" ...
+##  $ 재무자원    : chr  "하" "하" "하" "중" ...
+##  $ 정부지원사업: num  1 1 1 1 0 0 0 0 0 0 ...
+##  $ 사업명      : chr  "성안에서놀자" "성안에서놀자" "경기도특화거리지원" "수원시마을만들기" ...
+##  $ 지원금.천원.: num  12000 12000 10000 5000 0 0 0 0 0 0 ...
+##  $ 지원사항    : chr  "SW+HW" "SW+HW" "HW" "SW" ...
+##  $ 사업아이템  : chr  "관광기념품" "관광기념품" "식음" "체험" ...
+##  $ 아이디어    : chr  "상품" "쇼핑몰" "간식" "해당없음" ...
+##  $ 대표상품    : chr  "해당없음" "해당없음" "해당없음" "체험패키지" ...
+\end{verbatim}
+
+\subsubsection{성과자료}\label{uxc131uxacfcuxc790uxb8cc}
+
+\begin{verbatim}
+## 'data.frame':    97 obs. of  30 variables:
+##  $ 방문객_2012           : num  0 0 0 0 0 ...
+##  $ 방문객_2013           : num  0 0 0 5000 0 0 0 0 0 0 ...
+##  $ 방문객_2014           : num  0 0 0 4000 0 ...
+##  $ 매출_2012             : num  0 0 0 0 0 0 653000 0 0 0 ...
+##  $ 매출_2013             : num  0 0 0 80000 0 0 0 0 0 0 ...
+##  $ 매출_2014             : num  0 0 0 70000 0 ...
+##  $ 성과_법인화           : chr  "No" "No" "No" "Yes" ...
+##  $ 성과_사업착수         : chr  "No" "No" "Yes" "Yes" ...
+##  $ 성과_사업자등록       : chr  "No" "Yes" "No" "Yes" ...
+##  $ 성과_상품개발         : chr  "No" "No" "No" "Yes" ...
+##  $ 성과_기술개발         : chr  "No" "No" "No" "Yes" ...
+##  $ 성과_신기술개발       : chr  "No" "No" "No" "No" ...
+##  $ 성과_신상품개발       : chr  "No" "No" "No" "No" ...
+##  $ 성과_사업장확보       : chr  "No" "No" "No" "Yes" ...
+##  $ 성과_사업장추가       : chr  "No" "No" "No" "No" ...
+##  $ 성과_이벤트           : chr  "Yes" "Yes" "No" "No" ...
+##  $ 성과_SNS              : chr  "Yes" "Yes" "No" "No" ...
+##  $ 성과_매출_2014        : num  0 0 0 0 0 ...
+##  $ 성과_매출_2015_3개월  : num  0 0 20800 7080 0 0 0 0 0 0 ...
+##  $ 성과_방문객_2014      : num  0 0 0 0 0 ...
+##  $ 성과_방문객_2015_3개월: num  0 0 5200 760 0 0 0 0 0 0 ...
+##  $ 성과_정규직_2014      : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ 성과_정규직_2015      : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ 성과_비정규직_2014    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ 성과_비정규직_2015    : num  0 0 0 3 0 0 0 0 0 0 ...
+##  $ 사업실적_역량강화     : num  1 1 0 1 0 2 2 2 2 0 ...
+##  $ 사업실적_멘토링       : num  0 0 0 0 0 1 1 0 0 0 ...
+##  $ 사업실적_파일럿       : num  1 0 0 0 0 2 3 2 6 0 ...
+##  $ 사업실적_관광공사     : num  0 0 0 0 0 3 3 1 0 0 ...
+##  $ 기타                  : num  0 1 0 0 0 4 4 2 0 0 ...
+\end{verbatim}
+
+\subsection{변수별 기초통계 및
+요약}\label{uxbcc0uxc218uxbcc4-uxae30uxcd08uxd1b5uxacc4-uxbc0f-uxc694uxc57d}
+
+\begin{verbatim}
+## $조직명
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $시도
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $시군
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $PD.1
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $PD.2
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $공동체상태
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $조직형태
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $조직원
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##     3.0     5.0     7.0    13.9    12.0   162.0 
+## 
+## $법인유형
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $인적자원
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $물적자원
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $재무자원
+##    Length     Class      Mode 
+##        97 character character
+\end{verbatim}
+
+\begin{verbatim}
+## $정부지원사업
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00    0.00    0.00    0.67    1.00    8.00 
+## 
+## $지원금.천원.
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0  420217   80000 7000000 
+## 
+## $지원사항
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $사업아이템
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $방문객_2012
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0    8338       0  650000 
+## 
+## $방문객_2013
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0    8738       0  700000 
+## 
+## $방문객_2014
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0e+00   0e+00   0e+00   1e+04   7e+02   8e+05 
+## 
+## $매출_2012
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0   25420       0  680000 
+## 
+## $매출_2013
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0   23269       0  910000 
+## 
+## $매출_2014
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0   27483    5400  700000 
+## 
+## $성과_법인화
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_사업착수
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_사업자등록
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_상품개발
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_기술개발
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_신기술개발
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_신상품개발
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_사업장확보
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_사업장추가
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_이벤트
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_SNS
+##    Length     Class      Mode 
+##        97 character character 
+## 
+## $성과_매출_2014
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0   28087    5400  700000 
+## 
+## $성과_매출_2015_3개월
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0    5533    5000  103000 
+## 
+## $성과_방문객_2014
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0    9928     700  800000 
+## 
+## $성과_방문객_2015_3개월
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##       0       0       0     699     617   10154 
+## 
+## $성과_정규직_2014
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  0.0000  0.0000  0.0000  0.0722  0.0000  4.0000 
+## 
+## $성과_정규직_2015
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00    0.00    0.00    1.36    0.00   20.00 
+## 
+## $성과_비정규직_2014
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.196   0.000  10.000 
+## 
+## $성과_비정규직_2015
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.928   0.000  24.000 
+## 
+## $사업실적_역량강화
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.784   2.000   3.000 
+## 
+## $사업실적_멘토링
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.196   0.000   3.000 
+## 
+## $사업실적_파일럿
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.557   0.000   6.000 
+## 
+## $사업실적_관광공사
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.361   0.000   3.000 
+## 
+## $기타
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   0.000   0.000   0.907   2.000   6.000
+\end{verbatim}
+
+\section{교차분석}\label{uxad50uxcc28uxbd84uxc11d}
+
+\subsection{공동체상태와
+조직형태}\label{uxacf5uxb3d9uxccb4uxc0c1uxd0dcuxc640-uxc870uxc9c1uxd615uxd0dc}
+
+\subsubsection{교차표}\label{uxad50uxcc28uxd45c}
+
+\begin{longtable}[]{@{}lcrr@{}}
+\caption{ㅇ공동체상태와 조직형태(계)}\tabularnewline
+\toprule\noalign{}
+& 법인 & 임의단체 & 계 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 법인 & 임의단체 & 계 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 24 & 3 & 27 \\
+창업준비 & 28 & 42 & 70 \\
+계 & 52 & 45 & 97 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lcrr@{}}
+\caption{ㅇ공동체상태와 조직형태(\%, 계)}\tabularnewline
+\toprule\noalign{}
+& 법인 & 임의단체 & 계 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 법인 & 임의단체 & 계 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 88.9 & 11.1 & 100.0 \\
+창업준비 & 40.0 & 60.0 & 100.0 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lcr@{}}
+\caption{ㅇ조직형태와 공동체상태(\%, 계)}\tabularnewline
+\toprule\noalign{}
+& 법인 & 임의단체 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 법인 & 임의단체 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 46.2 & 6.7 \\
+창업준비 & 53.8 & 93.3 \\
+계 & 100.0 & 100.0 \\
+\end{longtable}
+
+\subsubsection{모자이크
+플롯}\label{uxbaa8uxc790uxc774uxd06c-uxd50cuxb86f}
+
+\begin{itemize}
+\tightlist
+\item
+  공동체상태와 조직형태
+
+  \begin{itemize}
+  \tightlist
+  \item
+    경영개선 상태에서 법인격을 갖춘 공동체사업의 비율이 창업준비
+    상태에서 법인격을 갖춘 공동체사업의 비율보다 압도적으로 많다는 점에
+    유의.
+  \end{itemize}
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-6-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-7-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  조직형태와 공동체상태
+
+  \begin{itemize}
+  \tightlist
+  \item
+    이는 거꾸로 법인격을 갖춘 공동체사업체 중에 경영개선 상태에 들어간
+    비율이 압도적으로 많다는 것으로 이해할 수도 있음.
+  \end{itemize}
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-8-1.pdf}}
+
+\subsection{성장단계 구분에의
+시사점}\label{uxc131uxc7a5uxb2e8uxacc4-uxad6cuxbd84uxc5d0uxc758-uxc2dcuxc0acuxc810}
+
+\begin{itemize}
+\tightlist
+\item
+  경영개선 상태의 법인 조직
+
+  \begin{itemize}
+  \tightlist
+  \item
+    모두 사업에 착수하였고, 사업자등록도 마침. 매출도 대부분 발생
+  \end{itemize}
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1237}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2680}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1443}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1649}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1134}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1856}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+공동체상태
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+조직명
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업착수여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업자등록여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2014년매출
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2015년(3개월)매출
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 이웃문화협동조합 & 착수 & 등록 & 0 & 7,080 \\
+경영개선 & 수미마을 & 착수 & 등록 & 222,200 & 0 \\
+경영개선 & 강릉수공예협동조합 & 착수 & 등록 & 2,500 & 0 \\
+경영개선 & 도배마을 & 착수 & 등록 & 0 & 0 \\
+경영개선 & 콩메마루협동조합 & 착수 & 등록 & 70,290 & 9,900 \\
+경영개선 & 소치마을회 & 착수 & 등록 & 98,837 & 23,569 \\
+경영개선 & 하추영농조합 & 착수 & 등록 & 200,000 & 33,203 \\
+경영개선 & 아름다운인제관광 & 착수 & 등록 & 700,000 & 2,000 \\
+경영개선 & 화전민 & 착수 & 등록 & 150,000 & 0 \\
+경영개선 & 누리마을빵카페 & 착수 & 등록 & 93,300 & 20,500 \\
+경영개선 & 탄지리꽃단지마을 & 착수 & 등록 & 31,000 & 10,200 \\
+경영개선 & 제천수상레저 & 착수 & 등록 & 54,000 & 3,000 \\
+경영개선 & 동편제영농조합법인 & 착수 & 등록 & 0 & 1,300 \\
+경영개선 & 내일관광여행사협동조합 & 착수 & 등록 & 0 & 17,000 \\
+경영개선 & 사랑골영농조합법인 & 착수 & 등록 & 0 & 0 \\
+경영개선 & 금오도영어영농조합 & 착수 & 등록 & 16,000 & 2,400 \\
+경영개선 & 에코도시락 & 착수 & 등록 & 15,000 & 7,500 \\
+경영개선 & 에코월드공정여행협동조합 & 착수 & 등록 & 0 & 6,130 \\
+경영개선 & 고들빼기영농조합법인 & 착수 & 등록 & 0 & 0 \\
+경영개선 & 섬진강도깨비마을 & 착수 & 등록 & 156,000 & 67,444 \\
+경영개선 & 주왕산다원 & 착수 & 등록 & 57,000 & 22,900 \\
+경영개선 & 왕지등대마을 & 착수 & 등록 & 81,137 & 3,200 \\
+경영개선 & 꽃내마을 & 착수 & 등록 & 90,000 & 0 \\
+경영개선 & 독일마을 & 착수 & 등록 & 18,600 & 15,600 \\
+\end{longtable}
+
+\begin{itemize}
+\tightlist
+\item
+  경영개선 상태의 임의단체 조직
+
+  \begin{itemize}
+  \tightlist
+  \item
+    임의단체인 경우가 소수 있으나 모두 사업에 착수하였고, 사업자등록도
+    마침. 모두 매출 발생
+  \end{itemize}
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1379}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1839}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1609}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1839}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1264}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2069}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+공동체상태
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+조직명
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업착수여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업자등록여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2014년매출
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2015년(3개월)매출
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 왕피천아홉구비 & 착수 & 등록 & 40,000 & 6,500 \\
+경영개선 & 금강송마을 & 착수 & 등록 & 100,000 & 12,000 \\
+경영개선 & 두모마을 & 착수 & 등록 & 209,000 & 3,827 \\
+\end{longtable}
+
+\begin{itemize}
+\tightlist
+\item
+  창업준비 상태의 법인 조직
+
+  \begin{itemize}
+  \tightlist
+  \item
+    사업미착수는 39\%, 사업자미등록이 32\%에 달함. 매출 극히 일부 발생.
+  \end{itemize}
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1212}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2828}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1414}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1616}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1111}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1818}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+공동체상태
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+조직명
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업착수여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업자등록여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2014년매출
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2015년(3개월)매출
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+창업준비 & 양평펜션협동조합 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 자연의소리들 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 가평힐링가든 & 착수 & 미등록 & 0 & 4,130 \\
+창업준비 & 재즈팜장아찌 & 착수 & 등록 & 0 & 6,500 \\
+창업준비 & 에코피아가평발효팜협동조합 & 착수 & 미등록 & 0 & 8,330 \\
+창업준비 & 공전자연학교 & 착수 & 등록 & 88,100 & 27,000 \\
+창업준비 & 교동민화마을 & 착수 & 등록 & 5,400 & 1,700 \\
+창업준비 & 성내리무암협동조합 & 착수 & 등록 & 12,000 & 11,000 \\
+창업준비 & 수산관광나들이 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 공주드림팜 & 착수 & 등록 & 0 & 4,041 \\
+창업준비 & 남원사랑길협동조합 & 착수 & 등록 & 0 & 2,300 \\
+창업준비 & 남원이색숙소체험협동조합 & 착수 & 등록 & 0 & 650 \\
+창업준비 & 남원공예드림협동조합 & 착수 & 등록 & 0 & 0 \\
+창업준비 & 벽골제마을주식회사 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 삶의향기공동체 & 착수 & 등록 & 0 & 0 \\
+창업준비 & 무주새내기 & 착수 & 미등록 & 0 & 7,600 \\
+창업준비 & 남도곁꾼협동조합 & 착수 & 등록 & 0 & 0 \\
+창업준비 & 신흥영어영농조합 & 착수 & 등록 & 0 & 0 \\
+창업준비 & 동고지명품마을 & 착수 & 등록 & 0 & 2,210 \\
+창업준비 & 버들인영농조합법인 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 두레아트 & 착수 & 등록 & 0 & 10,000 \\
+창업준비 & 친환경영농조합법인 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 두실마을 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 오전애권역 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 다슬기마을 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 대풍헌사람들 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 합천공예협동조합 & 착수 & 미등록 & 0 & 0 \\
+창업준비 & 고산송희망마을 & 미착수 & 등록 & 0 & 0 \\
+\end{longtable}
+
+\begin{itemize}
+\tightlist
+\item
+  창업준비 상태의 임의단체 조직
+
+  \begin{itemize}
+  \tightlist
+  \item
+    대부분 사업미착수(83\%)이고, 사업자미등록(93\%)인 상태임. 매출 극히
+    일부에서 발생하는 것으로 보고하고 있으나 개인사업자 명의의 실적임.
+  \end{itemize}
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1263}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.2526}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1474}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1684}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1158}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1895}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+공동체상태
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+조직명
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업착수여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+사업자등록여부
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2014년매출
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+2015년(3개월)매출
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+창업준비 & 수원누리 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 수원화성공예\_협 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 행궁맛촌 & 착수 & 미등록 & 0 & 20,800 \\
+창업준비 & 마을과사람들 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 양평카누레저 & 착수 & 등록 & 25,450 & 0 \\
+창업준비 & 핸즈퍼니 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 목화열애 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 강릉도가 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 영진리부녀회 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 다림 & 미착수 & 미등록 & 0 & 4,200 \\
+창업준비 & 공주곰돌빵 & 미착수 & 미등록 & 0 & 1,620 \\
+창업준비 & 혼불문화예술촌협동조합 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 남원문화기획사협동조합 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 징게쟁이들 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 손누리이야기 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 무주음식연구회 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 농촌살이아카데미 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 덕유산차량이동서비스 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 숲속나들이 & 착수 & 미등록 & 0 & 103,000 \\
+창업준비 & 구천동펜션협의회 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 여자만사람들 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 수-레인보우 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 청년창업집단수토리 & 착수 & 미등록 & 0 & 5,000 \\
+창업준비 & 예그리나 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 섬진강두꺼비 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 심청약선마을 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 미실란낭만부엌 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 덕다헌 & 착수 & 미등록 & 12,000 & 8,328 \\
+창업준비 & 청송고택운영위원회 & 착수 & 미등록 & 176,620 & 27,470 \\
+창업준비 & 귀농투어사업단 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 봉화도시락사업단 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 협곡구비마을 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 사미정펜션협의회 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 오산항난전방티 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 울진로컬푸드관광 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 망양쪽빛바다 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 울진기념품사업단 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 보물섬다이아 & 미착수 & 미등록 & 0 & 1,250 \\
+창업준비 & 남해펜션1번가 & 미착수 & 등록 & 0 & 0 \\
+창업준비 & 동행 & 착수 & 미등록 & 0 & 4,275 \\
+창업준비 & 오토캠핑장사업자연합 & 미착수 & 미등록 & 0 & 0 \\
+창업준비 & 구평마을 & 미착수 & 미등록 & 0 & 0 \\
+\end{longtable}
+
+\subsubsection{3원 교차분석}\label{uxc6d0-uxad50uxcc28uxbd84uxc11d}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{* 공동체상태/조직형태와 사업자등록여부}\tabularnewline
+\toprule\noalign{}
+& 등록 & 미등록 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 등록 & 미등록 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선\_법인 & 24 & 0 \\
+경영개선\_임의단체 & 3 & 0 \\
+창업준비\_법인 & 19 & 9 \\
+창업준비\_임의단체 & 3 & 39 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{* 공동체상태/조직형태와 사업자등록여부(\%)}\tabularnewline
+\toprule\noalign{}
+& 등록 & 미등록 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 등록 & 미등록 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선\_법인 & 100.0 & 0.0 \\
+경영개선\_임의단체 & 100.0 & 0.0 \\
+창업준비\_법인 & 67.9 & 32.1 \\
+창업준비\_임의단체 & 7.1 & 92.9 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{* 공동체상태/조직형태와 사업착수여부}\tabularnewline
+\toprule\noalign{}
+& 착수 & 미착수 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 착수 & 미착수 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선\_법인 & 24 & 0 \\
+경영개선\_임의단체 & 3 & 0 \\
+창업준비\_법인 & 17 & 11 \\
+창업준비\_임의단체 & 7 & 35 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{* 공동체상태/조직형태와 사업착수여부(\%)}\tabularnewline
+\toprule\noalign{}
+& 착수 & 미착수 \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+& 착수 & 미착수 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선\_법인 & 100.0 & 0.0 \\
+경영개선\_임의단체 & 100.0 & 0.0 \\
+창업준비\_법인 & 60.7 & 39.3 \\
+창업준비\_임의단체 & 16.7 & 83.3 \\
+\end{longtable}
+
+\subsection{공동체상태와
+법인유형}\label{uxacf5uxb3d9uxccb4uxc0c1uxd0dcuxc640-uxbc95uxc778uxc720uxd615}
+
+\subsubsection{교차표}\label{uxad50uxcc28uxd45c-1}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0909}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1688}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0390}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+마을회
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+사단법인
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+영농조합법인
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+유한회사
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+임의단체
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+주식회사
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+협동조합
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+계
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 1 & 2 & 13 & 1 & 2 & 3 & 5 & 27 \\
+창업준비 & 0 & 3 & 9 & 0 & 42 & 2 & 14 & 70 \\
+계 & 1 & 5 & 22 & 1 & 44 & 5 & 19 & 97 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& 공동체상태 & 조직명 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+22 & 경영개선 & 아름다운인제관광 \\
+30 & 경영개선 & 제천수상레저 \\
+42 & 창업준비 & 벽골제마을주식회사 \\
+56 & 창업준비 & 동고지명품마을 \\
+59 & 경영개선 & 에코도시락 \\
+\end{longtable}
+
+\subsubsection{모자이크
+플롯}\label{uxbaa8uxc790uxc774uxd06c-uxd50cuxb86f-1}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-17-1.pdf}}
+
+\subsection{공동체상태와
+사업아이템}\label{uxacf5uxb3d9uxccb4uxc0c1uxd0dcuxc640-uxc0acuxc5c5uxc544uxc774uxd15c}
+
+\subsubsection{교차표(개소수)}\label{uxad50uxcc28uxd45cuxac1cuxc18cuxc218}
+
+\begin{itemize}
+\tightlist
+\item
+  경영개선 상태에서는 `식음'과 '체험', 창업준비 상태에서는 '식음'과
+  '관광기념품'이 많이 있음.
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1385}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1692}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0769}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1692}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0769}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0769}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1692}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0769}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0462}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+관광기념품
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+교통
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+레저스포츠
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+숙박
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+식음
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+주민여행사
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+체험
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+계
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 1 & 0 & 4 & 1 & 10 & 2 & 9 & 27 \\
+창업준비 & 13 & 1 & 4 & 10 & 20 & 10 & 12 & 70 \\
+계 & 14 & 1 & 8 & 11 & 30 & 12 & 21 & 97 \\
+\end{longtable}
+
+\subsubsection{교차표(\%)}\label{uxad50uxcc28uxd45c-2}
+
+\begin{itemize}
+\tightlist
+\item
+  창업준비 상태에서 '관광기념품'의 비중이 매우 높음.
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1364}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0758}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0758}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0758}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0758}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.0606}}@{}}
+\caption{\textless 공동체상태와
+사업아이템(\%)\textgreater{}}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+관광기념품
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+교통
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+레저스포츠
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+숙박
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+식음
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+주민여행사
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+체험
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+계
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+관광기념품
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+교통
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+레저스포츠
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+숙박
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+식음
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+주민여행사
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+체험
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+계
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 3.7 & 0.0 & 14.8 & 3.7 & 37.0 & 7.4 & 33.3 & 100 \\
+창업준비 & 18.6 & 1.4 & 5.7 & 14.3 & 28.6 & 14.3 & 17.1 & 100 \\
+\end{longtable}
+
+\subsubsection{모자이크
+플롯}\label{uxbaa8uxc790uxc774uxd06c-uxd50cuxb86f-2}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-20-1.pdf}}
+
+\subsection{공동체상태와
+업력}\label{uxacf5uxb3d9uxccb4uxc0c1uxd0dcuxc640-uxc5c5uxb825}
+
+\begin{itemize}
+\tightlist
+\item
+  경영개선 상태에서 업력이 중위수비교나 평균적으로 3년 이상 오래됨.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    경영개선 상태에 진입하기까지의 기간에 대한 시사점.
+  \item
+    창업준비 상태에서 예그리나(11.6년)와 같이 예외적인 경우도 있음.
+  \end{itemize}
+\end{itemize}
+
+\subsubsection{요약표}\label{uxc694uxc57duxd45c}
+
+\begin{itemize}
+\item
+  \textbf{경영개선}:
+
+  \begin{longtable}[]{@{}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0972}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1389}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1250}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0972}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1389}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0972}}@{}}
+  \toprule\noalign{}
+  \begin{minipage}[b]{\linewidth}\centering
+  Min.
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  1st Qu.
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  Median
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  Mean
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  3rd Qu.
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  Max.
+  \end{minipage} \\
+  \midrule\noalign{}
+  \endhead
+  \bottomrule\noalign{}
+  \endlastfoot
+  1.3 & 2.5 & 4.5 & 4.9 & 6.2 & 12.4 \\
+  \end{longtable}
+\item
+  \textbf{창업준비}:
+
+  \begin{longtable}[]{@{}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0972}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1389}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1250}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0972}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1389}}
+    >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.0972}}@{}}
+  \toprule\noalign{}
+  \begin{minipage}[b]{\linewidth}\centering
+  Min.
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  1st Qu.
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  Median
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  Mean
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  3rd Qu.
+  \end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+  Max.
+  \end{minipage} \\
+  \midrule\noalign{}
+  \endhead
+  \bottomrule\noalign{}
+  \endlastfoot
+  0.1 & 0.9 & 1.4 & 1.6 & 1.6 & 11.7 \\
+  \end{longtable}
+\end{itemize}
+
+\subsubsection{Box Plot}\label{box-plot}
+
+\begin{itemize}
+\tightlist
+\item
+  공동체 상태별 5숫자 요약 및 이상점 파악
+
+  \begin{itemize}
+  \tightlist
+  \item
+    '아름다운인제관광'과 '예그리나'가 예외적으로 오랜 업력
+  \end{itemize}
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-22-1.pdf}}
+
+\subsubsection{ECDF}\label{ecdf}
+
+\begin{itemize}
+\tightlist
+\item
+  분위수 비교 뿐 아니라 평균 업력 비교도 가능함
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-23-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-26-1.pdf}}
+
+\subsubsection{Dot Chart}\label{dot-chart}
+
+\begin{itemize}
+\tightlist
+\item
+  전체 주민공동체사업의 업력을 공동체상태별로 한눈에 비교
+
+  \begin{itemize}
+  \tightlist
+  \item
+    개별 조직명도 파악됨.
+  \end{itemize}
+\end{itemize}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Doorae_Report_p_v4_pdf_files/figure-latex/unnamed-chunk-27-1.pdf}}
+
+\subsection{방문객과 매출
+요약}\label{uxbc29uxbb38uxac1duxacfc-uxb9e4uxcd9c-uxc694uxc57d}
+
+\subsubsection{공동체상태별 평균
+비교}\label{uxacf5uxb3d9uxccb4uxc0c1uxd0dcuxbcc4-uxd3c9uxade0-uxbe44uxad50}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1622}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1757}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2703}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1486}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2432}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+공동체상태
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+방문객(2014)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+방문객(2015, 3개월)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+매출(2014)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+매출(2015, 3개월)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 35,030 & 1,756 & 89,069 & 10,195 \\
+창업준비 & 245 & 291 & 4,565 & 3,734 \\
+\end{longtable}
+
+\subsubsection{공동체상태별 중위수
+비교}\label{uxacf5uxb3d9uxccb4uxc0c1uxd0dcuxbcc4-uxc911uxc704uxc218-uxbe44uxad50}
+
+\begin{longtable}[]{@{}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1622}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1757}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2703}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1486}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2432}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\centering
+공동체상태
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+방문객(2014)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+방문객(2015, 3개월)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+매출(2014)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+매출(2015, 3개월)
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 3,477 & 870 & 54,000 & 6,130 \\
+창업준비 & 0 & 0 & 0 & 0 \\
+\end{longtable}
+
+\subsection{방문객 및 매출 상위
+조직}\label{uxbc29uxbb38uxac1d-uxbc0f-uxb9e4uxcd9c-uxc0c1uxc704-uxc870uxc9c1}
+
+\subsubsection{방문객(2014)}\label{uxbc29uxbb38uxac1d2014}
+
+\begin{longtable}[]{@{}ccr@{}}
+\toprule\noalign{}
+공동체상태 & 조직명 & 방문객(2014) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 독일마을 & 800,000 \\
+경영개선 & 에코도시락 & 28,000 \\
+경영개선 & 금강송마을 & 17,000 \\
+경영개선 & 아름다운인제관광 & 15,000 \\
+경영개선 & 두모마을 & 13,896 \\
+경영개선 & 수미마을 & 10,560 \\
+경영개선 & 누리마을빵카페 & 8,220 \\
+경영개선 & 하추영농조합 & 7,234 \\
+경영개선 & 왕지등대마을 & 6,511 \\
+경영개선 & 강릉수공예협동조합 & 6,050 \\
+경영개선 & 꽃내마을 & 5,800 \\
+창업준비 & 공전자연학교 & 5,460 \\
+창업준비 & 청송고택운영위원회 & 5,384 \\
+경영개선 & 화전민 & 5,000 \\
+경영개선 & 주왕산다원 & 3,800 \\
+경영개선 & 콩메마루협동조합 & 3,477 \\
+경영개선 & 제천수상레저 & 3,400 \\
+경영개선 & 소치마을회 & 3,358 \\
+경영개선 & 탄지리꽃단지마을 & 3,154 \\
+경영개선 & 왕피천아홉구비 & 3,000 \\
+\end{longtable}
+
+\subsubsection{방문객(2015,
+3개월)}\label{uxbc29uxbb38uxac1d2015-3uxac1cuxc6d4}
+
+\begin{longtable}[]{@{}ccr@{}}
+\toprule\noalign{}
+공동체상태 & 조직명 & 방문객(2015, 3개월) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 두모마을 & 10,154 \\
+경영개선 & 왕지등대마을 & 8,300 \\
+경영개선 & 섬진강도깨비마을 & 7,609 \\
+경영개선 & 내일관광여행사협동조합 & 6,600 \\
+창업준비 & 행궁맛촌 & 5,200 \\
+창업준비 & 남원사랑길협동조합 & 2,950 \\
+창업준비 & 숲속나들이 & 2,210 \\
+경영개선 & 누리마을빵카페 & 2,100 \\
+경영개선 & 에코월드공정여행협동조합 & 2,095 \\
+경영개선 & 하추영농조합 & 1,823 \\
+창업준비 & 성내리무암협동조합 & 1,300 \\
+창업준비 & 공전자연학교 & 1,200 \\
+경영개선 & 왕피천아홉구비 & 1,200 \\
+경영개선 & 주왕산다원 & 1,170 \\
+창업준비 & 무주새내기 & 1,120 \\
+창업준비 & 남원이색숙소체험협동조합 & 1,100 \\
+경영개선 & 동편제영농조합법인 & 1,100 \\
+창업준비 & 교동민화마을 & 1,080 \\
+경영개선 & 아름다운인제관광 & 1,000 \\
+경영개선 & 금강송마을 & 1,000 \\
+\end{longtable}
+
+\subsubsection{매출(2014)}\label{uxb9e4uxcd9c2014}
+
+\begin{longtable}[]{@{}ccr@{}}
+\toprule\noalign{}
+공동체상태 & 조직명 & 매출(2014) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+경영개선 & 아름다운인제관광 & 700,000 \\
+경영개선 & 수미마을 & 222,200 \\
+경영개선 & 두모마을 & 209,000 \\
+경영개선 & 하추영농조합 & 200,000 \\
+창업준비 & 청송고택운영위원회 & 176,620 \\
+경영개선 & 섬진강도깨비마을 & 156,000 \\
+경영개선 & 화전민 & 150,000 \\
+경영개선 & 금강송마을 & 100,000 \\
+경영개선 & 소치마을회 & 98,837 \\
+경영개선 & 누리마을빵카페 & 93,300 \\
+경영개선 & 꽃내마을 & 90,000 \\
+창업준비 & 공전자연학교 & 88,100 \\
+경영개선 & 왕지등대마을 & 81,137 \\
+경영개선 & 콩메마루협동조합 & 70,290 \\
+경영개선 & 주왕산다원 & 57,000 \\
+경영개선 & 제천수상레저 & 54,000 \\
+경영개선 & 왕피천아홉구비 & 40,000 \\
+경영개선 & 탄지리꽃단지마을 & 31,000 \\
+창업준비 & 양평카누레저 & 25,450 \\
+경영개선 & 독일마을 & 18,600 \\
+\end{longtable}
+
+\subsubsection{매출(2015, 3개월)}\label{uxb9e4uxcd9c2015-3uxac1cuxc6d4}
+
+\begin{longtable}[]{@{}ccr@{}}
+\toprule\noalign{}
+공동체상태 & 조직명 & 매출(2015, 3개월) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+창업준비 & 숲속나들이 & 103,000 \\
+경영개선 & 섬진강도깨비마을 & 67,444 \\
+경영개선 & 하추영농조합 & 33,203 \\
+창업준비 & 청송고택운영위원회 & 27,470 \\
+창업준비 & 공전자연학교 & 27,000 \\
+경영개선 & 소치마을회 & 23,569 \\
+경영개선 & 주왕산다원 & 22,900 \\
+창업준비 & 행궁맛촌 & 20,800 \\
+경영개선 & 누리마을빵카페 & 20,500 \\
+경영개선 & 내일관광여행사협동조합 & 17,000 \\
+경영개선 & 독일마을 & 15,600 \\
+경영개선 & 금강송마을 & 12,000 \\
+창업준비 & 성내리무암협동조합 & 11,000 \\
+경영개선 & 탄지리꽃단지마을 & 10,200 \\
+창업준비 & 두레아트 & 10,000 \\
+경영개선 & 콩메마루협동조합 & 9,900 \\
+창업준비 & 에코피아가평발효팜협동조합 & 8,330 \\
+창업준비 & 덕다헌 & 8,328 \\
+창업준비 & 무주새내기 & 7,600 \\
+경영개선 & 에코도시락 & 7,500 \\
+\end{longtable}
+
+\subsubsection{자료 갈무리}\label{uxc790uxb8cc-uxac08uxbb34uxb9ac}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{doorae0928 }\OtherTok{\textless{}{-}}\NormalTok{ doorae}
+\CommentTok{\# save.image("doorae\_new.RData")}
+\end{Highlighting}
+\end{Shaded}
+
+
+\end{document}

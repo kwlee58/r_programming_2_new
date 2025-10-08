@@ -1,0 +1,1473 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{fontspec}
+\setmainfont{NanumGothic}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Fitting Normal Distribution},
+  pdfauthor={coop711},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Fitting Normal Distribution}
+\author{coop711}
+\date{2025-10-08}
+
+\begin{document}
+\maketitle
+
+\section{Data}\label{data}
+
+\subsection{From Stigler's}\label{from-stiglers}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"../pics/quetelet\_soldiers.png"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{flushleft}\includegraphics[width=0.5\linewidth]{../pics/quetelet_soldiers} \end{flushleft}
+
+\subsection{Frequency Table}\label{frequency-table}
+
+\begin{itemize}
+\tightlist
+\item
+  케틀레가 작성한 스코틀랜드 군인 5738명의 가슴둘레(인치) 분포표를
+  옮기면
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest }\OtherTok{\textless{}{-}} \DecValTok{33}\SpecialCharTok{:}\DecValTok{48}
+\NormalTok{freq }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DecValTok{18}\NormalTok{, }\DecValTok{81}\NormalTok{, }\DecValTok{185}\NormalTok{, }\DecValTok{420}\NormalTok{, }\DecValTok{749}\NormalTok{, }\DecValTok{1073}\NormalTok{, }\DecValTok{1079}\NormalTok{, }\DecValTok{934}\NormalTok{, }\DecValTok{658}\NormalTok{, }\DecValTok{370}\NormalTok{, }\DecValTok{92}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{21}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\FunctionTok{data.frame}\NormalTok{(chest, freq)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    chest freq
+## 1     33    3
+## 2     34   18
+## 3     35   81
+## 4     36  185
+## 5     37  420
+## 6     38  749
+## 7     39 1073
+## 8     40 1079
+## 9     41  934
+## 10    42  658
+## 11    43  370
+## 12    44   92
+## 13    45   50
+## 14    46   21
+## 15    47    4
+## 16    48    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Chest =}\NormalTok{ chest, }\AttributeTok{Freq =}\NormalTok{ freq)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Chest Freq
+## 1     33    3
+## 2     34   18
+## 3     35   81
+## 4     36  185
+## 5     37  420
+## 6     38  749
+## 7     39 1073
+## 8     40 1079
+## 9     41  934
+## 10    42  658
+## 11    43  370
+## 12    44   92
+## 13    45   50
+## 14    46   21
+## 15    47    4
+## 16    48    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{Chest =}\NormalTok{ chest, }\AttributeTok{Freq =}\NormalTok{ freq)}
+\NormalTok{chest\_df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Chest Freq
+## 1     33    3
+## 2     34   18
+## 3     35   81
+## 4     36  185
+## 5     37  420
+## 6     38  749
+## 7     39 1073
+## 8     40 1079
+## 9     41  934
+## 10    42  658
+## 11    43  370
+## 12    44   92
+## 13    45   50
+## 14    46   21
+## 15    47    4
+## 16    48    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    16 obs. of  2 variables:
+##  $ Chest: int  33 34 35 36 37 38 39 40 41 42 ...
+##  $ Freq : num  3 18 81 185 420 ...
+\end{verbatim}
+
+\subsubsection{Extract Parts of an
+Object}\label{extract-parts-of-an-object}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df}\SpecialCharTok{$}\NormalTok{Freq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  .}\SpecialCharTok{$}\NormalTok{Freq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df}\SpecialCharTok{$}\NormalTok{Freq)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[, }\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(, }\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[, }\DecValTok{2}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[, }\StringTok{"Freq"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(, }\StringTok{"Freq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[, }\StringTok{"Freq"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[}\StringTok{"Freq"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Freq
+## 1     3
+## 2    18
+## 3    81
+## 4   185
+## 5   420
+## 6   749
+## 7  1073
+## 8  1079
+## 9   934
+## 10  658
+## 11  370
+## 12   92
+## 13   50
+## 14   21
+## 15    4
+## 16    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(}\StringTok{"Freq"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Freq
+## 1     3
+## 2    18
+## 3    81
+## 4   185
+## 5   420
+## 6   749
+## 7  1073
+## 8  1079
+## 9   934
+## 10  658
+## 11  370
+## 12   92
+## 13   50
+## 14   21
+## 15    4
+## 16    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[}\StringTok{"Freq"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    16 obs. of  1 variable:
+##  $ Freq: num  3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[}\StringTok{"Freq"}\NormalTok{]}\SpecialCharTok{$}\NormalTok{Freq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(}\StringTok{"Freq"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  .}\SpecialCharTok{$}\NormalTok{Freq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[}\StringTok{"Freq"}\NormalTok{]}\SpecialCharTok{$}\NormalTok{Freq)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[}\StringTok{"Freq"}\NormalTok{][[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(}\StringTok{"Freq"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[[}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{1}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#  \textasciigrave{}[\textasciigrave{}(, 1) }
+\CommentTok{\#   \textasciigrave{}[\textasciigrave{}(1)}
+\FunctionTok{str}\NormalTok{(chest\_df[}\StringTok{"Freq"}\NormalTok{][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[}\DecValTok{2}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Freq
+## 1     3
+## 2    18
+## 3    81
+## 4   185
+## 5   420
+## 6   749
+## 7  1073
+## 8  1079
+## 9   934
+## 10  658
+## 11  370
+## 12   92
+## 13   50
+## 14   21
+## 15    4
+## 16    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Freq
+## 1     3
+## 2    18
+## 3    81
+## 4   185
+## 5   420
+## 6   749
+## 7  1073
+## 8  1079
+## 9   934
+## 10  658
+## 11  370
+## 12   92
+## 13   50
+## 14   21
+## 15    4
+## 16    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[}\DecValTok{2}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    16 obs. of  1 variable:
+##  $ Freq: num  3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[}\DecValTok{2}\NormalTok{]}\SpecialCharTok{$}\NormalTok{Freq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  .}\SpecialCharTok{$}\NormalTok{Freq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[}\DecValTok{2}\NormalTok{]}\SpecialCharTok{$}\NormalTok{Freq)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[}\DecValTok{2}\NormalTok{][[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[[}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[}\DecValTok{2}\NormalTok{][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df[[}\DecValTok{2}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{[[}\StringTok{\textasciigrave{}}\NormalTok{(}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(chest\_df[[}\DecValTok{2}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:16] 3 18 81 185 420 ...
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  33인치인 사람이 3명, 34인치인 사람이 18명 등으로 기록되어 있으나 이는
+  구간의 가운데로 이해하여야 함.
+\end{itemize}
+
+\subsection{Probability Histogram}\label{probability-histogram}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{barplot(height,\ ...)} 은 기본적으로 \texttt{height}만
+  주어지면 그릴 수 있음. 확률 히스토그램의 기둥 면적의 합은 1이므로, 각
+  기둥의 높이는 각 계급의 돗수를 전체 돗수, 5738명으로 나눠준 값임.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{total }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(chest\_df}\SpecialCharTok{$}\NormalTok{Freq)}
+\FunctionTok{barplot}\NormalTok{(chest\_df}\SpecialCharTok{$}\NormalTok{Freq }\SpecialCharTok{/}\NormalTok{ total)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/barplot first-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\textgreater{} 위의 두 줄을 \%\textgreater{}\% 로 흘려보내면 \textasciigrave{}total\textasciigrave{}을 만들지 않아도 되는 데 ...}
+\NormalTok{chest\_df}\SpecialCharTok{$}\NormalTok{Freq }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{/}\StringTok{\textasciigrave{}}\NormalTok{(., }\FunctionTok{sum}\NormalTok{(.)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  barplot}
+\NormalTok{chest\_df}\SpecialCharTok{$}\NormalTok{Freq }\SpecialCharTok{\%\textgreater{}\%} 
+\NormalTok{  prop.table }\SpecialCharTok{\%\textgreater{}\%}
+\CommentTok{\#\textgreater{} R 4.0.0 부터는 proportions 사용 가능}
+\CommentTok{\#  proportions \%\textgreater{}\%}
+\NormalTok{  barplot}
+\CommentTok{\#\textgreater{} 조심! 다음 두 표현은 원하는 그림이 나오지 않음.}
+\NormalTok{chest\_df}\SpecialCharTok{$}\NormalTok{Freq }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{barplot}\NormalTok{(. }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(.))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/barplot first-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df}\SpecialCharTok{$}\NormalTok{Freq }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{barplot}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{/}\StringTok{\textasciigrave{}}\NormalTok{(., }\FunctionTok{sum}\NormalTok{(.)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  각 막대의 이름은 계급을 나타내는 가슴둘레 값으로 표현할 수 있고, 막대
+  간의 사이를 띄우지 않으며, 디폴트 값으로 주어진 회색 보다는 차라리
+  백색이 나으므로 이를 설정해 주면,
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{barplot}\NormalTok{(chest\_df}\SpecialCharTok{$}\NormalTok{Freq}\SpecialCharTok{/}\NormalTok{total, }
+        \AttributeTok{names.arg =} \DecValTok{33}\SpecialCharTok{:}\DecValTok{48}\NormalTok{, }
+        \AttributeTok{space =} \DecValTok{0}\NormalTok{, }
+        \AttributeTok{col =} \StringTok{"white"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/barplot white-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_df}\SpecialCharTok{$}\NormalTok{Freq }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{/}\StringTok{\textasciigrave{}}\NormalTok{(., }\FunctionTok{sum}\NormalTok{(.)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{barplot}\NormalTok{(}\AttributeTok{names.arg =} \DecValTok{33}\SpecialCharTok{:}\DecValTok{48}\NormalTok{, }
+          \AttributeTok{space =} \DecValTok{0}\NormalTok{, }
+          \AttributeTok{col =} \StringTok{"white"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  확률 히스토그램의 정의에 따라 이 막대들의 면적을 합하면 1이 됨에 유의.
+\end{itemize}
+
+\subsection{Summary statistics and SD}\label{summary-statistics-and-sd}
+
+\begin{itemize}
+\tightlist
+\item
+  33인치가 3명, 34인치가 18명 등을 한 줄의 긴 벡터로 나타내어야 평균과
+  표준편차를 쉽게 계산할 수 있으므로 long format으로 바꾸면,
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_vec }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(chest\_df}\SpecialCharTok{$}\NormalTok{Chest, chest\_df}\SpecialCharTok{$}\NormalTok{Freq)}
+\NormalTok{chest\_vec }\OtherTok{\textless{}{-}}\NormalTok{ chest\_df }\SpecialCharTok{\%$\%}
+  \FunctionTok{rep}\NormalTok{(.}\SpecialCharTok{$}\NormalTok{Chest, .}\SpecialCharTok{$}\NormalTok{Freq)}
+\FunctionTok{str}\NormalTok{(chest\_vec)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  int [1:5738] 33 33 33 34 34 34 34 34 34 34 ...
+\end{verbatim}
+
+\subsubsection{\texorpdfstring{\texttt{rep()}}{rep()}}\label{rep}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\AttributeTok{times =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 2 3 1 2 3 1 2 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\AttributeTok{each =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 1 1 2 2 2 3 3 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rep}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{, }\DecValTok{1}\SpecialCharTok{:}\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 2 2 3 3 3
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{chest\_vec} 을 이용하여 기초통계와 표준편차를 계산하면,
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(chest\_vec)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   33.00   38.00   40.00   39.83   41.00   48.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sd}\NormalTok{(chest\_vec)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.049616
+\end{verbatim}
+
+\subsection{Histogram}\label{histogram}
+
+\begin{itemize}
+\tightlist
+\item
+  히스토그램을 직관적으로 그려보면 \(y\)축은 돗수가 기본값임을 알 수
+  있음.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hist}\NormalTok{(chest\_vec)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/frequency histogram-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  hist}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/frequency histogram-2.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  정규분포와 비교하기 위해서 \(y\)축을 확률로 나타내려면
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/probability histogram-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{hist}\NormalTok{(}\AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/probability histogram-2.pdf}}
+
+\subsubsection{Inside the histogram}\label{inside-the-histogram}
+
+\begin{itemize}
+\tightlist
+\item
+  실제로 이 히스토그램을 그리는 데 계산된 값들은?
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(h\_chest }\OtherTok{\textless{}{-}} \FunctionTok{hist}\NormalTok{(chest\_vec, }\AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $breaks
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+## 
+## $counts
+##  [1]   21   81  185  420  749 1073 1079  934  658  370   92   50   21    4    1
+## 
+## $density
+##  [1] 0.0036598118 0.0141164169 0.0322411990 0.0731962356 0.1305332869
+##  [6] 0.1869989543 0.1880446148 0.1627744859 0.1146741025 0.0644823980
+## [11] 0.0160334611 0.0087138376 0.0036598118 0.0006971070 0.0001742768
+## 
+## $mids
+##  [1] 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5 47.5
+## 
+## $xname
+## [1] "chest_vec"
+## 
+## $equidist
+## [1] TRUE
+## 
+## attr(,"class")
+## [1] "histogram"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{list}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ h\_chest}\SpecialCharTok{$}\NormalTok{breaks, }
+     \AttributeTok{counts =}\NormalTok{ h\_chest}\SpecialCharTok{$}\NormalTok{counts, }
+     \AttributeTok{density =}\NormalTok{ h\_chest}\SpecialCharTok{$}\NormalTok{density, }
+     \AttributeTok{mids =}\NormalTok{ h\_chest}\SpecialCharTok{$}\NormalTok{mids)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $breaks
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+## 
+## $counts
+##  [1]   21   81  185  420  749 1073 1079  934  658  370   92   50   21    4    1
+## 
+## $density
+##  [1] 0.0036598118 0.0141164169 0.0322411990 0.0731962356 0.1305332869
+##  [6] 0.1869989543 0.1880446148 0.1627744859 0.1146741025 0.0644823980
+## [11] 0.0160334611 0.0087138376 0.0036598118 0.0006971070 0.0001742768
+## 
+## $mids
+##  [1] 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5 47.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{hist}\NormalTok{(}\AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{list}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{breaks, }
+       \AttributeTok{counts =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{counts, }
+       \AttributeTok{density =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{density, }
+       \AttributeTok{mids =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{mids)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [[1]]
+## $breaks
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+## 
+## $counts
+##  [1]   21   81  185  420  749 1073 1079  934  658  370   92   50   21    4    1
+## 
+## $density
+##  [1] 0.0036598118 0.0141164169 0.0322411990 0.0731962356 0.1305332869
+##  [6] 0.1869989543 0.1880446148 0.1627744859 0.1146741025 0.0644823980
+## [11] 0.0160334611 0.0087138376 0.0036598118 0.0006971070 0.0001742768
+## 
+## $mids
+##  [1] 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5 47.5
+## 
+## $xname
+## [1] "."
+## 
+## $equidist
+## [1] TRUE
+## 
+## attr(,"class")
+## [1] "histogram"
+## 
+## $breaks
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+## 
+## $counts
+##  [1]   21   81  185  420  749 1073 1079  934  658  370   92   50   21    4    1
+## 
+## $density
+##  [1] 0.0036598118 0.0141164169 0.0322411990 0.0731962356 0.1305332869
+##  [6] 0.1869989543 0.1880446148 0.1627744859 0.1146741025 0.0644823980
+## [11] 0.0160334611 0.0087138376 0.0036598118 0.0006971070 0.0001742768
+## 
+## $mids
+##  [1] 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5 47.5
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  평균값과 표준편차로부터 히스토그램의 위치가 0.5만큼 왼쪽으로 치우쳐
+  있다는 것을 알 수 있음. 제자리에 옮겨 놓기 위해서 \texttt{breaks}
+  매개변수를 32.5부터 48.5까지 1간격으로 설정
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }
+     \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/move 0.5 inches-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  위의 히스토그램을 그리느라고 계산된 값들은?
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{h\_chest\_2 }\OtherTok{\textless{}{-}} \FunctionTok{hist}\NormalTok{(chest\_vec, }
+                  \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{, }
+                  \AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{list}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ h\_chest\_2}\SpecialCharTok{$}\NormalTok{breaks, }
+     \AttributeTok{counts =}\NormalTok{ h\_chest\_2}\SpecialCharTok{$}\NormalTok{counts, }
+     \AttributeTok{density =}\NormalTok{ h\_chest\_2}\SpecialCharTok{$}\NormalTok{density, }
+     \AttributeTok{mids =}\NormalTok{ h\_chest\_2}\SpecialCharTok{$}\NormalTok{mids)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $breaks
+##  [1] 32.5 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5
+## [16] 47.5 48.5
+## 
+## $counts
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+## 
+## $density
+##  [1] 0.0005228303 0.0031369815 0.0141164169 0.0322411990 0.0731962356
+##  [6] 0.1305332869 0.1869989543 0.1880446148 0.1627744859 0.1146741025
+## [11] 0.0644823980 0.0160334611 0.0087138376 0.0036598118 0.0006971070
+## [16] 0.0001742768
+## 
+## $mids
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{hist}\NormalTok{(}\AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{,}
+       \AttributeTok{plot =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{list}\NormalTok{(}\AttributeTok{breaks =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{breaks, }
+       \AttributeTok{counts =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{counts, }
+       \AttributeTok{density =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{density, }
+       \AttributeTok{mids =}\NormalTok{ .}\SpecialCharTok{$}\NormalTok{mids)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [[1]]
+## $breaks
+##  [1] 32.5 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5
+## [16] 47.5 48.5
+## 
+## $counts
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+## 
+## $density
+##  [1] 0.0005228303 0.0031369815 0.0141164169 0.0322411990 0.0731962356
+##  [6] 0.1305332869 0.1869989543 0.1880446148 0.1627744859 0.1146741025
+## [11] 0.0644823980 0.0160334611 0.0087138376 0.0036598118 0.0006971070
+## [16] 0.0001742768
+## 
+## $mids
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+## 
+## $xname
+## [1] "."
+## 
+## $equidist
+## [1] TRUE
+## 
+## attr(,"class")
+## [1] "histogram"
+## 
+## $breaks
+##  [1] 32.5 33.5 34.5 35.5 36.5 37.5 38.5 39.5 40.5 41.5 42.5 43.5 44.5 45.5 46.5
+## [16] 47.5 48.5
+## 
+## $counts
+##  [1]    3   18   81  185  420  749 1073 1079  934  658  370   92   50   21    4
+## [16]    1
+## 
+## $density
+##  [1] 0.0005228303 0.0031369815 0.0141164169 0.0322411990 0.0731962356
+##  [6] 0.1305332869 0.1869989543 0.1880446148 0.1627744859 0.1146741025
+## [11] 0.0644823980 0.0160334611 0.0087138376 0.0036598118 0.0006971070
+## [16] 0.0001742768
+## 
+## $mids
+##  [1] 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  히스토그램을 보기 쉽게 하기 위해서 메인 타이틀과 서브 타이틀, x축
+  라벨, y축 라벨 설정
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{main\_title }\OtherTok{\textless{}{-}} \StringTok{"Fitting Normal Distribution"}
+\CommentTok{\# sub\_title \textless{}{-} "Chest Circumferences of Scottish Soldiers"}
+\NormalTok{sub\_title }\OtherTok{\textless{}{-}} \StringTok{""}
+\NormalTok{x\_lab }\OtherTok{\textless{}{-}} \StringTok{"Chest Circumferences (inches)"}
+\NormalTok{y\_lab }\OtherTok{\textless{}{-}} \StringTok{"Proportion"}
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }
+     \AttributeTok{main =}\NormalTok{ main\_title, }
+     \AttributeTok{sub =}\NormalTok{ sub\_title, }
+     \AttributeTok{xlab =}\NormalTok{ x\_lab, }
+     \AttributeTok{ylab =}\NormalTok{ y\_lab)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/annotations-1.pdf}}
+
+\subsection{\texorpdfstring{Mean \(\pm\) SD contains 2/3 of total number
+of
+counts}{Mean \textbackslash pm SD contains 2/3 of total number of counts}}\label{mean-pm-sd-contains-23-of-total-number-of-counts}
+
+\begin{itemize}
+\tightlist
+\item
+  평균을 중심으로 \(\pm\)표준편차 만큼 떨어진 자료를 붉은 색
+  수직점선으로 표시.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mean\_chest }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(chest\_vec)}
+\NormalTok{sd\_chest }\OtherTok{\textless{}{-}} \FunctionTok{sd}\NormalTok{(chest\_vec)}
+\NormalTok{x\_lower }\OtherTok{\textless{}{-}}\NormalTok{ mean\_chest }\SpecialCharTok{{-}}\NormalTok{ sd\_chest}
+\NormalTok{x\_upper }\OtherTok{\textless{}{-}}\NormalTok{ mean\_chest }\SpecialCharTok{+}\NormalTok{ sd\_chest}
+\NormalTok{sd\_chest }\OtherTok{\textless{}{-}}\NormalTok{ chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  sd}
+\NormalTok{x\_lower }\OtherTok{\textless{}{-}}\NormalTok{ chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  mean }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{{-}}\StringTok{\textasciigrave{}}\NormalTok{(sd\_chest)}
+\NormalTok{x\_upper }\OtherTok{\textless{}{-}}\NormalTok{ chest\_vec }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  mean }\SpecialCharTok{\%\textgreater{}\%}
+  \StringTok{\textasciigrave{}}\AttributeTok{+}\StringTok{\textasciigrave{}}\NormalTok{(sd\_chest)}
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }
+     \AttributeTok{main =}\NormalTok{ main\_title, }
+     \AttributeTok{sub =}\NormalTok{ sub\_title, }
+     \AttributeTok{xlab =}\NormalTok{ x\_lab, }
+     \AttributeTok{ylab =}\NormalTok{ y\_lab)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FunctionTok{c}\NormalTok{(x\_lower, x\_upper), }
+       \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }
+       \AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/mean and sd-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  그 사이의 영역을 빗금으로 표시하기 위하여 다각형의 좌표를 계산
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{h\_chest\_2}\SpecialCharTok{$}\NormalTok{density[}\DecValTok{6}\SpecialCharTok{:}\DecValTok{10}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1305333 0.1869990 0.1880446 0.1627745 0.1146741
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y }\OtherTok{\textless{}{-}}\NormalTok{ h\_chest\_2}\SpecialCharTok{$}\NormalTok{density[}\DecValTok{6}\SpecialCharTok{:}\DecValTok{10}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  5개의 직사각형으로 파악하고 향후 면적 계산을 쉽게 하기 위하여 다음과
+  같이 좌표 설정
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_coord }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(x\_lower, }\FloatTok{38.5}\SpecialCharTok{:}\FloatTok{41.5}\NormalTok{, x\_upper), }\AttributeTok{each =} \DecValTok{2}\NormalTok{)}
+\NormalTok{y\_coord }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{rep}\NormalTok{(y, }\AttributeTok{each =} \DecValTok{2}\NormalTok{), }\DecValTok{0}\NormalTok{)}
+\NormalTok{poly\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_coord, }\AttributeTok{y =}\NormalTok{ y\_coord)}
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }
+     \AttributeTok{main =}\NormalTok{ main\_title, }
+     \AttributeTok{sub =}\NormalTok{ sub\_title, }
+     \AttributeTok{xlab =}\NormalTok{ x\_lab, }
+     \AttributeTok{ylab =}\NormalTok{ y\_lab)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FunctionTok{c}\NormalTok{(x\_lower, x\_upper), }
+       \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }
+       \AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\CommentTok{\# polygon(x\_coord, y\_coord, density = 20)}
+\FunctionTok{polygon}\NormalTok{(poly\_df, }
+\CommentTok{\#        col = "grey",}
+\CommentTok{\#        border = NA)}
+        \AttributeTok{density =} \DecValTok{20}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/5 rectangles-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  이론적으로 빗금친 부분의 면적은
+  \texttt{pnorm(1)\ -\ pnorm(-1)\ =}0.6826895에 가까울 것으로 예상. 5개
+  직사각형의 면적을 구하여 합하는 과정은 다음과 같음.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{options}\NormalTok{(}\AttributeTok{digits =} \DecValTok{3}\NormalTok{)}
+\NormalTok{x\_area }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(x\_lower, }\FloatTok{38.5}\SpecialCharTok{:}\FloatTok{41.5}\NormalTok{, x\_upper)}
+\NormalTok{y}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.131 0.187 0.188 0.163 0.115
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{diff}\NormalTok{(x\_area)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.718 1.000 1.000 1.000 0.381
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{diff}\NormalTok{(x\_area) }\SpecialCharTok{*}\NormalTok{ y}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.0937 0.1870 0.1880 0.1628 0.0437
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{diff}\NormalTok{(x\_area) }\SpecialCharTok{*}\NormalTok{ y)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.675
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{source}\NormalTok{(}\StringTok{"./area.R"}\NormalTok{)}
+\NormalTok{area\_R}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## function (x, y) 
+## {
+##     sum(diff(x) * (head(y, -1) + tail(y, -1))/2)
+## }
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{area\_R}\NormalTok{(x\_coord, y\_coord)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.675
+\end{verbatim}
+
+\subsection{Comparison with normal
+curve}\label{comparison-with-normal-curve}
+
+\begin{itemize}
+\tightlist
+\item
+  이론적인 정규분포 밀도함수 곡선을 히스토그램에 덧붙여 그림.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_chest }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\FloatTok{32.5}\NormalTok{, }\FloatTok{48.5}\NormalTok{, }
+               \AttributeTok{length =} \DecValTok{1000}\NormalTok{)}
+\NormalTok{y\_norm }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_chest, }
+                \AttributeTok{mean =}\NormalTok{ mean\_chest, }
+                \AttributeTok{sd =}\NormalTok{ sd\_chest)}
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }
+     \AttributeTok{main =}\NormalTok{ main\_title, }
+     \AttributeTok{sub =}\NormalTok{ sub\_title, }
+     \AttributeTok{xlab =}\NormalTok{ x\_lab, }
+     \AttributeTok{ylab =}\NormalTok{ y\_lab)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FunctionTok{c}\NormalTok{(x\_lower, x\_upper), }
+       \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }
+       \AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\CommentTok{\# abline(v = c(38, 42), lty = 2, col = "red")}
+\FunctionTok{polygon}\NormalTok{(poly\_df, }
+        \AttributeTok{density =} \DecValTok{20}\NormalTok{)}
+\CommentTok{\# polygon(x\_coord, y\_coord, density = 20)}
+\FunctionTok{lines}\NormalTok{(x\_chest, y\_norm, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/normal curve added-1.pdf}}
+
+\subsection{Changing tick marks of x
+axis}\label{changing-tick-marks-of-x-axis}
+
+\begin{itemize}
+\tightlist
+\item
+  default로 주어지는 \(x\)축의 눈금을 제대로 볼 수 있게 고치려면,
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{hist}\NormalTok{(chest\_vec, }
+     \AttributeTok{breaks =} \FloatTok{32.5}\SpecialCharTok{:}\FloatTok{48.5}\NormalTok{, }
+     \AttributeTok{probability =} \ConstantTok{TRUE}\NormalTok{, }
+     \AttributeTok{main =}\NormalTok{ main\_title, }
+     \AttributeTok{sub =}\NormalTok{ sub\_title, }
+     \AttributeTok{xlab =}\NormalTok{ x\_lab, }
+     \AttributeTok{ylab =}\NormalTok{ y\_lab, }
+     \AttributeTok{axes =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\AttributeTok{v =} \FunctionTok{c}\NormalTok{(x\_lower, x\_upper), }
+       \AttributeTok{lty =} \DecValTok{2}\NormalTok{, }
+       \AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\FunctionTok{polygon}\NormalTok{(poly\_df, }
+        \AttributeTok{density =} \DecValTok{20}\NormalTok{)}
+\CommentTok{\# polygon(x\_coord, y\_coord, density = 20)}
+\FunctionTok{lines}\NormalTok{(x\_chest, y\_norm, }\AttributeTok{col =} \StringTok{"red"}\NormalTok{)}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{1}\NormalTok{, }
+     \AttributeTok{at =} \FunctionTok{seq}\NormalTok{(}\DecValTok{32}\NormalTok{, }\DecValTok{48}\NormalTok{, }\AttributeTok{by =} \DecValTok{2}\NormalTok{), }
+     \AttributeTok{labels =} \FunctionTok{seq}\NormalTok{(}\DecValTok{32}\NormalTok{, }\DecValTok{48}\NormalTok{, }\AttributeTok{by =} \DecValTok{2}\NormalTok{))}
+\FunctionTok{axis}\NormalTok{(}\AttributeTok{side =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/x axis-1.pdf}}
+
+\subsection{ggplot}\label{ggplot}
+
+\begin{itemize}
+\tightlist
+\item
+  data frame으로 작업.
+\end{itemize}
+
+\subsubsection{Basic histogram}\label{basic-histogram}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\CommentTok{\# theme\_update(plot.title = element\_text(hjust = 0.5)) }
+\NormalTok{g0 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =} \FunctionTok{data.frame}\NormalTok{(chest\_vec), }
+             \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ chest\_vec)) }
+\NormalTok{(g1 }\OtherTok{\textless{}{-}}\NormalTok{ g0 }\SpecialCharTok{+}
+    \FunctionTok{stat\_bin}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{after\_stat}\NormalTok{(density)),}
+\CommentTok{\#   stat\_bin(aes(y = ..density..), \#\textgreater{} ggplot 새 버전에서 퇴출된 코드}
+             \AttributeTok{binwidth =} \DecValTok{1}\NormalTok{, }
+             \AttributeTok{fill =} \StringTok{"white"}\NormalTok{, }
+             \AttributeTok{colour =} \StringTok{"black"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/ggplots-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\textgreater{} 다음 방법들도 동일한 결과 }
+\CommentTok{\# (g1 \textless{}{-} g0 + }
+\CommentTok{\#   stat\_count(fill = "white", }
+\CommentTok{\#              colour = "black"))}
+\CommentTok{\# (g1 \textless{}{-} g0 + }
+\CommentTok{\#    geom\_histogram(aes(y = ..density..), }
+\CommentTok{\#                   binwidth = 1, }
+\CommentTok{\#                   fill = "white", }
+\CommentTok{\#                   colour = "black"))}
+\CommentTok{\# (g1 \textless{}{-} g0 + }
+\CommentTok{\#  geom\_histogram(aes(y = ..density..), }
+\CommentTok{\#                binwidth = 1, }
+\CommentTok{\#                breaks = 32.5:48.5, }
+\CommentTok{\#                fill = "white", }
+\CommentTok{\#                colour = "black"))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{\texorpdfstring{Mean \(\pm\)
+SD}{Mean \textbackslash pm SD}}\label{mean-pm-sd}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g2 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+   \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \FunctionTok{c}\NormalTok{(x\_lower, x\_upper), }
+              \AttributeTok{linetype =} \StringTok{"dotted"}\NormalTok{, }
+              \AttributeTok{colour =} \StringTok{"red"}\NormalTok{)) }
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/mean plus minus sd-1.pdf}}
+
+\subsubsection{x-axis label and main
+title}\label{x-axis-label-and-main-title}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g3 }\OtherTok{\textless{}{-}}\NormalTok{ g2 }\SpecialCharTok{+} 
+   \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+} 
+\CommentTok{\#   xlab(x\_lab) + }
+\CommentTok{\#   ylab(y\_lab) +}
+\CommentTok{\#   ggtitle(main\_title) +}
+\CommentTok{\#\textgreater{} 위의 세 코드를 한 번에 }
+   \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =}\NormalTok{ main\_title,}
+        \AttributeTok{x =}\NormalTok{ x\_lab, }
+        \AttributeTok{y =}\NormalTok{ y\_lab) }\SpecialCharTok{+} 
+   \FunctionTok{theme}\NormalTok{(}\AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \FloatTok{0.5}\NormalTok{,}
+                                   \AttributeTok{size =} \DecValTok{20}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/xlab and ggtitle-1.pdf}}
+
+\subsubsection{Shading the area}\label{shading-the-area}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g4 }\OtherTok{\textless{}{-}}\NormalTok{ g3 }\SpecialCharTok{+} 
+   \FunctionTok{geom\_polygon}\NormalTok{(}\AttributeTok{data =}\NormalTok{ poly\_df, }
+                \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y), }
+                \AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{, }
+                \AttributeTok{fill =} \StringTok{"grey"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/polygon-1.pdf}}
+
+\subsubsection{Normal curve added}\label{normal-curve-added}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# x\_curve \textless{}{-} seq(32.5, 48.5, length = 100)}
+\CommentTok{\# y\_curve \textless{}{-} dnorm(x\_curve, mean = mean\_chest, sd = sd\_chest)}
+\NormalTok{curve\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_chest, }\AttributeTok{y =}\NormalTok{ y\_norm)}
+\NormalTok{(g5 }\OtherTok{\textless{}{-}}\NormalTok{ g4 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ curve\_df, }
+            \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y), }
+            \AttributeTok{colour =} \StringTok{"blue"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/normal curve-1.pdf}}
+
+\subsubsection{x-axis tick marks}\label{x-axis-tick-marks}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g6 }\OtherTok{\textless{}{-}}\NormalTok{ g5 }\SpecialCharTok{+} 
+   \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{32}\NormalTok{, }\DecValTok{48}\NormalTok{, }\AttributeTok{by =} \DecValTok{2}\NormalTok{), }
+                      \AttributeTok{labels =} \FunctionTok{seq}\NormalTok{(}\DecValTok{32}\NormalTok{, }\DecValTok{48}\NormalTok{, }\AttributeTok{by =} \DecValTok{2}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Quetelet_chest_pdf_files/figure-latex/tick marks-1.pdf}}
+
+\subsection{Comments}\label{comments}
+
+R 코드에 대하여 학습한 내용
+
+케틀레가 스코틀랜드 군인 5738명의 가슴둘레 자료를 정규분포에 적합시킨
+이야기
+
+\end{document}

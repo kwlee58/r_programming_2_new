@@ -1,0 +1,1108 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{fontspec}
+\setmainfont{NanumGothic}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Student 3000 Criminal Data : ggplot},
+  pdfauthor={coop711},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Student 3000 Criminal Data : ggplot}
+\author{coop711}
+\date{2025-10-08}
+
+\begin{document}
+\maketitle
+
+\subsection{Working Data Loading}\label{working-data-loading}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(magrittr)}
+\FunctionTok{load}\NormalTok{(}\StringTok{"./crimtab.RData"}\NormalTok{)}
+\FunctionTok{ls}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "crimtab_2"       "crimtab_df"      "crimtab_long"    "crimtab_long_df"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ls.str}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## crimtab_2 :  'table' int [1:42, 1:22] 0 0 0 0 0 0 1 0 0 0 ...
+## crimtab_df : 'data.frame':   924 obs. of  3 variables:
+##  $ finger: num  9.4 9.5 9.6 9.7 9.8 9.9 10 10.1 10.2 10.3 ...
+##  $ height: num  56 56 56 56 56 56 56 56 56 56 ...
+##  $ Freq  : int  0 0 0 0 0 0 1 0 0 0 ...
+## crimtab_long :  num [1:3000, 1:2] 10 10.3 9.9 10.2 10.2 10.3 10.4 10.7 10 10.1 ...
+## crimtab_long_df : 'data.frame':  3000 obs. of  2 variables:
+##  $ finger: num  10 10.3 9.9 10.2 10.2 10.3 10.4 10.7 10 10.1 ...
+##  $ height: num  56 57 58 58 58 58 58 58 59 59 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(crimtab\_long\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   finger height
+## 1   10.0     56
+## 2   10.3     57
+## 3    9.9     58
+## 4   10.2     58
+## 5   10.2     58
+## 6   10.3     58
+\end{verbatim}
+
+\subsection{Graphic Representation}\label{graphic-representation}
+
+\subsubsection{Base Graphics}\label{base-graphics}
+
+\begin{itemize}
+\tightlist
+\item
+  키와 손가락길이의 산점도
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# plot(finger \textasciitilde{} height, data = crimtab\_long\_df)}
+\NormalTok{crimtab\_long\_df[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{] }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  plot}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/scatter diagram-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{plot}\NormalTok{(crimtab\_long\_df[, }\DecValTok{2}\SpecialCharTok{:}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  변수 각각의 히스토그램은?
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+\FunctionTok{hist}\NormalTok{(crimtab\_long\_df}\SpecialCharTok{$}\NormalTok{height, }
+     \AttributeTok{main =} \StringTok{"Histogram of Height"}\NormalTok{, }
+     \AttributeTok{xlab =} \StringTok{"height(inches)"}\NormalTok{)}
+\FunctionTok{hist}\NormalTok{(crimtab\_long\_df}\SpecialCharTok{$}\NormalTok{finger, }
+     \AttributeTok{main =} \StringTok{"Histogram of Finger Length"}\NormalTok{, }
+     \AttributeTok{xlab =} \StringTok{"finger length(cm)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/histograms for each-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# hist(crimtab\_long\_df["height"], }
+\CommentTok{\#      main="Histogram of Height", }
+\CommentTok{\#      xlab="height(inches)")}
+\CommentTok{\# hist(crimtab\_long\_df["finger"], }
+\CommentTok{\#      main="Histogram of Finger Length", }
+\CommentTok{\#      xlab= "finger length(cm)")}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
+\item
+  평균과 표준편차를 한번에 구하려면 다음과 같이 anonymous function을
+  작성하고 \texttt{mapply()} 또는 \texttt{sapply()}를 이용하는 게 편함.
+  이를 모수로 하는 정규곡선을 덧씌워 볼 것.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{mean\_sd()}도 \texttt{anonymous\ function} 으로 평균과
+    표준편차를 계산해서 출력하는 함수임. 이와 같은 함수를 저장해
+    놓으려면 \texttt{dump()}를 이용함.
+  \item
+    이와 같이 계산한 평균과 표준편차를 모수로 하는 정규곡선을 덧씌워 볼
+    것.
+  \end{itemize}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mean\_sd }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{  mean }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(x, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{  sd }\OtherTok{\textless{}{-}} \FunctionTok{sd}\NormalTok{(x)}
+  \FunctionTok{c}\NormalTok{(}\AttributeTok{mean =}\NormalTok{ mean, }\AttributeTok{sd =}\NormalTok{ sd)}
+\CommentTok{\# list(mean = mean, sd = sd)}
+\NormalTok{\}}
+\FunctionTok{dump}\NormalTok{(}\StringTok{"mean\_sd"}\NormalTok{, }\AttributeTok{file =} \StringTok{"mean\_sd.R"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# crimtab\_long\_df \%\textgreater{}\%}
+\CommentTok{\#   sapply(FUN = mean\_sd)}
+\NormalTok{crimtab\_stat }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(crimtab\_long\_df, }\AttributeTok{FUN =}\NormalTok{ mean\_sd)}
+\CommentTok{\# crimtab\_stat \textless{}{-} mapply(mean\_sd, crimtab\_long\_df)}
+\CommentTok{\# apply(crimtab\_long, 2, mean)}
+\CommentTok{\# apply(crimtab\_long, 2, sd)}
+\FunctionTok{str}\NormalTok{(crimtab\_stat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:2, 1:2] 11.547 0.549 65.473 2.558
+##  - attr(*, "dimnames")=List of 2
+##   ..$ : chr [1:2] "mean" "sd"
+##   ..$ : chr [1:2] "finger" "height"
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{crimtab\_stat}이 어떤 성격을 갖는지 다음 질문과 추출 작업을
+  통해서 알아보자.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.matrix}\NormalTok{(crimtab\_stat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.table}\NormalTok{(crimtab\_stat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.list}\NormalTok{(crimtab\_stat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.data.frame}\NormalTok{(crimtab\_stat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat[, }\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       mean         sd 
+## 11.5473667  0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat[, }\StringTok{"finger"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       mean         sd 
+## 11.5473667  0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat[, }\StringTok{"finger"}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     mean 
+## 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat[, }\StringTok{"finger"}\NormalTok{][[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat[}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{3}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  0.5487137 65.4730000
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# crimtab\_stat["finger"]}
+\CommentTok{\# crimtab\_stat$finger}
+\end{Highlighting}
+\end{Shaded}
+
+\texttt{matrix} 를 \texttt{data\ frame} 으로 변환하면
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(crimtab\_stat\_df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(crimtab\_stat))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          finger    height
+## mean 11.5473667 65.473000
+## sd    0.5487137  2.557757
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.matrix}\NormalTok{(crimtab\_stat\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.table}\NormalTok{(crimtab\_stat\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.list}\NormalTok{(crimtab\_stat\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{is.data.frame}\NormalTok{(crimtab\_stat\_df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[, }\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.5473667  0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[, }\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:2] 11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[, }\StringTok{"finger"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.5473667  0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[, }\StringTok{"finger"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:2] 11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[, }\StringTok{"finger"}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[, }\StringTok{"finger"}\NormalTok{][}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num 11.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[, }\StringTok{"finger"}\NormalTok{][[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[, }\StringTok{"finger"}\NormalTok{][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num 11.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          finger
+## mean 11.5473667
+## sd    0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    2 obs. of  1 variable:
+##  $ finger: num  11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[}\StringTok{"finger"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          finger
+## mean 11.5473667
+## sd    0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[}\StringTok{"finger"}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    2 obs. of  1 variable:
+##  $ finger: num  11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[}\StringTok{"finger"}\NormalTok{][}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          finger
+## mean 11.5473667
+## sd    0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[}\StringTok{"finger"}\NormalTok{][}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    2 obs. of  1 variable:
+##  $ finger: num  11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df[}\StringTok{"finger"}\NormalTok{][[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.5473667  0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df[}\StringTok{"finger"}\NormalTok{][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:2] 11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df}\SpecialCharTok{$}\NormalTok{finger}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.5473667  0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df}\SpecialCharTok{$}\NormalTok{finger)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:2] 11.547 0.549
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df}\SpecialCharTok{$}\NormalTok{finger[}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df}\SpecialCharTok{$}\NormalTok{finger[}\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num 11.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crimtab\_stat\_df}\SpecialCharTok{$}\NormalTok{finger[[}\DecValTok{1}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(crimtab\_stat\_df}\SpecialCharTok{$}\NormalTok{finger[[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num 11.5
+\end{verbatim}
+
+\subsubsection{ggplot}\label{ggplot}
+
+\begin{itemize}
+\tightlist
+\item
+  키와 손가락 길이의 산점도
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\NormalTok{g1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ crimtab\_long\_df, }
+             \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ height, }\AttributeTok{y =}\NormalTok{ finger)) }
+\NormalTok{g2 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{()}
+\NormalTok{g2}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/scatter of finger and height-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  투명도 변경 : \texttt{alpha\ =\ 0.9}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_2 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.9}\NormalTok{)}
+\NormalTok{g2\_2}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/alpha variation 0.9-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  투명도 변경 : \texttt{alpha\ =\ 0.5}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_3 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
+\NormalTok{g2\_3}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/alpha variation 0.5-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  투명도 변경 : \texttt{alpha\ =\ 0.1}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_4 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.1}\NormalTok{)}
+\NormalTok{g2\_4}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/alpha variation 0.1-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  중복점 흐트러놓기 : \texttt{position\ =\ jitter}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_5 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{position =} \StringTok{"jitter"}\NormalTok{)}
+\NormalTok{g2\_5}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/position jitter-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  점의 크기를 줄이고 중복점 흐트러놓기 :
+  \texttt{position\ =\ jitter,\ size\ =\ 0.7}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_6 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{position =} \StringTok{"jitter"}\NormalTok{, }\AttributeTok{size =} \FloatTok{0.7}\NormalTok{)}
+\NormalTok{g2\_6}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/position jitter size-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  동일한 효과 : \texttt{position\ =\ position\_jitter(),\ size\ =\ 0.7}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_7 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{position =} \FunctionTok{position\_jitter}\NormalTok{(), }\AttributeTok{size =} \FloatTok{0.7}\NormalTok{)}
+\NormalTok{g2\_7}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/position jitter size alt-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  흐트러놓는 폭 조절 :
+  \texttt{width\ =\ 1,\ height\ =\ 0,\ size\ =\ 0.7}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_8 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{position =} \FunctionTok{position\_jitter}\NormalTok{(}\AttributeTok{width =} \DecValTok{1}\NormalTok{, }\AttributeTok{height =} \DecValTok{0}\NormalTok{), }
+             \AttributeTok{size =} \FloatTok{0.7}\NormalTok{)}
+\NormalTok{g2\_8}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/position jitter size width-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  흐트러놓는 폭과 높이 조절 :
+  \texttt{width\ =\ 1,\ height\ =\ 0.1,\ size\ =\ 0.7}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g2\_9 }\OtherTok{\textless{}{-}}\NormalTok{ g1 }\SpecialCharTok{+} 
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{position =} \FunctionTok{position\_jitter}\NormalTok{(}\AttributeTok{width =} \DecValTok{1}\NormalTok{, }\AttributeTok{height =} \FloatTok{0.1}\NormalTok{), }
+             \AttributeTok{size =} \FloatTok{0.7}\NormalTok{)}
+\NormalTok{g2\_9}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/position jitter size width height-1.pdf}}
+
+\begin{itemize}
+\tightlist
+\item
+  흑백 테마 : \texttt{theme\_bw()}
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g3 }\OtherTok{\textless{}{-}}\NormalTok{ g2\_9 }\SpecialCharTok{+}
+  \FunctionTok{theme\_bw}\NormalTok{()}
+\NormalTok{g3}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/position jitter size bw-1.pdf}}
+
+\subsubsection{히스토그램}\label{uxd788uxc2a4uxd1a0uxadf8uxb7a8}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{h1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ crimtab\_long\_df, }
+             \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ height)) }
+\NormalTok{h1 }\SpecialCharTok{+} \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-1-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f1 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ crimtab\_long\_df, }
+             \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ finger))}
+\NormalTok{f1 }\SpecialCharTok{+} \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-2-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{h1 }\SpecialCharTok{+} \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{after\_stat}\NormalTok{(density)),}
+                    \AttributeTok{binwidth =} \DecValTok{1}\NormalTok{, }
+                    \AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-3-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{f1 }\SpecialCharTok{+} \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{after\_stat}\NormalTok{(density)), }
+                    \AttributeTok{binwidth =} \FloatTok{0.1}\NormalTok{, }
+                    \AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-4-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_h\_1 }\OtherTok{\textless{}{-}}\NormalTok{ h1 }\SpecialCharTok{+} 
+   \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{after\_stat}\NormalTok{(density)), }
+                  \AttributeTok{binwidth =} \DecValTok{1}\NormalTok{, }
+                  \AttributeTok{fill =} \StringTok{"white"}\NormalTok{, }
+                  \AttributeTok{colour =} \StringTok{"black"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-5-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_h }\OtherTok{\textless{}{-}}\NormalTok{ g\_h\_1 }\SpecialCharTok{+}
+   \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
+   \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{""}\NormalTok{, }
+                      \AttributeTok{breaks =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+}
+   \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{""}\NormalTok{, }
+                      \AttributeTok{breaks =} \ConstantTok{NULL}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-6-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_f\_1 }\OtherTok{\textless{}{-}}\NormalTok{ f1 }\SpecialCharTok{+} 
+   \FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =} \FunctionTok{after\_stat}\NormalTok{(density)), }
+                  \AttributeTok{binwidth =} \FloatTok{0.2}\NormalTok{, }
+                  \AttributeTok{fill =} \StringTok{"white"}\NormalTok{, }
+                  \AttributeTok{colour =} \StringTok{"black"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-7-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_f }\OtherTok{\textless{}{-}}\NormalTok{ g\_f\_1 }\SpecialCharTok{+}
+   \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
+   \FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{""}\NormalTok{, }
+                      \AttributeTok{breaks =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+}
+   \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{name =} \StringTok{""}\NormalTok{, }
+                      \AttributeTok{breaks =} \ConstantTok{NULL}\NormalTok{) }\SpecialCharTok{+}
+   \FunctionTok{coord\_flip}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-8-1.pdf}}
+
+\subsubsection{평균 위치를 화살표로
+나타내려면}\label{uxd3c9uxade0-uxc704uxce58uxb97c-uxd654uxc0b4uxd45cuxb85c-uxb098uxd0c0uxb0b4uxb824uxba74}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(grid)}
+\NormalTok{(mean\_finger }\OtherTok{\textless{}{-}}\NormalTok{ crimtab\_stat[, }\DecValTok{1}\NormalTok{][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 11.54737
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(sd\_finger }\OtherTok{\textless{}{-}}\NormalTok{ crimtab\_stat[, }\DecValTok{1}\NormalTok{][[}\DecValTok{2}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.5487137
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(mean\_height }\OtherTok{\textless{}{-}}\NormalTok{ crimtab\_stat[, }\DecValTok{2}\NormalTok{][[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 65.473
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(sd\_height }\OtherTok{\textless{}{-}}\NormalTok{ crimtab\_stat[, }\DecValTok{2}\NormalTok{][[}\DecValTok{2}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.557757
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_finger }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\FloatTok{9.5}\NormalTok{, }\FloatTok{13.5}\NormalTok{, }
+                \AttributeTok{length.out =} \DecValTok{3000}\NormalTok{)}
+\NormalTok{y\_finger }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_finger, }
+                  \AttributeTok{mean =}\NormalTok{ mean\_finger, }
+                  \AttributeTok{sd =}\NormalTok{ sd\_finger)}
+\NormalTok{x\_height }\OtherTok{\textless{}{-}} \FunctionTok{seq}\NormalTok{(}\DecValTok{56}\NormalTok{, }\DecValTok{77}\NormalTok{, }
+                \AttributeTok{length.out =} \DecValTok{3000}\NormalTok{)}
+\NormalTok{y\_height }\OtherTok{\textless{}{-}} \FunctionTok{dnorm}\NormalTok{(x\_height, }
+                  \AttributeTok{mean =}\NormalTok{ mean\_height, }
+                  \AttributeTok{sd =}\NormalTok{ sd\_height)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_h\_2 }\OtherTok{\textless{}{-}}\NormalTok{ g\_h\_1 }\SpecialCharTok{+} 
+    \FunctionTok{annotate}\NormalTok{(}\StringTok{"segment"}\NormalTok{, }
+             \AttributeTok{x =}\NormalTok{ mean\_height, }
+             \AttributeTok{xend =}\NormalTok{ mean\_height, }
+             \AttributeTok{y =} \SpecialCharTok{{-}}\FloatTok{0.02}\NormalTok{, }
+             \AttributeTok{yend =} \DecValTok{0}\NormalTok{, }
+             \AttributeTok{arrow =} \FunctionTok{arrow}\NormalTok{(}\AttributeTok{length =} \FunctionTok{unit}\NormalTok{(}\FloatTok{0.3}\NormalTok{, }\StringTok{"cm"}\NormalTok{))))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-9-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_h\_3 }\OtherTok{\textless{}{-}}\NormalTok{ g\_h\_2 }\SpecialCharTok{+} 
+   \FunctionTok{theme\_bw}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-10-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_h\_4 }\OtherTok{\textless{}{-}}\NormalTok{ g\_h\_3 }\SpecialCharTok{+} 
+   \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_height, }\AttributeTok{y =}\NormalTok{ y\_height)))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-11-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_f\_2 }\OtherTok{\textless{}{-}}\NormalTok{ g\_f\_1 }\SpecialCharTok{+} 
+   \FunctionTok{annotate}\NormalTok{(}\StringTok{"segment"}\NormalTok{, }
+            \AttributeTok{x =}\NormalTok{ mean\_finger, }
+            \AttributeTok{xend =}\NormalTok{ mean\_finger, }
+            \AttributeTok{y =} \SpecialCharTok{{-}}\FloatTok{0.1}\NormalTok{, }
+            \AttributeTok{yend =} \DecValTok{0}\NormalTok{, }
+            \AttributeTok{arrow =} \FunctionTok{arrow}\NormalTok{(}\AttributeTok{length =} \FunctionTok{unit}\NormalTok{(}\FloatTok{0.3}\NormalTok{, }\StringTok{"cm"}\NormalTok{))))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-12-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_f\_3 }\OtherTok{\textless{}{-}}\NormalTok{ g\_f\_2 }\SpecialCharTok{+} 
+   \FunctionTok{theme\_bw}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-13-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(g\_f\_4 }\OtherTok{\textless{}{-}}\NormalTok{ g\_f\_3 }\SpecialCharTok{+} 
+   \FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_finger, }\AttributeTok{y =}\NormalTok{ y\_finger)))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/unnamed-chunk-14-1.pdf}}
+
+\subsubsection{산점도와 히스토그램 함께
+배열하기}\label{uxc0b0uxc810uxb3c4uxc640-uxd788uxc2a4uxd1a0uxadf8uxb7a8-uxd568uxaed8-uxbc30uxc5f4uxd558uxae30}
+
+\texttt{grid} 및 \texttt{gridExtra} 패키지와 함께 \texttt{blank} Grob
+설정이 핵심. \texttt{grid.arrange} 사용법에 유의.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(gridExtra)}
+\FunctionTok{grid.rect}\NormalTok{(}\AttributeTok{gp =} \FunctionTok{gpar}\NormalTok{(}\AttributeTok{col =} \StringTok{"white"}\NormalTok{), }\AttributeTok{draw =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\FunctionTok{grid.arrange}\NormalTok{(g\_h, ., g3, g\_f, }
+             \AttributeTok{ncol =} \DecValTok{2}\NormalTok{, }
+             \AttributeTok{widths =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }
+             \AttributeTok{heights =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/side by side-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{blank }\OtherTok{\textless{}{-}} \FunctionTok{grid.rect}\NormalTok{(}\AttributeTok{gp =} \FunctionTok{gpar}\NormalTok{(}\AttributeTok{col =} \StringTok{"white"}\NormalTok{), }\AttributeTok{draw =} \ConstantTok{FALSE}\NormalTok{)}
+\FunctionTok{grid.arrange}\NormalTok{(g\_h, blank, g3, g\_f, }
+             \AttributeTok{ncol =} \DecValTok{2}\NormalTok{, }
+             \AttributeTok{widths =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }
+             \AttributeTok{heights =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/side by side-2.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{blank }\OtherTok{\textless{}{-}} \FunctionTok{nullGrob}\NormalTok{()}
+\FunctionTok{grid.arrange}\NormalTok{(g\_h, blank, g3, g\_f, }
+             \AttributeTok{ncol =} \DecValTok{2}\NormalTok{, }
+             \AttributeTok{widths =} \FunctionTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{1}\NormalTok{), }
+             \AttributeTok{heights =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{crimtab_ggplots_pdf_files/figure-latex/side by side-3.pdf}}
+
+\end{document}
