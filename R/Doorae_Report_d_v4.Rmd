@@ -315,12 +315,6 @@ doorae$"사업자등록여부" %<>%
 doorae$"성과_사업착수" %<>%
   factor(levels = c("Yes", "No"), 
          labels = c("착수", "미착수"))
-#> with()
-  bi_corp     <- with(doorae, which(`공동체상태` == "경영개선" & `조직형태` == "법인"))
-  bi_noncorp  <- with(doorae, which(`공동체상태` == "경영개선" & `조직형태` == "임의단체"))
-  bp_corp     <- with(doorae, which(`공동체상태` == "창업준비" & `조직형태` == "법인"))
-  bp_noncorp  <- with(doorae, which(`공동체상태` == "창업준비" & `조직형태` == "임의단체"))
-
 #> %$%
 # bi_corp <- doorae %$%
 #   `&`(.$"공동체상태" == "경영개선", .$"조직형태" == "법인") %>%
@@ -343,7 +337,9 @@ c_names <- c("공동체상태", "조직명", "사업착수여부", "사업자등
 
 ```{r, results = 'asis', echo = FALSE}
 doorae %>%
-  `[`(bi_corp, v_names) %>%
+  filter(`공동체상태` == "경영개선" & `조직형태` == "법인") %>%
+  select(all_of(v_names)) %>%
+#   `[`(bi_corp, v_names) %>%
   format(big.mark = ",") %>%
   kable(row.names = FALSE, 
         col.names = c_names, 
@@ -357,7 +353,9 @@ doorae %>%
     
 ```{r, results = 'asis', echo = FALSE}
 doorae %>%
-  `[`(bi_noncorp, v_names) %>%
+  filter(`공동체상태` == "경영개선" & `조직형태` == "임의단체") %>%
+  select(all_of(v_names)) %>%
+#   `[`(bi_noncorp, v_names) %>%
   format(big.mark = ",") %>%
   kable(row.names = FALSE, 
         col.names = c_names, 
@@ -369,7 +367,9 @@ doorae %>%
     
 ```{r, results='asis', echo=FALSE}
 doorae %>%
-  `[`(bp_corp, v_names) %>%
+  filter(`공동체상태` == "창업준비" & `조직형태` == "법인") %>%
+  select(all_of(v_names)) %>%
+#   `[`(bp_corp, v_names) %>%
   format(big.mark = ",") %>%
   kable(row.names = FALSE, 
         col.names = c_names, 
@@ -385,7 +385,9 @@ doorae %>%
 
 ```{r, results='asis', echo=FALSE}
 doorae %>%
-  `[`(bp_noncorp, v_names) %>%
+  filter(`공동체상태` == "창업준비" & `조직형태` == "임의단체") %>%
+  select(all_of(v_names)) %>%
+#   `[`(bp_noncorp, v_names) %>%
   format(big.mark = ",") %>%
   kable(row.names = FALSE, 
         col.names = c_names, 
@@ -398,16 +400,16 @@ doorae %>%
 
 ```{r, echo = FALSE}
 doorae %$%
-  table("공동체상태 :" = .$"공동체상태", 
-        "조직형태 :" = .$"조직형태", 
-        "사업자등록여부:" = .$"사업자등록여부") %>%
+  table("공동체상태 :" = `공동체상태`, 
+        "조직형태 :" = `조직형태`, 
+        "사업자등록여부:" = `사업자등록여부`) %>%
   ftable %>%
   as.matrix %>%
   kable(caption = "* 공동체상태/조직형태와 사업자등록여부")
 doorae %$%
-  table("공동체상태 :" = .$"공동체상태", 
-        "조직형태 :" = .$"조직형태", 
-        "사업자등록여부:" = .$"사업자등록여부") %>%
+  table("공동체상태 :" = `공동체상태`, 
+        "조직형태 :" = `조직형태`, 
+        "사업자등록여부:" = `사업자등록여부`) %>%
   ftable %>%
   prop.table(margin = 1) %>%
   `*`(100) %>%
@@ -415,16 +417,16 @@ doorae %$%
   as.matrix %>%
   kable(caption = "* 공동체상태/조직형태와 사업자등록여부(%)")
 doorae %$%
-  table("공동체상태 :" = .$"공동체상태", 
-        "조직형태 :" = .$"조직형태", 
-        "사업착수여부:" = .$"성과_사업착수") %>%
+  table("공동체상태 :" = `공동체상태`, 
+        "조직형태 :" = `조직형태`, 
+        "사업착수여부:" = `성과_사업착수`) %>%
   ftable %>%
   as.matrix %>%
   kable(caption = "* 공동체상태/조직형태와 사업착수여부")
 doorae %$%
-  table("공동체상태 :" = .$"공동체상태", 
-        "조직형태 :" = .$"조직형태", 
-        "사업착수여부:" = .$"성과_사업착수") %>%
+  table("공동체상태 :" = `공동체상태`, 
+        "조직형태 :" = `조직형태`, 
+        "사업착수여부:" = `성과_사업착수`) %>%
   ftable %>%
   prop.table(margin = 1) %>%
   `*`(100) %>%
