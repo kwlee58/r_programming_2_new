@@ -48,7 +48,7 @@ doorae %>%
 ```{r, echo = FALSE}
 doorae %>%
 #   `[`(, 25:54) %>%
-  select(1:24) %>%
+  select(25:54) %>%
 #  `[`(25:54) %>%
   str
 ```
@@ -254,7 +254,7 @@ ggplot(data = tbl_p_df,
                      label = y_label) +
   scale_fill_brewer(name = "조직형태") +
   ggtitle("공동체상태와 조직형태") + 
-  theme(plot.title = element_text(face = "bold",size = 18, hjust = 0.5),
+  theme(plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
         axis.title = element_text(),
         legend.text = element_text(),
         legend.title = element_text())
