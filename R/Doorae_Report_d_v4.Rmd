@@ -22,10 +22,10 @@ library(showtext)
 font_add(family = "kopub", 
          regular = "~/Library/Fonts/KoPubWorld Dotum Medium.ttf",
          bold = "~/Library/Fonts/KoPubWorld Dotum Bold.ttf")
-#> Windows 용
+#> Windows 용 kwlee 대신 자신의 계정이름을 넣으세요.
 # font_add(family = "kopub", 
-#          regular = "C:/Windows/Fonts/KoPubWorld Dotum Medium.ttf",
-#          bold = "C:/Windows/Fonts/KoPubWorld Dotum Bold.ttf")
+#          regular = "C:/Users/kwlee/AppData/Local/Microsoft/Windows/Fonts/KoPubWorld Dotum Medium.ttf",
+#          bold = "C:/Users/kwlee/AppData/Local/Microsoft//Windows/Fonts/KoPubWorld Dotum Bold.ttf")
 showtext_auto()
 panderOptions("table.split.table", Inf)
 ```
