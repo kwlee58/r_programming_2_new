@@ -15,6 +15,20 @@ options(digits = 2)
 library(knitr)
 library(magrittr)
 library(extrafont)
+library(showtext)
+
+if (Sys.info()[["sysname"]] == "Windows") {
+  win_home <- Sys.getenv("USERPROFILE")  # VMware Windows에서도 정상 동작
+  font_add(family = "kopub",
+           regular = file.path(win_home, "AppData/Local/Microsoft/Windows/Fonts/KoPubWorld Dotum Medium.ttf"),
+           bold    = file.path(win_home, "AppData/Local/Microsoft/Windows/Fonts/KoPubWorld Dotum Bold.ttf"))
+} else {
+  font_add(family = "kopub",
+           regular = "~/Library/Fonts/KoPubWorld Dotum Medium.ttf",
+           bold    = "~/Library/Fonts/KoPubWorld Dotum Bold.ttf")
+}
+
+showtext_auto()
 #> 데이터 불러 들이기
 load("US_top_income_shares_vs_tax_rates_2022.RData")
 ```
@@ -26,7 +40,7 @@ load("US_top_income_shares_vs_tax_rates_2022.RData")
 # png(file = "../pics/US_Top_Income_Share_vs_MTR_300dpi_en.png", width = 1280, height = 720)
 #> 왼쪽, 오른쪽 수직 축의 축 눈금을 수평하게 놓을 수 있도록 공간 조정
 par(mar = c(5, 6, 4, 6) + 0.1,
-    family = "KoPubWorldDotum Medium")
+    family = "kopub")
 #> 점과 선을 함께 사용하여 소득 상위 1%의 점유율 표시.
 top_income_tax %>%
   plot(P99_100_z ~ Year, 
@@ -119,7 +133,7 @@ invisible(dev.off)
 # png(file = "../pics/US_Top_Income_Share_vs_MTR_72dpi_en.png", width = 864, height = 486)
 # png(file = "../pics/US_Top_Income_Share_vs_MTR_300dpi_en.png", width = 1280, height = 720)
 par(mar = c(5, 6, 4, 6) + 0.1,
-    family = "KoPubWorldDotum Medium")
+    family = "kopub")
 plot(P99_100_z ~ Year, 
      data = top_income_tax, 
      type = "b", 
@@ -198,7 +212,7 @@ invisible(dev.off)
 # png(file = "../pics/US_Top_Income_Growth_vs_MTR_72dpi_en.png", width = 864, height = 486)
 # png(file = "../pics/US_Top_Income_Growth_vs_MTR_300dpi_en.png", width = 1280, height = 720)
 par(mar = c(5, 6, 4, 6) + 0.1,
-    family = "KoPubWorldDotum Medium")
+    family = "kopub")
 plot(Rate_99_z ~ Year, 
      data = top_income_tax, 
      type = "b", 
@@ -292,7 +306,7 @@ invisible(dev.off())
 # png(file = "../pics/US_Income_Growth_vs_MTR_72dpi_K.png", width = 864, height = 486)
 # png(file = "../pics/US_Income_Growth_vs_MTR_300dpi_K.png", width = 1280, height = 720)
 par(mar = c(5, 6, 4, 6) + 0.1,
-    family = "KoPubWorldDotum Medium")
+    family = "kopub")
 plot(Rate_99_K_z ~ Year, 
      data = top_income_tax, 
      type = "b", 
