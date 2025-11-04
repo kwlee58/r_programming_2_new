@@ -42,7 +42,6 @@ str(US_top_income_shares_22)
 
 ```{r, data for Table 3, echo = FALSE}
 kable(US_top_income_shares_22)
-# kable(US_top_income_shares_22[c(11:20, 41:51, 92:106), ])
 ```
 
 ## Plots
@@ -145,8 +144,8 @@ text(x = c(1924, 2007, 2021),
      pos = 3)
 text(x = c(1935, 1965, 2015), 
      y = c(22, 8, 25), 
-     labels = c("(가)", "(나)", "(다)"),
-#     labels = times_label, 
+#     labels = c("(가)", "(나)", "(다)"),
+     labels = times_label, 
      cex = 1.5, 
      col = "red")
 # dev.copy(png, 
@@ -549,7 +548,7 @@ ggplot(data = data_01_tbl,
   theme(axis.title.y = element_text()) +
   theme(plot.title = element_text(size = 20, 
                                   hjust = 0.5)) +
-  theme(legend.position =  c(0.5, 0.88)) +
+  theme(legend.position = "inside", legend.position.inside = c(0.5, 0.88)) +
   scale_colour_manual(name = "", 
                       values = c("black", "blue"), 
                       labels = legend_text_3) +
@@ -581,9 +580,7 @@ ggsave("../pics/US_top_income_share_0.01-0.09_2022_ggplot_kr.png",
 ```
 
 
-<!--## 뒷 정리
+## Comments
 
-```{r, save.image}
-# save.image(file = "US_top_income_shares_2022_add.rda")
-```
--->
+미국 소득 불평등의 역사 ...top_income_shares_2022_summary_
+
