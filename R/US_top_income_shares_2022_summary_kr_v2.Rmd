@@ -333,10 +333,16 @@ data_10_df <-
   US_top_income_shares_22[c("Year", "P90_100")]
 data_10 <- 
   US_top_income_shares_22[c("Year", "P99_100", "P95_99", "P90_95")]
+
 data_10_tbl <- 
   data_10 %>%
   as_tibble %>%
-  gather(key = "Percentiles", value = "Share", -Year) %>%
+  pivot_longer(
+    cols = -Year,          # Year를 제외한 모든 열을 긴 형식으로 변환 (gather의 -Year)
+    names_to = "Percentiles", # 변환된 열 이름(P99_100 등)을 저장할 새 열 이름 (gather의 key)
+    values_to = "Share"    # 변환된 값(숫자)을 저장할 새 열 이름 (gather의 value)
+  ) %>%
+#   gather(key = "Percentiles", value = "Share", -Year) %>%
   mutate(Percentiles = factor(Percentiles, 
                               levels = c("P99_100", "P95_99", "P90_95")))
 data_1 <- 
@@ -344,7 +350,12 @@ data_1 <-
 data_1_tbl <- 
   data_1 %>%
   as_tibble %>%
-  gather(key = "Percentiles", value = "Share", -Year) %>%
+  pivot_longer(
+    cols = -Year,          # Year를 제외한 모든 열을 긴 형식으로 변환 (gather의 -Year)
+    names_to = "Percentiles", # 변환된 열 이름(P99_100 등)을 저장할 새 열 이름 (gather의 key)
+    values_to = "Share"    # 변환된 값(숫자)을 저장할 새 열 이름 (gather의 value)
+  ) %>%
+#   gather(key = "Percentiles", value = "Share", -Year) %>%
   mutate(Percentiles = factor(Percentiles, 
                               levels = c("P99.9_100", "P99.5_99.9", "P99_99.5")))
 data_01 <- 
@@ -352,7 +363,12 @@ data_01 <-
 data_01_tbl <- 
   data_01 %>%
   as_tibble %>%
-  gather(key = "Percentiles", value = "Share", -Year) %>%
+  pivot_longer(
+    cols = -Year,          # Year를 제외한 모든 열을 긴 형식으로 변환 (gather의 -Year)
+    names_to = "Percentiles", # 변환된 열 이름(P99_100 등)을 저장할 새 열 이름 (gather의 key)
+    values_to = "Share"    # 변환된 값(숫자)을 저장할 새 열 이름 (gather의 value)
+  ) %>%
+#   gather(key = "Percentiles", value = "Share", -Year) %>%
   mutate(Percentiles = factor(Percentiles, 
                               levels = c("P99.99_100", "P99.9_99.99")))
 ```

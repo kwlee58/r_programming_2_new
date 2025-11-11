@@ -1,5 +1,5 @@
 ---
-title: "Twin Studies on Smoking"
+title: "자산 양극화"
 author: "coop711"
 date: "`r Sys.Date()`"
 output: html_document
