@@ -1,0 +1,327 @@
+---
+title: "Monty Hall Simulation"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo = FALSE}
+# 필요한 라이브러리들을 미리 로드합니다.
+library(knitr)
+library(magrittr)
+library(ggplot2)   # 시각화 패키지
+library(gridExtra) # 여러 그래프를 한 번에 보여주는 패키지
+options(width = 180)
+```
+
+```{r, echo = FALSE, out.width = "65%", fig.align = "left"}
+# 이미지 파일 경로가 맞는지 확인해주세요.
+include_graphics("../pics/Monty_Hall.png")
+```
+
+<P style = "page-break-before:always">
+
+## 기본 설정 및 한 번의 시행 (Single Trial)
+
+이 부분은 몬티 홀 게임을 한 번 진행하는 로직을 함수로 만드는 과정입니다.
+
+```{r}
+# 재현성을 위해 난수 시드 설정 (항상 같은 결과가 나오도록 함)
+set.seed(1)
+
+monty_hall <- function() {
+  # 1. 자동차(Key) 위치 선정: 1, 2, 3번 문 중 하나를 무작위 선택
+  key <- 1:3 %>% 
+    sample(size = 1)
+  
+  # 2. 염소(Goat) 위치 선정: 자동차가 없는 나머지 문들
+  goat <- 1:3 %>% 
+    setdiff(key)
+  
+  # 3. 참가자(Contestant)의 선택: 1, 2, 3번 문 중 하나 무작위 선택
+  contestant <- 1:3 %>% 
+    sample(size = 1)
+  
+  # 4. 몬티(Monty)의 선택:
+  # 참가자가 자동차를 골랐다면 -> 남은 염소 방 2개 중 하나를 무작위로 open
+  # 참가자가 염소를 골랐다면 -> 자동차도 아니고 참가자가 고른 곳도 아닌 나머지 염소 방을 open
+  monty <- contestant %>%
+    `==` (key) %>%
+    ifelse(goat %>% sample(size = 1), 
+           goat %>% setdiff(contestant))
+  
+  # 5. 바꾸기(Switch) 전략: 전체 문 중에서 참가자가 고른 문과 몬티가 연 문을 제외한 나머지 문
+  switch <- 1:3 %>% 
+    setdiff(c(contestant, monty))
+  
+  # 6. 결과 판정: 바꾼 문이 자동차(key)와 같다면 "Switching wins", 아니면 "Staying wins"
+  result <- switch %>% 
+    `==`(key) %>%
+    ifelse("Switching wins", "Staying wins") 
+  
+  # 7. 결과 반환: 각 단계의 선택과 최종 결과를 벡터로 출력
+  c("Key" = key, 
+    "Contestant" = contestant, 
+    "Monty" = monty, 
+    "Switch" = switch, 
+    "Result" = result)
+}
+
+# 함수 테스트 실행
+monty_hall()
+```
+
+<P style = "page-break-before:always">
+
+## `N` trials
+
+```{r}
+N <- 30 # 반복 횟수 설정
+
+# replicate 함수로 N번 반복 실행 후, 전치(t)하여 보기 좋은 행렬 형태로 변환
+monty_result <- 
+  replicate(N, monty_hall()) %>% 
+  t
+
+# 결과 확인
+monty_result
+
+# 결과 빈도표 (몇 번 이겼는지 확인)
+table(monty_result[, 5])
+
+# '바꾸기(Switching)'가 이긴 비율 계산
+sum(monty_result[, 5] == "Switching wins") / N
+
+# 누적 합(cumsum) 계산: 시행 횟수가 늘어날수록 이긴 횟수가 어떻게 쌓이는지 확인
+cumsum(monty_result[, 5] == "Switching wins")
+cumsum(monty_result[, 5] == "Staying wins")
+
+# 그래프를 그리기 위한 데이터 준비
+y_switch <- cumsum(monty_result[, 5] == "Switching wins")
+# y_stay는 전체 횟수에서 y_switch를 뺀 것과 같음
+y_stay <- 1:N - y_switch
+```
+
+## plot
+
+```{r}
+monty_plot <- function(N) {
+  # N번 시뮬레이션 수행 및 전치
+  monty_result <- 
+    replicate(N, monty_hall()) %>%
+    t
+  
+  # 누적 승리 횟수 계산
+  y_switch <- cumsum(monty_result[, 5] == "Switching wins")
+  y_stay <- 1:N - y_switch
+  
+  # 최종 승률 계산
+  p_wins <- sum(monty_result[, 5] == "Switching wins") / N
+  
+  # 1. plot 그리기 (Switching wins 데이터 - 빨간색 다이아몬드)
+  plot(x = 1:N, 
+       y = y_switch / N, # y축을 비율(0~1)로 변환
+       pch = 23,         # 점 모양 (다이아몬드)
+       col = "red",      # 테두리 색
+       bg = "red",       # 채우기 색
+       ylim = c(0, 1),   # y축 범위
+       xlab = "Number of Trials", # x축 라벨
+       ylab = "Proportion of Wins", # y축 라벨
+       yaxt = "n",       # y축 눈금 자동 생성 끄기 (수동 설정을 위해)
+       cex = 0.7)        # 점 크기
+  
+  # y축 눈금 수동 설정 (0, 1/3, 2/3, 1 표시)
+  axis(side = 2, 
+       at = c(0, 1/3, 2/3, 1), 
+       labels = c("0", "1/3", "2/3", "1"), las = 2)
+  
+  # 2. points 추가 (Staying wins 데이터 - 파란색 사각형)
+  points(x = 1:N, 
+         y = y_stay / N, 
+         pch = 22,       # 점 모양 (사각형)
+         col = "blue", 
+         bg = "blue", 
+         cex = 0.7)
+  
+  # 3. 기준선 추가 (1/3, 2/3 지점에 점선)
+  abline(h = c(1/3, 2/3), lty = 3)
+  
+  # 4. 제목 및 범례 추가
+  title(main = "Monty Hall Simulation")
+  legend("topleft", 
+         inset = 0.05, 
+         legend = c("Switching wins", "Staying wins"), 
+         pch = c(23, 22), 
+         col = c("red", "blue"), 
+         pt.bg = c("red", "blue"))
+  
+  # 5. 최종 승률 텍스트 표시
+  text(x = N / 5, y = 1 / 2, 
+       labels = paste0("P(Switching wins) = ", format(p_wins, digits = 2, nsmall = 2)))
+  
+  # 함수의 결과로 최종 승률 반환
+  p_wins
+}
+
+# 함수 실행 (30회)
+monty_plot(30)
+```
+
+## Repetitions 
+
+```{r}
+# 1. 시뮬레이션 1회 실행
+# monty_plot(30)을 실행하여 30번 시행했을 때의 '바꾸기 전략' 승률을 계산하고 저장합니다.
+# 이때 하나의 그래프가 출력됩니다.
+Prop_Switching_wins <- monty_plot(30)
+
+# 계산된 승률 값 출력
+Prop_Switching_wins
+```
+
+```{r}
+# 2. 시뮬레이션 10회 반복 실행
+# monty_plot(30)을 10번 반복(replicate)하여 승률 데이터를 수집합니다.
+# 코드가 실행되면서 10개의 그래프가 순차적으로 생성됩니다.
+Prop_Switching_wins_10 <- replicate(10, monty_plot(30))
+```
+
+### Stem and Leaf
+
+```{r}
+# 3. 승률 분포 확인 (줄기-잎 그림)
+# 수집된 10개의 승률이 어떻게 분포하는지 텍스트 형태의 히스토그램으로 보여줍니다.
+# 데이터가 적을 때(여기서는 10개) 분포를 빠르게 파악하기 좋습니다.
+stem(Prop_Switching_wins_10)
+```
+
+## ggplot
+
+```{r}
+library(ggplot2)
+monty_ggplot <- function(N) {
+  # 데이터 생성 및 전치, 데이터프레임으로 변환
+  monty_result <- 
+    replicate(N, monty_hall()) %>%
+    t %>%
+    data.frame
+  
+  # 누적 승수 계산
+  y_switch <- cumsum(monty_result[, 5] == "Switching wins")
+#  y_stay <- cumsum(monty_result[, 5] == "Staying wins")
+  y_stay <- 1:N - y_switch
+  
+  # ggplot을 위한 'Long Format' 데이터프레임 생성
+  y_df <- data.frame(x = rep(1:N, times = 2), 
+                     Result = c(y_switch, y_stay), 
+                     Decision = rep(c("Switching wins","Staying wins"), each = N)) 
+  
+  # ggplot 그리기
+  p_wins <- sum(monty_result[, 5] == "Switching wins") / N
+monty <-  
+  ggplot(data = y_df, 
+         mapping = aes(x = x, 
+                       y = Result / N, 
+                       colour = Decision,
+                       shape = Decision,
+                       fill = Decision)) +
+    geom_point() +
+    scale_shape_manual(values = c(23, 22)) +
+    scale_fill_manual(values = c("red", "blue")) +
+    scale_y_continuous(name = "Proportion of Wins", 
+                       limits = c(0, 1),
+                       breaks = c(0, 1/3, 2/3, 1),
+                       labels = c("0", "1/3", "2/3", "1")) +
+    geom_hline(yintercept = c(1/3, 2/3), 
+               linetype = "dotted") +
+    theme_bw() + 
+    labs(title = "Monty Hall Simulation", 
+         x = "Number of Trials") +
+    annotate("text", 
+             x = N / 5, 
+             y = 1 / 2,
+             label = paste0("P(Switching wins) = ", format(p_wins, digits = 2, nsmall = 2))) +
+    theme(legend.position = c(0.15, 0.8),
+          legend.title = element_blank(),
+          legend.box.background = element_rect(fill = "transparent"),
+          panel.grid = element_blank(),
+          plot.title = element_text(hjust = 0.5, size = 20))
+# 그래프 객체와 승률 값을 리스트로 반환
+list(monty = monty, p_wins = p_wins)
+}
+monty_ggplot(30)$monty
+monty_ggplot(30)$p_wins
+```
+
+## Repetitions 
+
+```{r, warning = FALSE, message = FALSE}
+# 1. 반복 횟수 설정
+k <- 10
+
+# 2. 그래프를 담을 빈 리스트 생성 (미리 10개의 방을 만듦)
+m <- vector("list", k)
+
+# 3. 반복문을 통해 각 방에 그래프를 하나씩 저장
+for (i in 1:k) {
+  m[[i]] <- monty_ggplot(30)$monty
+}
+
+invisible(lapply(m, print)) 
+
+# 4. 승률 시뮬레이션 (기존 코드 유지)
+Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
+```
+
+```{r, echo = FALSE, eval = FALSE}
+#> 예전 코드 불필요한 출력 야기
+x <- 10
+m <- list()
+while (x > 0) {
+m <- list(m, monty_ggplot(30)$monty)
+  x <- x - 1
+}
+m #> <- 불필요한 출력을 만드는 주범
+Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
+```
+
+### Stem and Leaf
+
+```{r, eval = TRUE}
+stem(Prop_Switching_wins_100)
+```
+
+### Histogram with ggplot2
+
+```{r, message=FALSE, warning=FALSE}
+
+# 1. ggplot 시각화를 위해 벡터 데이터를 데이터프레임으로 변환
+df_wins <- data.frame(Proportion = Prop_Switching_wins_100)
+
+# 2. 히스토그램 그리기
+ggplot(data = df_wins, aes(x = Proportion)) +
+  # binwidth는 N=30일 때의 간격(1/30)을 고려하여 설정하면 깔끔합니다.
+  geom_histogram(binwidth = 1/30, 
+                 fill = "steelblue", 
+                 color = "white", 
+                 alpha = 0.8) + 
+  # 이론적 확률(2/3)을 표시하는 빨간 점선 추가
+  geom_vline(xintercept = 2/3, 
+             color = "red", 
+             linetype = "dashed", 
+             size = 1) +
+  # x축 범위를 0~1로 고정하고, 주요 눈금을 설정
+  scale_x_continuous(limits = c(0, 1), 
+                     breaks = c(0, 0.33, 0.66, 1),
+                     labels = c("0", "1/3", "2/3", "1")) +
+  labs(title = "Distribution of Switching Wins (100 Repetitions)",
+       subtitle = "Red dashed line indicates theoretical probability (2/3)",
+       x = "Proportion of Wins",
+       y = "Frequency") +
+  theme_bw()
+```
+

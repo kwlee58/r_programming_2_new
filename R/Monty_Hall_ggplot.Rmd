@@ -119,6 +119,8 @@ monty_plot(30)$p_wins
 
 ## Repetitions
 
+
+
 ```{r}
 N2 <- 10
 m <- list()

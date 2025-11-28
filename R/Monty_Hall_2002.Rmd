@@ -183,7 +183,25 @@ monty_ggplot(30)$p_wins
 
 ## Repetitions
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
+# 1. 반복 횟수 설정
+k <- 10
+
+# 2. 그래프를 담을 빈 리스트 생성 (미리 10개의 방을 만듦)
+m <- vector("list", k)
+
+# 3. 반복문을 통해 각 방에 그래프를 하나씩 저장
+for (i in 1:k) {
+  m[[i]] <- monty_ggplot(30)$monty
+}
+
+invisible(lapply(m, print)) 
+
+# 4. 승률 시뮬레이션 (기존 코드 유지)
+Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
+```
+
+```{r, echo = FALSE, eval = FALSE}
 x <- 10
 m <- list()
 while (x > 0) {
@@ -193,6 +211,7 @@ m <- list(m, monty_ggplot(30)$monty)
 m
 Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
 ```
+
 ### Stem and Leaf
 
 ```{r, eval = TRUE}
