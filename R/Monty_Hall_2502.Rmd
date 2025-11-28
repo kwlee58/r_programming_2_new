@@ -257,6 +257,7 @@ monty_ggplot(30)$monty
 monty_ggplot(30)$p_wins
 ```
 
+<!--
 ## Repetitions 
 
 ```{r, warning = FALSE, message = FALSE}
@@ -276,9 +277,33 @@ invisible(lapply(m, print))
 # 4. 승률 시뮬레이션 (기존 코드 유지)
 Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
 ```
+-->
+
+## Repetitions (GridExtra)
+
+```{r, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 21}
+# 1. 시뮬레이션 반복 횟수 설정 (총 10개의 그래프 생성)
+k <- 10
+
+# 2. 그래프를 담을 빈 리스트(방) 미리 생성
+m <- vector("list", k)
+
+# 3. 반복문을 통해 시뮬레이션 수행 및 그래프 저장
+for (i in 1:k) {
+  # monty_ggplot 함수를 호출하여 그래프 부분($monty)만 리스트에 저장
+  m[[i]] <- monty_ggplot(30)$monty
+}
+
+# 4. 저장된 10개의 그래프를 2열로 정렬하여 한 번에 출력 (gridExtra 패키지 사용)
+# 이 방식은 지저분한 출력 텍스트 없이 그래프만 깔끔하게 보여줍니다.
+grid.arrange(grobs = m, ncol = 2)
+
+# 5. 100번 반복 시뮬레이션: 승률 데이터만 수집 (히스토그램용)
+Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
+```
 
 ```{r, echo = FALSE, eval = FALSE}
-#> 예전 코드 불필요한 출력 야기
+#> 예전 코드 불필요한 출력 야기. eval = FALSE 로 조치.
 x <- 10
 m <- list()
 while (x > 0) {
@@ -289,11 +314,13 @@ m #> <- 불필요한 출력을 만드는 주범
 Prop_Switching_wins_100 <- replicate(100, monty_ggplot(30)$p_wins)
 ```
 
+<!--
 ### Stem and Leaf
 
 ```{r, eval = TRUE}
 stem(Prop_Switching_wins_100)
 ```
+-->
 
 ### Histogram with ggplot2
 
