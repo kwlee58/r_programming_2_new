@@ -236,6 +236,8 @@ ggplot(mapping = aes(x = N_matches), data = matching_tbl) +
 
 ## Chisquare Test : simulated p-value = TRUE
 
+### Base R Plot
+
 ```{r}
 #> Matching Problem 100명 수행 예시
 set.seed(1)
@@ -288,4 +290,42 @@ legend("topright", inset = 0.05, lty = 1, col = c("black", "red"), legend = c("O
 p_value <- sum(chi_squares >= 18) / (B + 1)
 p_value
 ```
+
+### Plot with ggplot2
+
+```{r}
+library(ggplot2)
+
+# 1. ggplot은 데이터프레임을 입력으로 받으므로 변환
+df_chi <- data.frame(chi_val = chi_squares)
+
+# 2. ggplot 그리기
+ggplot(data = df_chi, aes(x = chi_val)) +
+  # (1) 히스토그램: y축을 빈도(count)가 아닌 밀도(density)로 설정
+  # boundary = 0 : 막대가 0부터 시작하도록 정렬 (base plot의 breaks와 유사 효과)
+  # binwidth = 1 : 막대 너비를 1로 설정 (base plot의 정수 단위 breaks 반영)
+  geom_histogram(aes(y = after_stat(density)), 
+                 binwidth = 1, 
+                 boundary = 0,
+                 fill = "white", 
+                 color = "black") +
+  
+  # (2) 이론적 분포 곡선 (Chi-square, df = 3)
+  # stat_function을 사용하면 별도의 x 데이터 생성 없이 함수를 바로 그릴 수 있습니다.
+  stat_function(fun = dchisq, 
+                args = list(df = 3), 
+                color = "red", 
+                linewidth = 0.5) +
+  
+  # (3) 축 및 라벨 설정
+  scale_y_continuous(limits = c(0, 0.25)) + # y축 범위를 base plot과 동일하게
+  labs(title = "Chi-Square Values",
+       subtitle = "Histogram: Simulated / Red Line: Theoretical (df = 3)",
+       x = "Chi-square values",
+       y = "Density") +
+  
+  # (4) 테마 설정
+  theme_bw()
+```
+      
 
