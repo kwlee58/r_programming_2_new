@@ -219,4 +219,5 @@ N1 %>%
 
 
 ```{r, save, echo = FALSE}
+save.image(file = "./birthday_2502.RData")
 ```

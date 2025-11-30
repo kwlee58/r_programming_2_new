@@ -1,0 +1,174 @@
+---
+title: "Birthday Problem"
+author: "coop711"
+date: " `r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+library(tidyverse)
+library(googlesheets4)
+
+# 인증정보 설정 (메시지 숨김))
+gs4_auth()
+
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width = 132)
+```
+
+## Data 
+
+```{r, message = FALSE, results = 'hide'}
+##> read_sheet 으로 읽어 들이기
+birthday_url <- "https://docs.google.com/spreadsheets/d/1qIqsmqAX7yDAFqym5XmQypNswKxMqVSEEtoQuQsOEQM"
+birthday_raw <- read_sheet(birthday_url)
+
+# 컬럼명 설정
+names(birthday_raw) <- c("time", "email", "dept", "id", "name", "Q1", "Q2")
+
+##> 데이터 전처리 (Data Wrangling)
+# mutate를 사용하여 Q1, Q2 전처리를 한 번에 수행합니다.
+birthday <- birthday_raw %>%
+  mutate(
+    ## Q1 처리: "가. 있을 것이다" -> "있을 것이다"
+    Q1 = str_split(Q1, "[.]", simplify = TRUE)[, 1] %>% 
+         factor(levels = c("가", "나"), labels = c("있을 것이다", "없을 것이다")),
+    
+    ## Q2 처리: 월/일 분리 및 포맷팅 ("5/3" -> "05월03일")
+    # 1. "/"를 기준으로 분리
+    month_raw = str_split(Q2, "/", simplify = TRUE)[, 1],
+    date_raw  = str_split(Q2, "/", simplify = TRUE)[, 2],
+    
+    # 2. 한 자리 숫자를 두 자리로 변환 (예: "1" -> "01") - str_pad 사용
+    month = str_pad(month_raw, width = 2, side = "left", pad = "0"),
+    date  = str_pad(date_raw, width = 2, side = "left", pad = "0"),
+    
+    # 3. 최종 포맷 생성
+    Q2_2 = paste0(month, "월", date, "일")
+  ) %>%
+  # 월, 일 순서대로 정렬 (arrange 사용)
+  arrange(month, date)
+
+##> 분석용 데이터 생성 (NA 제거)
+# 학번과 생일만 뽑고, 생일이 결측치인 경우 제외
+birthday_valid <- 
+  birthday %>%
+  select(id, Q2_2) %>%
+  filter(!is.na(Q2_2))
+
+##> 전체 응답 인원수 (N1)
+N1 <- nrow(birthday_valid)
+
+##> 중복 생일 찾기 로직
+# 1. 중복된 생일 날짜(문자열) 찾기
+dup_dates <- 
+  birthday_valid$Q2_2[duplicated(birthday_valid$Q2_2)] %>% 
+  unique()
+
+# 2. 해당 날짜를 가진 모든 학생 추출
+dup_students <- 
+  birthday_valid %>%
+  filter(Q2_2 %in% dup_dates)
+
+# 결과 확인 (pander 사용)
+pander(birthday[c("Q1", "Q2")])
+```
+
+## 생일 문제의 질문
+
+```{r, echo = FALSE, out.width = "75%"}
+knitr::include_graphics("../pics/Birthday_Problem_Qs.png", dpi = NA)
+```
+
+### Q1. 나와 생일 같은 사람이 있을까?
+
+나와 생일이 같은 사람이 있겠느냐는 질문에 3/4은 없을 것이라고 답을 했습니다. 
+생일이 같은 사람이 11명이나 되는 데 대해서 어떻게 생각할까요?
+
+```{r, Money illusion, echo = FALSE}
+# useNA = "ifany" 대신 filter(!is.na(Q1))를 사용하거나 그대로 둡니다.
+tbl_Q1_a <- birthday$Q1 %>%
+  table(useNA = "ifany") %>%
+  c("계" = sum(.)) 
+
+tbl_Q1_a %>% 
+  t %>% 
+  kable
+```
+
+#### % 비교.  
+
+```{r, echo = FALSE}
+tbl_Q1_a[-3] %>%
+  prop.table %>%
+  `*`(100) %>%
+  c("계" = sum(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  t %>%
+  kable
+```
+
+### Q2. Birthday Problem
+
+#### 생일이 같은 사람의 수효
+
+```{r, echo = FALSE}
+# 위에서 구한 중복 학생 명단 출력
+dup_students %>%
+  kable(col.names = c("학번", "생일"), align = "c", row.names = FALSE)
+```
+
+#### 어느 날에 몇 명씩 생일이 같은가?
+
+```{r, echo = FALSE}
+# 중복된 학생들만 모아서 날짜별 빈도표 생성
+dup_students$Q2_2 %>%
+  table %>%
+  as.matrix %>%
+  t %>%
+  cbind("계" = rowSums(.)) %>%
+  kable(row.names = FALSE)
+```
+
+#### 생일이 같은 사람은 몇 명 정도 기대되는가?
+
+```{r, echo = FALSE}
+E_N <- . %>% {. * (1 - (364 / 365) ^ ( . - 1))}
+# E_N <- function(N){N * (1 - (364 / 365) ^ (N - 1))}
+V_N <- . %>% {E_N(.) + . * ( . - 1) * (1 - (363 / 365)) ^ ( . - 2)}
+# V_N <- function(N){N * (1 - (364 / 365) ^ (N - 1)) + N * (N - 1) * (1 - (363 / 365)) ^ (N - 2)}
+```
+
+$N$을 전체 인원이라 할 때, 기대 인원은 $N\times\{1- (\frac{364}{365})^{N-1}\}$, 
+분산은 $N\times\{1- (\frac{364}{365})^{N-1}\} + N\times(N-1)\times\{1-(\frac{363}{365})^{N-2}\}$로 계산된다.
+
+무응답이거나 결석한 학생을 제외한 응답 인원 `r N1`명에 대하여 기대인원을 계산하면 `r N1 %>% E_N %>% round(1)`명,
+표준오차는 `r N1 %>% V_N %>% sqrt %>% round(1)`명으로 계산되어 관찰된 값이 그 범위 근처에 있음을 알 수 있다.
+
+##### 기대값의 계산
+
+```{r, echo = FALSE}
+N1 %>% 
+  E_N %>%
+  round(digits = 1)
+```
+
+##### 표준오차의 계산
+
+```{r, echo = FALSE}
+N1 %>%
+  V_N %>%
+  sqrt %>%
+  round(digits = 1)
+```
+
+```{r, save, echo = FALSE}
+save.image(file = "birthday_2502.RData")
+```
