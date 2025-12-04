@@ -26,7 +26,7 @@ options(width = 132)
 ```{r, data, echo = TRUE, results = 'hide', message = FALSE}
 ##> read_sheet 으로 읽어 들이기
 birthday_url <-"https://docs.google.com/spreadsheets/d/1qIqsmqAX7yDAFqym5XmQypNswKxMqVSEEtoQuQsOEQM"
-birthday <- read_sheet(birthday_url)
+birthday <- read_sheet(birthday_url, range = "A2:G25")
 birthday %>% 
   str
 names(birthday) <- c("time", "email", "dept", "id", "name", "Q1", "Q2")
