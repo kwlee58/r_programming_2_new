@@ -164,8 +164,31 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
         cnt_stat || (aggd && cnt_aes)
       }
     })
+
     add("필수 계산 2 : g_honest (개수가 보이는 그림)", ok2,
         "각 자리의 인원수가 그림에 나타나야 합니다. geom_count(), geom_bin2d(), geom_hex() 중 하나를 쓰거나, 개수를 세어 aes(size = n) 으로 매핑하세요. alpha 만 준 geom_point 는 통과하지 못합니다.")
+
+  } else if (week == 6) {
+    ok1 <- safe({
+      v <- as.numeric(val("t750"))
+      got("t750") && length(v) == 750 && !any(is.na(v)) &&
+        !any(is.infinite(v)) && sd(v) > 1.2 && sd(v) < 2.4
+    })
+    add("필수 계산 1 : t750 (750개 t-값)", ok1,
+        "sample_t 를 t750 에 담으세요. 750개여야 하고, 무한대를 +-6 으로 바꾼 뒤의 값이어야 합니다. 표준편차가 1.2~2.4 밖이면 t-값 계산을 다시 확인하세요.")
+
+    ok2 <- safe({
+      v <- val("tail_cmp")
+      nm <- names(v)
+      got("tail_cmp") && length(v) == 3 &&
+        all(c("observed", "t_df3", "normal") %in% nm) &&
+        abs(as.numeric(v[["t_df3"]])  - 0.1393) < 0.002 &&
+        abs(as.numeric(v[["normal"]]) - 0.0455) < 0.002 &&
+        as.numeric(v[["observed"]]) > 0.09 &&
+        as.numeric(v[["observed"]]) < 0.20
+    })
+    add("필수 계산 2 : tail_cmp (꼬리 확률 비교)", ok2,
+        "observed / t_df3 / normal 세 이름으로 담으세요. t_df3 = 2*pt(-2, 3) = 0.1393, normal = 2*pnorm(-2) = 0.0455 입니다. observed 가 0.09~0.20 밖이면 t-값이나 +-6 처리를 확인하세요.")
 
   }
 

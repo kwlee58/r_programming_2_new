@@ -1,0 +1,353 @@
+---
+title: "Crimtab Data for Simulation of T-Distribution"
+subtitle: "6주차 — 잡음을 넣으면 검정이 통과한다"
+author: "제출자의 학과, 학번, 이름"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r setup-context, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+## 이 주차에 대하여
+
+### 4주차에 깔아 둔 판지 3000장을 회수한다
+
+4주차에 고셋의 1908년 논문 13쪽을 읽었다. 3000명의 키와 손가락 길이를 판지
+3000장에 옮겨 적고, 아주 철저히 섞은 다음, 연속한 네 장씩을 한 표본으로 삼아
+750개를 만들었다는 대목이다.
+
+이번 주에 우리가 하는 일이 정확히 그것이다. 다만 판지 대신 `sample()` 을 쓴다.
+고셋이 며칠 걸려 한 일이 한 줄로 끝난다.
+
+여기서 순서를 눈여겨보자. **고셋은 t-분포를 유도한 다음 확인한 것이 아니다.**
+먼저 손으로 750번 굴려 보고, 거기서 나온 모양을 보고 나서 수식을 찾아 나섰다.
+이론이 먼저가 아니라 시뮬레이션이 먼저였다.
+
+### 정규분포를 쓰면 얼마나 틀리는가
+
+작은 표본에서 평균을 표본표준편차로 나눈 값이 어떻게 흩어지는지 —
+이것이 고셋의 질문이었다. 답을 숫자로 보자. 200개의 서로 다른 난수 씨앗으로
+이 시뮬레이션을 200번 돌린 결과다.
+
+| | 시뮬레이션 관측 | t-분포(자유도 3) | 정규분포 |
+|---|---|---|---|
+| $P(\lvert t \rvert > 2)$ | 0.137 | 0.139 | 0.046 |
+| $P(\lvert t \rvert > 4)$ | 0.026 | 0.028 | 0.000063 |
+
+관측값은 **t-분포와 거의 정확히 맞는다.** 그리고 정규분포는 $\lvert t \rvert > 4$
+를 **400배 넘게 과소평가한다.** 정규분포를 믿었다면 만 명에 한 명꼴로나 나올
+일이라고 했을 텐데, 실제로는 마흔 명에 한 명꼴로 나온다.
+
+> **여기서 배울 것** — 표본이 작을 때 정규분포를 쓰는 것은 조금 부정확한 정도가
+> 아니다. **극단값이 나올 확률을 자릿수 단위로 틀리게 만든다.**
+
+### 4로 나눌 수 없는 표본이 생긴다
+
+네 명을 뽑았는데 넷의 키가 모두 같으면 표준편차가 0이 된다. 0으로 나누면
+무한대다. 이 자료는 키가 스무 가지 값밖에 없으니 충분히 일어날 수 있는 일이다.
+
+실제로 750개 표본 중 키 기준으로 **평균 1.6개**(많을 때는 5개)가 그렇게 된다.
+손가락 길이는 눈금이 촘촘해서 평균 0.3개다.
+
+고셋도 이 문제를 만났고, 그의 처리는 이랬다 — 모평균보다 크면 +6, 작으면 −6.
+이번 주 코드에도 그대로 들어 있다.
+
+```{r inf-context, eval = FALSE}
+t_inf <- is.infinite(sample_t)
+sample_t[t_inf] <- 6 * sign(sample_t[t_inf])
+```
+
+이것은 계산 기법이 아니라 **판단**이다. 왜 하필 6인가. 무한대를 유한한 수로
+바꾸는 순간 히스토그램의 꼬리가 달라진다. 고셋은 이 처리를 논문에 적어 두었다.
+적어 두었기 때문에 우리가 지금 그것을 알고 검토할 수 있다.
+
+### 그리고 이번 주의 핵심 — 잡음을 넣으면 검정이 통과한다
+
+5주차에 확인했다. 이 자료의 키는 1인치로 반올림되어 있어서, 연속 정규성을
+묻는 검정은 무조건 기각한다. 반올림 자체가 위반이기 때문이다.
+
+그러면 반올림을 되돌리면 되지 않을까. `crimtab_noise.Rmd` 가 하는 일이 그것이다.
+각 값에 `runif() - 0.5` 를, 즉 **눈금 폭만큼의 균등 난수**를 더한다.
+
+결과를 보자. 앤더슨-달링 정규성 검정이다.
+
+| | 원자료 | 잡음을 더한 뒤 |
+|---|---|---|
+| 키(인치) | $A^2 = 18.84$, $p = 3.7 \times 10^{-24}$ | $A^2 = 0.33$, $p = 0.514$ |
+| 손가락(cm) | $A^2 = 4.71$, $p = 1.2 \times 10^{-11}$ | $A^2 = 0.69$, $p = 0.072$ |
+
+**같은 3000명이다.** 더한 것은 아무 정보도 없는 난수뿐이다. 그런데 p-값이
+$10^{-24}$ 에서 0.514 로 갔다. "압도적으로 정규분포가 아니다" 가
+"정규분포와 완벽하게 어울린다" 로 바뀌었다.
+
+### 이것은 정당한가
+
+정당할 수도 있고 아닐 수도 있다. 갈림길은 **폭**과 **고백** 두 가지다.
+
+**폭.** 여기서 더한 잡음은 ±0.5인치다. 눈금 간격이 정확히 1인치이니, 원래
+측정값이 있었을 구간 안에서만 흔든 것이다. 65인치로 기록된 사람의 진짜 키는
+64.5와 65.5 사이 어딘가였다. 그 구간을 균등하게 채운 것이므로, **반올림으로
+잃은 정보를 확률적으로 되돌린 것**에 가깝다. 임의로 아무 크기나 더한 것이 아니다.
+
+**고백.** 그러나 이 처리를 하고 나서 "정규성 검정을 통과했다"고만 쓰면
+그것은 거짓이다. 통과한 것은 원자료가 아니라 **내가 손댄 자료**다.
+
+5주차의 jitter 를 기억하자. 그때는 그림을 바꿨고, 이번에는 p-값을 바꾼다.
+같은 동작인데 대가가 다르다. 그림은 보는 사람이 이상하다고 느낄 수 있지만,
+**p-값은 숫자 하나라서 무엇을 거쳐 나왔는지 보이지 않는다.**
+
+> **여기서 배울 것** — 자료에 손을 대는 것 자체는 죄가 아니다. 손댄 사실을
+> 적지 않는 것이 죄다. 그리고 손댄 뒤의 결과를 손대기 전의 결과인 것처럼
+> 말하는 것은 조작이다.
+
+### 이번 주에 실제로 할 일
+
+세 파일을 순서대로 돌린다.
+
+1. `crimtab_noise.Rmd` — 잡음을 넣고 정규성 검정을 비교한다. `crimtab_noise.RData` 가 만들어진다.
+2. `crimtab_student_simulation_v2.Rmd` — **원자료로** 고셋의 시뮬레이션을 재현한다.
+3. `crimtab_student_simulation_noise.Rmd` — **잡음을 넣은 자료로** 같은 시뮬레이션을 한다.
+
+2번과 3번의 결과가 얼마나 다른지, 다르다면 어느 쪽을 믿을 것인지가
+이번 주의 질문이다.
+
+```{r context-cleanup, include = FALSE}
+## 위 설명용 계산에서 만든 객체를 지우고 시작한다.
+rm(list = ls())
+```
+
+<P style = "page-break-before:always">
+
+## Data Loading
+
+```{r, data loading}
+load("./crimtab.RData")
+ls()
+ls.str()
+head(crimtab_long_df, 
+     n = 20)
+```
+
+<P style = "page-break-before:always">
+
+## Student 의 Simulation 재현
+
+### Sample t-values
+
+3,000장의 카드를 잘 섞는 것은 `sample()` 이용.
+ 
+```{r, suffling}
+set.seed(113)   #> 필수 계산이 매번 같은 값이 나오도록 반드시 켜 두세요
+crimtab_shuffle <- crimtab_long_df[sample(1:3000), ]
+head(crimtab_shuffle, 
+     n = 10)
+```
+
+각 표본의 크기가 4인 750개의 표본을 만드는 작업은 `rep()` 이용.
+
+```{r, 750 samples of size 4}
+sample_id <- as.factor(rep(1:750, each = 4))
+head(sample_id, n = 10)
+```
+
+각 표본의 평균과 표준편차 계산에는 `tapply()` 이용. 
+
+```{r, sample mean and sd}
+finger_sample_mean <- tapply(crimtab_shuffle[, "finger"], 
+                             INDEX = sample_id, 
+                             FUN = mean)
+finger_sample_sd <- tapply(crimtab_shuffle[, "finger"], 
+                           INDEX = sample_id, 
+                           FUN = sd)
+str(finger_sample_mean)
+str(finger_sample_sd)
+```
+
+t-통계량 계산. Student는 표준편차 계산에서 분모에 $n$을 사용하고 히스토그램을 그려 비교하였으나 자유도 3인 t-분포와 비교하기 위하여 $t=\frac{\bar{X_n}-\mu}{\hat{SD}/\sqrt{n}}$을 계산함. (여기서 $\hat{SD}$는 표본 표준편차)
+
+```{r, t stats}
+sample_t <- (finger_sample_mean - mean(crimtab_long_df[, "finger"])) / (finger_sample_sd/sqrt(4))
+str(sample_t)
+```
+
+계산한 t-통계량 값들의 평균과 표준편차, 히스토그램을 그리고 자유도 3인 t-분포의 밀도함수 및 표준정규곡선과 비교. 우선 모두 같은 값들이 나와서 분모가 0인 경우가 있는지 파악. 있으면 모평균과 비교하여 양수인 경우 +6, 음수인 경우 -6 값 부여(Student가 한 일)
+
+```{r, extreme values}
+t_inf <- is.infinite(sample_t)
+sample_t[t_inf]
+sample_t[t_inf] <- 6 * sign(sample_t[t_inf])
+```
+
+문제되는 값이 없는 것을 확인하고, 평균과 표준편차 계산. 자유도 $n$인 t-분포의 평균과 표준편차는 각각 0과 $\sqrt{\frac{n}{n-2}}$임을 상기할 것. -6이나 +6보다 큰 값이 상당히 자주 나온다는 점에 유의.
+
+```{r, summary}
+mean(sample_t)
+sd(sample_t)
+summary(sample_t)
+```
+
+<P style = "page-break-before:always">
+
+### Histogram and Density Curves
+
+t-통계량들의 히스토그램을 그리고, 자유도 3인 t의 밀도함수, 표준정규분포 밀도함수와 비교.
+
+```{r, comparison, fig.width = 10, fig.height = 6}
+# hist(sample_t, prob = TRUE, ylim = c(0, 0.5))
+# hist(sample_t, prob = TRUE, nclass = 20, xlim = c(-6, 6), ylim = c(0, 0.5), main = "Histogram of Sample t-statistics", xlab = "Sampled t-values")
+# hist(sample_t, prob = TRUE, nclass = 50, xlim = c(-6, 6), ylim = c(0, 0.5), main = "Histogram of Sample t-statistics", xlab = "Sampled t-values")
+hist(sample_t, 
+     prob = TRUE, 
+     breaks = seq(-20, 20, by = 0.5), 
+     xlim = c(-6, 6), 
+     ylim = c(0, 0.5), 
+     main = "Histogram of Sample t-statistics", 
+     xlab = "Sampled t-values")
+lines(seq(-6, 6, by = 0.01), 
+      dt(seq(-6, 6, by = 0.01), df = 3), 
+      col = "blue")
+lines(seq(-6, 6, by = 0.01), 
+      dnorm(seq(-6, 6, by = 0.01)), 
+      col = "red")
+legend("topright", 
+       inset = 0.05, 
+       legend = c("t with df = 3", "standard normal"),
+       lty = 1, 
+       col = c("blue", "red"))
+```
+
+<P style = "page-break-before:always">
+
+### ggplot 
+
+```{r, ggplot, fig.width = 10, fig.height = 6, warning = FALSE}
+library(ggplot2)
+
+# 샘플 데이터로 히스토그램 생성
+ggplot(data.frame(x = sample_t), aes(x = x)) +
+  geom_histogram(aes(y = after_stat(density)), 
+                 breaks = seq(-20, 20, by = 0.5), 
+                 color = "black", fill = "white") +
+  xlim(c(-6, 6)) + 
+  ylim(c(0, 0.5)) +
+  stat_function(fun = dt, args = list(df = 3), aes(color = "t with df = 3"), linetype = "solid") +
+  stat_function(fun = dnorm, aes(color = "standard normal"), linetype = "solid") +
+  labs(title = "Histogram of Sample t-statistics", 
+       x = "Sampled t-values", 
+       color = NULL) +  # 범례 제목을 빈 문자열로 설정
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(values = c("t with df = 3" = "blue", "standard normal" = "red")) +
+  guides(color = guide_legend(override.aes = list(linetype = c("solid", "solid"), size = 1.5))) +
+  theme(legend.position = "inside", 
+        legend.justification = c(0.8, 0.8), # 범례의 위치를 플롯 내부로 지정
+        legend.background = element_rect(fill = "white", color = "black"))
+```
+
+
+### QQnorm
+
+`qqnorm()` 을 그려보면 정규분포와 꼬리에서 큰 차이가 난다는 것을 알 수 있음.
+
+```{r, qqnorm, fig.width = 6, fig.height = 6}
+qqnorm(sample_t)
+```
+
+<P style = "page-break-before:always">
+
+## 꼬리를 세어 본다
+
+앞에서 만든 750개의 t-값이 정규분포와 t-분포 중 어느 쪽에 맞는지, 눈이 아니라
+숫자로 확인한다.
+
+### 필수 계산 (두 가지)
+
+**1. 750개의 t-값을 `t750` 이라는 이름에 담으세요.**
+
+- 앞의 `sample_t` 를 그대로 쓰면 됩니다. 무한대를 ±6 으로 바꾼 **뒤**의 값입니다.
+- 결과가 매번 달라지지 않도록 섞기 전에 **`set.seed()` 를 반드시 넣으세요.**
+  씨앗 값은 아무거나 좋습니다.
+
+**2. 꼬리 확률 세 가지를 비교해 `tail_cmp` 라는 이름에 담으세요.**
+
+$P(\lvert t \rvert > 2)$ 를 세 가지 방법으로 구해 이 순서, 이 이름으로 담습니다.
+
+| 이름 | 무엇 | 구하는 법 |
+|---|---|---|
+| `observed` | 내 시뮬레이션에서 관측된 비율 | `mean(abs(t750) > 2)` |
+| `t_df3` | 자유도 3 인 t-분포가 말하는 값 | `pt()` |
+| `normal` | 표준정규분포가 말하는 값 | `pnorm()` |
+
+- `t_df3` 은 **0.1393**, `normal` 은 **0.0455** 가 나와야 합니다.
+- `observed` 는 씨앗에 따라 달라지지만 **0.10 ~ 0.19** 사이여야 정상입니다.
+  이 범위를 벗어나면 t-값 계산이나 ±6 처리를 다시 확인하세요.
+
+```{r required-calc-w6}
+#> ── 필수 계산 1 : t750 ──────────────────────────────────────
+#> 앞의 sample_t 가 이미 750개짜리 벡터입니다. 이름만 옮겨 담습니다.
+#> 다만 문서 위쪽의 set.seed() 주석이 풀려 있는지 먼저 확인하세요.
+
+# t750 <- sample_t
+# length(t750)                          # 750
+# c(평균 = mean(t750), 표준편차 = sd(t750))
+
+
+#> ── 필수 계산 2 : tail_cmp ──────────────────────────────────
+#> 양쪽 꼬리이므로 2 를 곱합니다. pt / pnorm 은 왼쪽 꼬리를 주기 때문입니다.
+
+# tail_cmp <- c(observed = mean(abs(t750) > 2),
+#               t_df3    = 2 * pt(-2, df = 3),
+#               normal   = 2 * pnorm(-2))
+# round(tail_cmp, 4)
+
+#> 정규분포가 몇 배나 빗나가는지도 보아 두세요.
+# tail_cmp["observed"] / tail_cmp["normal"]
+
+```
+
+세 값을 나란히 놓고 보세요. 어느 쪽이 관측과 맞습니까. 그 차이가
+`|t| > 4` 에서는 얼마나 더 벌어집니까.
+
+<P style = "page-break-before:always">
+
+## Comments
+
+> 아래 네 항목을 모두 채워 주세요. 분량보다 항목의 충실함으로 평가합니다.
+> 각 항목은 **두세 문장** 이면 충분합니다.
+
+**1. 맥락** — 고셋은 왜 이론을 먼저 세우지 않고 판지 3000장을 손으로 섞는 일부터 했을까요. 그가 처한 상황(기네스 양조장, 작은 표본)과 연결해서 설명하세요.
+
+(여기에 작성)
+
+**2. 주장** — 여러분의 `tail_cmp` 세 값에서 읽어낼 수 있는 것을 한 문장으로. 어느 그림 또는 어느 수치를 근거로 삼을지도 정하세요.
+
+(여기에 작성)
+
+**3. 근거** — 위 주장을 뒷받침하는 수치와, 그것을 만들어 낸 코드의 핵심 한 줄, 그리고 그 줄이 하는 일. 히스토그램에 겹쳐 그린 두 곡선을 근거로 써도 됩니다.
+
+(여기에 작성)
+
+**4. 한계** — `crimtab_noise.Rmd` 는 자료에 `runif() - 0.5` 를 더해서 정규성 검정의 p-값을 3.7×10⁻²⁴ 에서 0.514 로 바꿉니다. 더한 것은 아무 정보도 없는 난수뿐입니다. 이 처리를 **써도 되는 조건**과 **하면 조작이 되는 지점**을 각각 하나씩 들고, 무엇이 그 둘을 가르는지 설명하세요.
+
+(여기에 작성)
+
+<P style = "page-break-before:always">
+
+## 제출 전 자가점검
+
+아래 청크를 그대로 두고 Knit 하면 형식 점검 결과가 나옵니다.
+**모두 '통과' 가 뜬 것을 확인한 뒤에 제출하세요.**
+이 점검은 형식만 봅니다. 내용은 교수자가 읽고 평가합니다.
+
+```{r submit-check, echo = FALSE, results = "asis"}
+if (file.exists("submit_check.R")) {
+  source("submit_check.R", encoding = "UTF-8")
+  submit_check(week = 6)
+} else {
+  cat("submit_check.R 을 이 Rmd 파일과 같은 폴더에 두세요.")
+}
+```

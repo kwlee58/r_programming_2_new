@@ -11,3 +11,7 @@ docs/*.pdf
 .DS_Store
 **/.DS_Store
 R/*_files/
+
+# --- gganimate 부산물 ---
+R/gganim_plot*.png
+**/figs/*.gif
