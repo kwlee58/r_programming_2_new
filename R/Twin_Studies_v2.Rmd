@@ -886,11 +886,21 @@ Nature3_tbl %>%
    `Fraternal` 이 **51.6**, `Identical` 이 **23.5** 로 나와야 피셔 원문과 맞습니다.
 
 ```{r fisher-check}
-#> 1. 여기에 N1 을 만드세요
+#> ── 필수 계산 1 : N1 ────────────────────────────────────────
+#> 앞의 Nature1 과 같은 방식입니다. 숫자가 원문(이란성 31쌍)에 맞는지 보세요.
+
+# N1 <- matrix(c(33, 11, 6, 4, 12, 16), nrow = 2,
+#              dimnames = list(c("Identical", "Fraternal"),
+#                              c("Alike", "Little_Alike", "Not_Alike")))
+# N1
+# sum(N1["Fraternal", ])                # 31 이어야 합니다
 
 
-#> 2. 여기에 pct_unlike 를 만드세요
+#> ── 필수 계산 2 : pct_unlike ────────────────────────────────
+#> prop.table(margin = 1) 은 행별 비율입니다. Not_Alike 열만 꺼냅니다.
 
+# pct_unlike <- round(100 * prop.table(N1, margin = 1), 1)[, "Not_Alike"]
+# pct_unlike                            # Identical 23.5, Fraternal 51.6
 
 ```
 

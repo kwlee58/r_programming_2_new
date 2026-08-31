@@ -406,11 +406,38 @@ VADeaths_colored
    **`g_colored`** 라는 이름에 담으세요.
 
 ```{r va-colored}
-#> 1. 여기에 VA_colored 를 만드세요
+#> ── 필수 계산 1 : VA_colored ────────────────────────────────
+#> 앞의 `r base` 청크에서 VADeaths 를 폈던 방법 그대로입니다.
+#> 주석(#)을 지우기 전에 각 줄이 무엇을 하는지 먼저 읽으세요.
+#> 그 줄이 한 일이 Comments 3번(근거)에 들어갈 재료입니다.
+
+# Rate <- c(VADeaths_colored)          # 행렬을 한 줄짜리 벡터로
+# N    <- length(Rate)
+# VA_colored <- data.frame(
+#   Age    = rep(ordered(rownames(VADeaths_colored)), length.out = N),
+#   Place  = gl(2, 10, N, labels = c("Rural", "Urban")),
+#   Gender = gl(2,  5, N, labels = c("Male", "Female")),
+#   Rate   = Rate)
+# VA_colored                            # 20 행이어야 합니다
+
+#> tidyverse 쪽이 편하면 앞의 `pivot_longer` 청크와 같은 형식으로 해도 됩니다.
+# VA_colored <- VADeaths_colored %>%
+#   as_tibble(rownames = "Age") %>%
+#   pivot_longer(cols = -Age,
+#                names_to = c("Place", "Gender"),
+#                names_sep = " ",
+#                values_to = "Rate")
 
 
-#> 2. 여기에 g_colored 를 만드세요
+#> ── 필수 계산 2 : g_colored ─────────────────────────────────
+#> 앞의 `geom_bar` 청크와 같습니다. Rates 가 Rate 로 바뀐 것만 다릅니다.
 
+# g_colored <- ggplot(data = VA_colored,
+#                     mapping = aes(x = interaction(Place, Gender),
+#                                   y = Rate,
+#                                   fill = Age)) +
+#   geom_bar(stat = "identity", position = position_dodge())
+# g_colored
 
 ```
 

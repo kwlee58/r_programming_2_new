@@ -281,11 +281,28 @@ colnames(crimtab)[1:6]
      여기서 바로 상관계수를 구하면 틀립니다. `Freq` 값만큼 행을 반복해야 3000행이 됩니다.
 
 ```{r required-calc}
-#> 1. 여기에 crimtab_in 을 만드세요
+#> ── 필수 계산 1 : crimtab_in ────────────────────────────────
+#> 열 이름은 글자입니다. 숫자로 바꿔 2.54 로 나눈 뒤 다시 붙입니다.
+
+# crimtab_in <- crimtab
+# colnames(crimtab_in) <- as.numeric(colnames(crimtab)) / 2.54
+# colnames(crimtab_in)                  # 56 부터 77 까지 정수 22개
 
 
-#> 2. 여기에 r_fh 를 만드세요
+#> ── 필수 계산 2 : r_fh ──────────────────────────────────────
+#> crimtab_data.Rmd 에서 만들어 둔 crimtab_long_df 가 이미 3000행입니다.
 
+# r_fh <- cor(crimtab_long_df$finger, crimtab_long_df$height)
+# r_fh                                  # 0.6557
+
+#> crimtab 에서 직접 펴 보고 싶다면 (924행 → 3000행)
+# d <- as.data.frame(crimtab, stringsAsFactors = FALSE)
+# names(d) <- c("finger", "height", "Freq")
+# d[1:2] <- sapply(d[1:2], as.numeric)
+# long <- data.frame(finger = rep(d$finger, d$Freq),
+#                    height = rep(d$height, d$Freq))
+# nrow(long)                            # 924 가 아니라 3000
+# cor(long$finger, long$height)         # 위와 같은 0.6557
 
 ```
 
