@@ -1,0 +1,660 @@
+---
+title: "Student 3000 Criminal Data : ggplot"
+subtitle: "5주차 — 같은 3000명, 다른 그림"
+author: "제출자의 학과, 학번, 이름"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r setup-context, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+## 이 주차에 대하여
+
+### 자료는 그대로다. 바뀌는 것은 그림뿐이다
+
+지난주와 같은 표를 쓴다. 맥도넬이 스코틀랜드 야드 중앙 계측국의 서식 더미에서
+뽑아 온 3000명, 고셋이 판지에 옮겨 적어 섞은 그 3000명이다. 새 자료는 없다.
+
+이번 주에 바뀌는 것은 그리는 방법 하나다. 그런데 그 하나로 **보는 사람이 믿게 되는
+것이 달라진다.** 지난 네 주 동안 우리는 "이 숫자가 어디서 왔는가"를 물었다. 이번
+주에는 "이 그림이 무엇을 보여 주고 무엇을 감추는가"를 묻는다. 같은 종류의 질문이다.
+
+### 3000개를 찍었는데 보이는 점은 301개다
+
+`geom_point()` 한 줄이면 산점도가 나온다. 3000명이니 점 3000개가 찍힌다.
+그런데 이 자료의 좌표는 연속값이 아니다.
+
+- 키는 **1인치 눈금**이다. 56부터 77까지 눈금이 22개뿐이다(실제로 사람이 있는
+  값은 20가지).
+- 손가락 길이는 **0.1cm 눈금**이다. 9.4부터 13.5까지 눈금이 42개뿐이다.
+
+그러면 점이 놓일 수 있는 자리는 22 × 42 = 924군데뿐이고, 그중 실제로 사람이 있는
+자리는 **301군데**다. 3000개를 찍어도 화면에는 301개만 남는다.
+
+```{r overplot-count-context}
+c2 <- crimtab
+colnames(c2) <- as.numeric(colnames(c2)) / 2.54
+d <- as.data.frame(c2, stringsAsFactors = FALSE)
+names(d) <- c("finger", "height", "Freq")
+d[1:2] <- sapply(d[1:2], as.numeric)
+long <- data.frame(finger = rep(d$finger, d$Freq),
+                   height = rep(d$height, d$Freq))
+nrow(long)            # 찍는 점
+nrow(unique(long))    # 보이는 자리
+```
+
+**2699명, 90%가 남의 밑에 깔린다.** 그리고 가장 붐비는 자리에는 **58명**이,
+가장 한산한 자리에는 **1명**이 있는데, 두 점은 화면에서 완전히 똑같이 생겼다.
+
+> **여기서 배울 것** — 그림이 거짓말을 한 것이 아니다. 담을 수 없는 것을 담으려 한
+> 것이다. 겹침(overplotting)은 실수가 아니라 자료 구조와 표현 수단이 안 맞아서
+> 생기는 구조적 문제다.
+
+### 겹침을 되살리는 두 가지 방법, 그리고 각각의 대가
+
+이번 주 코드는 두 가지를 시도한다. 둘 다 효과가 있고, 둘 다 값을 치른다.
+
+**1. 투명도(`alpha`) — 겹침을 밝기로 바꾼다.**
+
+alpha 를 0.1 로 주면 한 명은 옅고, 여럿이 겹치면 진해진다. 그럴듯하다. 그러나
+겹쳐진 투명도는 더해지지 않고 **곱해진다.** $n$ 명이 겹친 점의 불투명도는
+$1-(1-\alpha)^n$ 이다.
+
+| alpha | 1명 | 5명 | 10명 | 30명 | 58명 |
+|---|---|---|---|---|---|
+| 0.5 | 0.50 | 0.97 | 1.00 | 1.00 | 1.00 |
+| 0.1 | 0.10 | 0.41 | 0.65 | 0.96 | 1.00 |
+| 0.05 | 0.05 | 0.23 | 0.40 | 0.79 | 0.95 |
+
+alpha = 0.1 이면 **29명에서 이미 95% 불투명**이다. 29명인 자리와 58명인 자리가
+구별되지 않는다. 이 자료의 최대 겹침이 58이니, 눈금이 제대로 벌어지려면
+alpha 는 0.05 근처여야 한다. **투명도는 개수를 보여 주는 게 아니라 개수의 로그
+비슷한 것을 보여 준다.**
+
+**2. 흔들기(`jitter`) — 겹침을 위치로 흩는다.**
+
+`position_jitter()` 는 각 점을 원래 자리에서 조금씩 밀어 놓는다. 그러면 겹친 점이
+갈라져 보인다. 대가는 분명하다. **원래 없던 좌표를 만들어 낸다.**
+
+기본값은 자료 눈금 간격(`resolution`)의 40%다. 즉 키는 ±0.4인치, 손가락은
+±0.04cm. 눈금 안에서만 흔들리니 이웃 눈금을 침범하지 않는다.
+
+그런데 이번 주 코드는 `position_jitter(width = 1, height = 0.1)` 을 쓴다.
+
+```{r jitter-scale-context}
+res <- function(x) min(diff(sort(unique(x))))
+c(height_in = res(long$height), finger_cm = res(long$finger))   # 눈금 간격
+c(height_in = 0.4 * res(long$height), finger_cm = 0.4 * res(long$finger))  # 기본 흔들림
+```
+
+기본값의 **2.5배**, 즉 **눈금 간격과 똑같은 폭**이다. 65인치로 측정된 사람이
+64인치에서 66인치 사이 아무 데나 찍힌다. 그림에서 어떤 점의 x좌표를 읽어 보면,
+**아무도 그 값으로 측정되지 않았다.**
+
+이게 잘못인가? 그림을 "여기쯤에 사람이 몰려 있다"는 뜻으로만 읽는다면 괜찮다.
+그림에서 값을 읽어 내려는 순간 틀린다. 문제는 **그림에 그 구별이 적혀 있지
+않다는 것**이다.
+
+### 히스토그램의 구멍은 자료에 없다
+
+키 히스토그램을 `geom_histogram()` 만으로 그리면 ggplot 이 경고를 하나 낸다.
+칸 수를 30으로 잡았다는 안내다. 키는 56부터 77까지 21인치 폭이니 칸 하나가
+**0.7인치**가 된다. 정수 눈금 자료를 0.7 폭으로 자르면 어떤 칸은 정수 하나를
+품고 어떤 칸은 아무것도 못 품는다.
+
+```{r comb-context}
+rg <- range(long$height); bw <- diff(rg) / 30
+br <- seq(rg[1] - bw / 2, rg[2] + bw, by = bw)
+cnt <- table(cut(long$height, br, include.lowest = TRUE))
+sum(cnt == 0)   # 빈 칸 수
+```
+
+31칸 중 **11칸이 빈다.** 빗살 모양이 된다. 그 구멍에는 사람이 없는 게 아니라,
+**칸 자르기가 만들어 낸 구멍**이다.
+
+`binwidth = 1` 로 눈금에 맞추면 빈 칸이 2개로 줄고, 그 2개는 진짜다. 실제로
+그 키였던 사람이 한 명도 없다.
+
+> **여기서 배울 것** — 히스토그램의 칸 폭은 미적 취향이 아니다. **측정 눈금보다
+> 좁은 칸은 없는 구조를 만들어 낸다.**
+
+### 정규곡선을 얹는 것은 검정이 아니라 주장이다
+
+이번 주 코드는 히스토그램 위에 `dnorm()` 곡선을 그린다. 자료의 평균과 표준편차를
+모수로 쓴다. 보면 꽤 잘 맞는다.
+
+그런데 3주차에 우리는 "잘 맞아 보인다"를 검정으로 바꾸는 법을 배웠다. 해 보자.
+
+```{r two-tests-context}
+mh <- mean(long$height); sh <- sd(long$height)
+o <- as.numeric(table(long$height))
+v <- as.numeric(names(table(long$height)))
+e <- diff(pnorm(c(-Inf, v[-length(v)] + 0.5, Inf), mh, sh)) * 3000
+k  <- e >= 5; lo <- which(k)[1]; hi <- rev(which(k))[1]
+o2 <- c(sum(o[1:lo]), o[(lo + 1):(hi - 1)], sum(o[hi:length(o)]))
+e2 <- c(sum(e[1:lo]), e[(lo + 1):(hi - 1)], sum(e[hi:length(e)]))
+X2 <- sum((o2 - e2)^2 / e2)
+c(X2 = X2, df = length(o2) - 3,
+  p = pchisq(X2, length(o2) - 3, lower.tail = FALSE))
+
+shapiro.test(long$height)$p.value
+```
+
+**같은 자료, 정반대 결론이다.**
+
+- 카이제곱 적합도 : p = 0.71. 정규분포를 기각하지 못한다.
+- 샤피로-윌크 : p = 0.0000000000000003. 강하게 기각한다.
+
+어느 쪽이 틀렸나. 둘 다 맞다. **두 검정이 서로 다른 질문을 하고 있다.**
+
+카이제곱은 "인치별 도수가 정규곡선이 예측하는 도수와 맞는가"를 묻는다. 맞는다.
+샤피로는 "이 3000개 값이 연속 정규분포에서 나왔는가"를 묻는다. 아니다. 3000명의
+키가 **스무 가지 값**밖에 없으니 연속일 리가 없다. **반올림 자체가 연속 정규성
+위반이다.**
+게다가 n = 3000 이면 아주 사소한 어긋남도 검정이 잡아낸다.
+
+그러니 여기서 물을 수 있는 질문은 앞쪽이고, 뒤쪽은 이 자료로 물을 수 없는
+질문이다. 그리고 **그림 위에 얹은 곡선은 둘 중 어느 것도 대답하지 않는다.**
+곡선은 주장이다. 근거는 따로 대야 한다.
+
+### 이번 주에 실제로 할 일
+
+우리는 같은 3000명을 열 가지 넘는 방식으로 그린다. 산점도, 투명도 세 단계,
+흔들기 네 가지, 히스토그램, 정규곡선 얹기, 주변분포를 붙인 그림까지.
+
+그리면서 매번 물을 것 — **이 그림은 무엇을 보여 주고, 무엇을 감추는가.**
+그리고 이 그림을 본 사람이 무엇을 믿게 되는가.
+
+```{r context-cleanup, include = FALSE}
+## 위 설명용 계산에서 만든 객체를 지우고 시작한다.
+rm(list = ls())
+```
+
+<P style = "page-break-before:always">
+
+## Working Data Loading
+
+```{r, data loading, echo = TRUE}
+library(magrittr)
+load("./crimtab.RData")
+ls()
+ls.str()
+head(crimtab_long_df)
+```
+
+<P style = "page-break-before: always">
+
+## Graphic Representation
+
+### Base Graphics
+
+* 키와 손가락길이의 산점도 
+
+```{r, scatter diagram, fig.width = 7, fig_height = 7}
+# plot(finger ~ height, data = crimtab_long_df)
+crimtab_long_df[2:1] %>%
+  plot
+plot(crimtab_long_df[, 2:1])
+```
+
+* 변수 각각의 히스토그램은?
+
+```{r, histograms for each, fig.width = 12, fig_height = 4}
+par(mfrow = c(1, 2))
+hist(crimtab_long_df$height, 
+     main = "Histogram of Height", 
+     xlab = "height(inches)")
+hist(crimtab_long_df$finger, 
+     main = "Histogram of Finger Length", 
+     xlab = "finger length(cm)")
+# hist(crimtab_long_df["height"], 
+#      main="Histogram of Height", 
+#      xlab="height(inches)")
+# hist(crimtab_long_df["finger"], 
+#      main="Histogram of Finger Length", 
+#      xlab= "finger length(cm)")
+```
+
+* 평균과 표준편차를 한번에 구하려면 다음과 같이 anonymous function을 작성하고 `mapply()` 또는 `sapply()`를 이용하는 게 편함. 이를 모수로 하는 정규곡선을 덧씌워 볼 것.
+    + `mean_sd()`도 `anonymous function` 으로 평균과 표준편차를 계산해서 출력하는 함수임. 이와 같은 함수를 저장해 놓으려면 `dump()`를 이용함.
+    + 이와 같이 계산한 평균과 표준편차를 모수로 하는 정규곡선을 덧씌워 볼 것.
+    
+```{r, mean_sd}
+mean_sd <- function(x) {
+  mean <- mean(x, na.rm = TRUE)
+  sd <- sd(x)
+  c(mean = mean, sd = sd)
+# list(mean = mean, sd = sd)
+}
+dump("mean_sd", file = "mean_sd.R")
+```
+
+```{r, crimtab_stat}
+# crimtab_long_df %>%
+#   sapply(FUN = mean_sd)
+crimtab_stat <- sapply(crimtab_long_df, FUN = mean_sd)
+# crimtab_stat <- mapply(mean_sd, crimtab_long_df)
+# apply(crimtab_long, 2, mean)
+# apply(crimtab_long, 2, sd)
+str(crimtab_stat)
+```
+
+* `crimtab_stat`이 어떤 성격을 갖는지 다음 질문과 추출 작업을 통해서 알아보자.
+
+```{r, exercises}
+is.matrix(crimtab_stat)
+is.table(crimtab_stat)
+is.list(crimtab_stat)
+is.data.frame(crimtab_stat)
+crimtab_stat[, 1]
+crimtab_stat[, "finger"]
+crimtab_stat[, "finger"][1]
+crimtab_stat[, "finger"][[1]]
+crimtab_stat[1]
+crimtab_stat[2:3]
+# crimtab_stat["finger"]
+# crimtab_stat$finger
+```
+
+`matrix` 를 `data frame` 으로 변환하면 
+
+```{r, data frame}
+(crimtab_stat_df <- data.frame(crimtab_stat))
+is.matrix(crimtab_stat_df)
+is.table(crimtab_stat_df)
+is.list(crimtab_stat_df)
+is.data.frame(crimtab_stat_df)
+crimtab_stat_df[, 1]
+str(crimtab_stat_df[, 1])
+crimtab_stat_df[, "finger"]
+str(crimtab_stat_df[, "finger"])
+crimtab_stat_df[, "finger"][1]
+str(crimtab_stat_df[, "finger"][1])
+crimtab_stat_df[, "finger"][[1]]
+str(crimtab_stat_df[, "finger"][[1]])
+crimtab_stat_df[1]
+str(crimtab_stat_df[1])
+crimtab_stat_df["finger"]
+str(crimtab_stat_df["finger"])
+crimtab_stat_df["finger"][1]
+str(crimtab_stat_df["finger"][1])
+crimtab_stat_df["finger"][[1]]
+str(crimtab_stat_df["finger"][[1]])
+crimtab_stat_df$finger
+str(crimtab_stat_df$finger)
+crimtab_stat_df$finger[1]
+str(crimtab_stat_df$finger[1])
+crimtab_stat_df$finger[[1]]
+str(crimtab_stat_df$finger[[1]])
+```
+
+<P style = "page-break-before: always">
+
+### ggplot
+
+* 키와 손가락 길이의 산점도  
+
+```{r, scatter of finger and height, fig.width = 7, fig_height = 7}
+library(ggplot2)
+g1 <- ggplot(data = crimtab_long_df, 
+             mapping = aes(x = height, y = finger)) 
+g2 <- g1 + 
+  geom_point()
+g2
+```
+
+<P style = "page-break-before: always">
+
+* 투명도 변경 : `alpha = 0.9`
+  
+```{r, alpha variation 0.9, fig.width = 7, fig_height = 7}
+g2_2 <- g1 + 
+  geom_point(alpha = 0.9)
+g2_2
+```
+
+<P style = "page-break-before: always">
+
+* 투명도 변경 : `alpha = 0.5`
+  
+```{r, alpha variation 0.5, fig.width = 7, fig_height = 7}
+g2_3 <- g1 + 
+  geom_point(alpha = 0.5)
+g2_3
+```
+
+<P style = "page-break-before: always">
+
+* 투명도 변경 : `alpha = 0.1`
+  
+```{r, alpha variation 0.1, fig.width = 7, fig_height = 7}
+g2_4 <- g1 + 
+  geom_point(alpha = 0.1)
+g2_4
+```
+
+<P style = "page-break-before: always">
+
+* 중복점 흐트러놓기 : `position = jitter`
+  
+```{r, position jitter, fig.width = 7, fig_height = 7}
+g2_5 <- g1 + 
+  geom_point(position = "jitter")
+g2_5
+```
+
+<P style = "page-break-before: always">
+
+* 점의 크기를 줄이고 중복점 흐트러놓기 : `position = jitter, size = 0.7`
+  
+```{r, position jitter size, fig.width = 7, fig_height = 7}
+g2_6 <- g1 + 
+  geom_point(position = "jitter", size = 0.7)
+g2_6
+```
+
+<P style = "page-break-before: always">
+
+* 동일한 효과 : `position = position_jitter(), size = 0.7`
+  
+```{r, position jitter size alt, fig.width = 7, fig_height = 7}
+g2_7 <- g1 + 
+  geom_point(position = position_jitter(), size = 0.7)
+g2_7
+```
+
+<P style = "page-break-before: always">
+
+* 흐트러놓는 폭 조절 : `width = 1, height = 0, size = 0.7`
+  
+```{r, position jitter size width, fig.width = 7, fig_height = 7}
+g2_8 <- g1 + 
+  geom_point(position = position_jitter(width = 1, height = 0), 
+             size = 0.7)
+g2_8
+```
+
+<P style = "page-break-before: always">
+
+* 흐트러놓는 폭과 높이 조절 : `width = 1, height = 0.1, size = 0.7`
+  
+```{r, position jitter size width height, fig.width = 7, fig_height = 7}
+g2_9 <- g1 + 
+  geom_point(position = position_jitter(width = 1, height = 0.1), 
+             size = 0.7)
+g2_9
+```
+
+<P style = "page-break-before: always">
+
+* 흑백 테마 : `theme_bw()`
+  
+```{r, position jitter size bw, fig.width = 7, fig_height = 7}
+g3 <- g2_9 +
+  theme_bw()
+g3
+```
+
+<P style = "page-break-before: always">
+
+### 히스토그램
+
+```{r, fig.width = 8, fig_height = 4}
+h1 <- ggplot(data = crimtab_long_df, 
+             mapping = aes(x = height)) 
+h1 + geom_histogram(alpha = 0.5)
+```
+
+<P style = "page-break-before: always">
+
+```{r, fig.width = 8, fig_height = 4}
+f1 <- ggplot(data = crimtab_long_df, 
+             mapping = aes(x = finger))
+f1 + geom_histogram(alpha = 0.5)
+```
+
+```{r, fig.width = 8, fig_height = 4}
+h1 + geom_histogram(aes(y = after_stat(density)),
+                    binwidth = 1, 
+                    alpha = 0.5)
+```
+
+```{r, fig.width = 8, fig_height = 4}
+f1 + geom_histogram(aes(y = after_stat(density)), 
+                    binwidth = 0.1, 
+                    alpha = 0.5)
+```
+
+```{r, fig.width = 8, fig_height = 4}
+(g_h_1 <- h1 + 
+   geom_histogram(aes(y = after_stat(density)), 
+                  binwidth = 1, 
+                  fill = "white", 
+                  colour = "black"))
+```
+
+```{r, fig.width = 8, fig_height = 4}
+(g_h <- g_h_1 +
+   theme_bw() +
+   scale_x_continuous(name = "", 
+                      breaks = NULL) +
+   scale_y_continuous(name = "", 
+                      breaks = NULL))
+```
+
+```{r, fig.width = 8, fig_height = 4}
+(g_f_1 <- f1 + 
+   geom_histogram(aes(y = after_stat(density)), 
+                  binwidth = 0.2, 
+                  fill = "white", 
+                  colour = "black"))
+```
+
+```{r, fig.width = 8, fig_height = 4}
+(g_f <- g_f_1 +
+   theme_bw() +
+   scale_x_continuous(name = "", 
+                      breaks = NULL) +
+   scale_y_continuous(name = "", 
+                      breaks = NULL) +
+   coord_flip())
+```
+
+<P style = "page-break-before: always">
+
+### 평균 위치를 화살표로 나타내려면
+    
+```{r, breaks, fig.width = 8, fig_height = 4}
+library(grid)
+(mean_finger <- crimtab_stat[, 1][[1]])
+(sd_finger <- crimtab_stat[, 1][[2]])
+(mean_height <- crimtab_stat[, 2][[1]])
+(sd_height <- crimtab_stat[, 2][[2]])
+x_finger <- seq(9.5, 13.5, 
+                length.out = 3000)
+y_finger <- dnorm(x_finger, 
+                  mean = mean_finger, 
+                  sd = sd_finger)
+x_height <- seq(56, 77, 
+                length.out = 3000)
+y_height <- dnorm(x_height, 
+                  mean = mean_height, 
+                  sd = sd_height)
+```
+
+<P style = "page-break-before: always">
+
+```{r, fig.width = 8, fig_height = 4}
+(g_h_2 <- g_h_1 + 
+    annotate("segment", 
+             x = mean_height, 
+             xend = mean_height, 
+             y = -0.02, 
+             yend = 0, 
+             arrow = arrow(length = unit(0.3, "cm"))))
+```
+
+<!--
+<P style = "page-break-before: always">
+-->
+
+```{r, fig.width = 8, fig_height = 4}
+(g_h_3 <- g_h_2 + 
+   theme_bw())
+```
+
+<P style = "page-break-before: always">
+
+```{r, fig.width = 8, fig_height = 4}
+(g_h_4 <- g_h_3 + 
+   geom_line(aes(x = x_height, y = y_height)))
+```
+
+<!--
+<P style = "page-break-before: always">
+-->
+
+```{r, fig.width = 8, fig_height = 4}
+(g_f_2 <- g_f_1 + 
+   annotate("segment", 
+            x = mean_finger, 
+            xend = mean_finger, 
+            y = -0.1, 
+            yend = 0, 
+            arrow = arrow(length = unit(0.3, "cm"))))
+```
+
+<P style = "page-break-before: always">
+
+```{r, fig.width = 8, fig_height = 4}
+(g_f_3 <- g_f_2 + 
+   theme_bw())
+```
+
+<!--
+<P style = "page-break-before: always">
+-->
+
+```{r, fig.width = 8, fig_height = 4}
+(g_f_4 <- g_f_3 + 
+   geom_line(aes(x = x_finger, y = y_finger)))
+```
+
+<P style = "page-break-before: always">
+
+### 산점도와 히스토그램 함께 배열하기
+
+`grid` 및 `gridExtra` 패키지와 함께 `blank` Grob 설정이 핵심. `grid.arrange` 사용법에 유의.
+
+```{r, side by side, fig.width = 8, fig_height = 8}
+library(gridExtra)
+grid.rect(gp = gpar(col = "white"), draw = FALSE) %>%
+grid.arrange(g_h, ., g3, g_f, 
+             ncol = 2, 
+             widths = c(4, 1), 
+             heights = c(1, 4))
+blank <- grid.rect(gp = gpar(col = "white"), draw = FALSE)
+grid.arrange(g_h, blank, g3, g_f, 
+             ncol = 2, 
+             widths = c(4, 1), 
+             heights = c(1, 4))
+blank <- nullGrob()
+grid.arrange(g_h, blank, g3, g_f, 
+             ncol = 2, 
+             widths = c(4, 1), 
+             heights = c(1, 4))
+```
+
+<P style = "page-break-before: always">
+
+<!--
+### Data 갈무리
+
+```{r, save}
+save.image(file = "./crimtab_ggplot.RData")
+# cor(crimtab.2.long[,1], crimtab.2.long[,2])
+```
+-->
+
+<P style = "page-break-before:always">
+
+## 겹침을 세어 보고, 숨기지 않는 그림을 하나 그린다
+
+앞에서 만든 `crimtab_long_df` 를 그대로 씁니다. 3000행, 두 변수
+(`height` 는 인치, `finger` 는 cm)입니다.
+
+### 필수 계산 (두 가지)
+
+**1. 겹침을 숫자로.** 아래 세 값을 이 순서, 이 이름으로 담은 벡터를
+**`overplot`** 이라는 이름에 담으세요.
+
+| 이름 | 뜻 | 값 |
+|---|---|---|
+| `n_point` | 찍는 점의 개수 (= 사람 수) | 3000 |
+| `n_spot` | 화면에 실제로 남는 서로 다른 자리의 개수 | ? |
+| `n_max` | 한 자리에 가장 많이 겹친 사람 수 | ? |
+
+- `n_spot` 은 `unique()` 로, `n_max` 는 `table()` 로 구할 수 있습니다.
+- 힌트 : `nrow(unique(...))`, `max(table(...))`
+
+**2. 숨기지 않는 그림 하나.** 각 자리에 **몇 명이 있는지가 그림에 나타나는**
+산점도를 하나 만들어 **`g_honest`** 라는 이름에 담으세요.
+
+- `geom_count()`, `geom_bin2d()`, `geom_hex()` 중 아무거나 좋습니다.
+  직접 개수를 세어 `geom_point(aes(size = n))` 으로 그려도 됩니다.
+- `geom_point(alpha = ...)` 만 준 그림은 통과하지 못합니다. 투명도는 개수를
+  **비선형으로** 보여 주기 때문입니다(컨텍스트의 표를 다시 보세요).
+- 그림을 화면에 띄우려면 `g_honest` 를 한 번 더 쳐 주세요.
+
+```{r required-calc-w5, fig.width = 7, fig.height = 6}
+#> 1. 여기에 overplot 을 만드세요
+
+
+#> 2. 여기에 g_honest 를 만드세요
+
+
+```
+
+<P style = "page-break-before:always">
+
+## Comments
+
+> 아래 네 항목을 모두 채워 주세요. 분량보다 항목의 충실함으로 평가합니다.
+> 각 항목은 **두세 문장** 이면 충분합니다.
+
+**1. 맥락** — 이번 주에는 새 자료가 없고 4주차와 똑같은 3000명인데, 그렇다면 이 그림들을 볼 때에도 자료의 출신을 기억해야 할 이유가 있을까요 없을까요. 어느 쪽이든 이유를 대세요.
+
+(여기에 작성)
+
+**2. 주장** — 여러분이 만든 `g_honest` 에서 읽어낼 수 있는 것을 한 문장으로. 그냥 `geom_point()` 로 그린 첫 산점도에서는 읽을 수 없었던 것이어야 합니다.
+
+(여기에 작성)
+
+**3. 근거** — 위 주장을 뒷받침하는 수치(`overplot` 의 세 값을 써도 됩니다)와, `g_honest` 를 만든 코드에서 개수를 살려낸 한 줄을 밝히고 그 줄이 하는 일을 설명하세요.
+
+(여기에 작성)
+
+**4. 한계** — `position_jitter(width = 1, height = 0.1)` 은 각 점을 눈금 간격과 똑같은 폭으로 흔들어서, 65인치로 측정된 사람이 64와 66 사이 아무 데나 찍힙니다. 이 그림을 써도 되는 용도와 쓰면 안 되는 용도를 하나씩 들고, 무엇이 그 둘을 가르는지 설명하세요.
+
+(여기에 작성)
+
+<P style = "page-break-before:always">
+
+## 제출 전 자가점검
+
+아래 청크를 그대로 두고 Knit 하면 형식 점검 결과가 나옵니다.
+**모두 '통과' 가 뜬 것을 확인한 뒤에 제출하세요.**
+이 점검은 형식만 봅니다. 내용은 교수자가 읽고 평가합니다.
+
+```{r submit-check, echo = FALSE, results = "asis"}
+if (file.exists("submit_check.R")) {
+  source("submit_check.R", encoding = "UTF-8")
+  submit_check(week = 5)
+} else {
+  cat("submit_check.R 을 이 Rmd 파일과 같은 폴더에 두세요.")
+}
+```

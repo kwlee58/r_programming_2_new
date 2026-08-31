@@ -51,6 +51,9 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
     if (length(i)) i[1] else NA_integer_
   }
   head_at <- vapply(keys, find_head, integer(1))
+  ## 절 제목(##...)과 페이지 나눔은 Comments 구역의 끝으로 본다
+  stop_marks <- sort(c(grep("^\\s*#{1,6}\\s", src),
+                       grep("^\\s*<P[ >]", src, ignore.case = TRUE)))
   for (i in seq_along(keys)) {
     from <- head_at[i]
     if (is.na(from)) {
@@ -58,11 +61,18 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
           "이 항목의 제목이 문서에 없습니다. 양식의 제목 줄을 지우지 마세요.")
       next
     }
-    nxt <- head_at[(i + 1):length(keys)]
-    nxt <- nxt[!is.na(nxt) & nxt > from]
+    nxt <- c(head_at[!is.na(head_at) & head_at > from],
+             stop_marks[stop_marks > from])
     to  <- if (length(nxt)) min(nxt) - 1L else length(src)
-    body <- src[(from + 1L):to]
+    body <- src[from:to]
+    ## 제목 줄에 붙어 있는 첫 문단(= 문제 지문)은 검사 대상에서 뺀다.
+    ## 학생이 쓰는 자리는 '(여기에 작성)' 이 있던 그 아래이기 때문.
+    j <- 1L
+    while (j <= length(body) && nzchar(trimws(body[j]))) j <- j + 1L
+    body <- if (j < length(body)) body[(j + 1L):length(body)] else character(0)
     body <- body[!grepl("^\\s*```", body)]
+    body <- body[!grepl("^\\s*>", body)]
+    body <- body[!grepl("^\\s*<!--|-->", body)]
     body <- body[!grepl("여기에 작성", body)]
     n <- sum(nchar(gsub("[[:space:]]", "", body)))
     add(paste0("Comments ", i, ". ", keys[i]), n >= 40,
@@ -104,6 +114,59 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
           safe(p[1] < 0.05 && p[2] > 0.05),
           "케틀레 원표는 기각(p < 0.05), 스티글러 정정본은 기각되지 않아야(p > 0.05) 합니다. 구간 묶기를 다시 확인하세요.")
     }
+  } else if (week == 4) {
+    ok1 <- safe({
+      x <- val("crimtab_in")
+      cn <- suppressWarnings(as.numeric(colnames(x)))
+      got("crimtab_in") && length(cn) == 22 && all(!is.na(cn)) &&
+        all(cn == 56:77)
+    })
+    add("필수 계산 1 : crimtab_in (인치)", ok1,
+        "crimtab 의 열 이름을 2.54 로 나눠 되돌린 표를 crimtab_in 에 담으세요. 열 이름이 56 부터 77 까지 정수여야 합니다.")
+    add("필수 계산 2 : r_fh (상관계수)",
+        safe(got("r_fh") && is.numeric(as.numeric(val("r_fh"))) &&
+             abs(as.numeric(val("r_fh"))[1] - 0.6557) < 0.01),
+        "표를 개체 단위 3000행으로 편 뒤 손가락 길이와 키의 상관계수를 r_fh 에 담으세요. 0.66 근처(0.656)가 나와야 합니다.")
+
+  } else if (week == 5) {
+    ok1 <- safe({
+      v <- val("overplot")
+      nm <- names(v)
+      got("overplot") && length(v) == 3 &&
+        all(c("n_point", "n_spot", "n_max") %in% nm) &&
+        as.numeric(v[["n_point"]]) == 3000 &&
+        as.numeric(v[["n_spot"]])  == 301 &&
+        as.numeric(v[["n_max"]])   == 58
+    })
+    add("필수 계산 1 : overplot (겹침 세기)", ok1,
+        "n_point = 3000, n_spot = 301, n_max = 58 이 되어야 합니다. n_spot 은 nrow(unique(...)), n_max 는 max(table(...)) 로 구합니다. 이름 세 개를 그대로 붙여 주세요.")
+
+    ok2 <- safe({
+      g <- val("g_honest")
+      if (!inherits(g, "ggplot")) FALSE else {
+        cls <- function(x) tryCatch(class(x)[1], error = function(e) "")
+        sts <- vapply(g$layers, function(l) cls(l$stat), character(1))
+        gms <- vapply(g$layers, function(l) cls(l$geom), character(1))
+        ## (가) 개수를 스스로 세는 stat / geom 을 쓴 경우
+        cnt_stat <- any(sts %in% c("StatSum", "StatBin2d", "StatBin_2d",
+                                   "StatBinhex", "StatSummary2d",
+                                   "StatDensity2d", "StatDensity2dFilled")) ||
+                    any(gms %in% c("GeomTile", "GeomRaster", "GeomHex"))
+        ## (나) 직접 집계한 자료에 개수를 미적요소로 매핑한 경우
+        nrows <- suppressWarnings(vapply(
+          c(list(g$data), lapply(g$layers, function(l) l$data)),
+          function(z) tryCatch(nrow(as.data.frame(z)), error = function(e) NA_integer_),
+          integer(1)))
+        aggd <- any(!is.na(nrows) & nrows > 0 & nrows <= 924)
+        aes_all <- c(names(g$mapping),
+                     unlist(lapply(g$layers, function(l) names(l$mapping))))
+        cnt_aes <- any(c("size", "fill", "alpha") %in% aes_all)
+        cnt_stat || (aggd && cnt_aes)
+      }
+    })
+    add("필수 계산 2 : g_honest (개수가 보이는 그림)", ok2,
+        "각 자리의 인원수가 그림에 나타나야 합니다. geom_count(), geom_bin2d(), geom_hex() 중 하나를 쓰거나, 개수를 세어 aes(size = n) 으로 매핑하세요. alpha 만 준 geom_point 는 통과하지 못합니다.")
+
   }
 
   ## ---- 4. 출력 ---------------------------------------------------

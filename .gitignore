@@ -6,3 +6,8 @@ R/rsconnect/**
 docs/*.pdf
 .Ruserdata
 .Rproj.user
+
+# --- 2026-2 추가 ---
+.DS_Store
+**/.DS_Store
+R/*_files/
