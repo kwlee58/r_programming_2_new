@@ -603,29 +603,33 @@ grid.arrange(g_h, blank, g3, g_f,
 - 그림을 화면에 띄우려면 `g_honest` 를 한 번 더 쳐 주세요.
 
 ```{r required-calc-w5, fig.width = 7, fig.height = 6}
-#> ── 필수 계산 1 : overplot ──────────────────────────────────
-#> nrow() 는 행 수, unique() 는 중복을 없앤 행, table() 은 칸별 도수입니다.
-#> 세 값이 각각 무엇을 세는 것인지 말로 설명할 수 있어야 Comments 3번을 씁니다.
+## ── 필수 계산 1 : overplot ──────────────────────────────────
+## nrow() 는 행 수, unique() 는 중복을 없앤 행, table() 은 칸별 도수입니다.
+## 세 값이 각각 무엇을 세는지 말로 설명할 수 있어야 Comments 3번을 씁니다.
 
-# overplot <- c(n_point = nrow(crimtab_long_df),
-#               n_spot  = nrow(unique(crimtab_long_df)),
-#               n_max   = max(table(crimtab_long_df$height,
-#                                   crimtab_long_df$finger)))
-# overplot                              # 3000 / 301 / 58
+overplot <- c(n_point = nrow(crimtab_long_df),
+              n_spot  = nrow(unique(crimtab_long_df)),
+              n_max   = max(table(crimtab_long_df$height,
+                                  crimtab_long_df$finger)))
+overplot                              # 3000 / 301 / 58
 
+## ── 필수 계산 2 : g_honest ──────────────────────────────────
+## 겹친 점의 개수를 그림에 싣습니다.
 
-#> ── 필수 계산 2 : g_honest ──────────────────────────────────
-#> 셋 중 하나를 골라 주석을 지우세요. 셋 다 통과합니다.
-#> geom_hex() 는 hexbin 패키지가 필요합니다.
+g_honest <- ggplot(crimtab_long_df, aes(x = height, y = finger)) + geom_count()
+g_honest
+```
 
-# g_honest <- ggplot(crimtab_long_df, aes(x = height, y = finger)) + geom_count()
-# g_honest <- ggplot(crimtab_long_df, aes(x = height, y = finger)) + geom_bin2d()
-# g_honest <- ggplot(crimtab_long_df, aes(x = height, y = finger)) + geom_hex()
-# g_honest
+```{r try-it-w5, fig.width = 7, fig.height = 6}
+## ── 바꿔 보기 ───────────────────────────────────────────────
+## 아래 줄의  geom_count()  를  geom_bin2d()  나  geom_point()  로
+## 바꾸고 다시 Knit 해 보세요. 셋 다 같은 3000명입니다.
+##   geom_count()  점의 크기로  |  geom_bin2d()  칸의 색으로
+##   geom_point()  개수를 아예 안 보여 줌 — 301개 자리만 보입니다
+## geom_point(alpha = 0.1) 도 해 보세요. 29명 자리와 58명 자리가
+## 구별되는지가 Comments 4번(한계)의 재료입니다.
 
-#> alpha 만 준 geom_point 는 통과하지 못합니다. 왜 안 되는지는 컨텍스트 절에
-#> 있습니다 — 29명 자리와 58명 자리가 같은 색으로 보이기 때문입니다.
-
+ggplot(crimtab_long_df, aes(x = height, y = finger)) + geom_count()
 ```
 
 <P style = "page-break-before:always">

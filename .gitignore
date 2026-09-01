@@ -15,3 +15,4 @@ R/*_files/
 # --- gganimate 부산물 ---
 R/gganim_plot*.png
 **/figs/*.gif
+_bak_20260901/

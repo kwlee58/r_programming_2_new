@@ -886,22 +886,30 @@ Nature3_tbl %>%
    `Fraternal` 이 **51.6**, `Identical` 이 **23.5** 로 나와야 피셔 원문과 맞습니다.
 
 ```{r fisher-check}
-#> ── 필수 계산 1 : N1 ────────────────────────────────────────
-#> 앞의 Nature1 과 같은 방식입니다. 숫자가 원문(이란성 31쌍)에 맞는지 보세요.
+## ── 필수 계산 1 : N1 ────────────────────────────────────────
+## 앞의 Nature1 과 같은 방식입니다. 숫자가 원문(이란성 31쌍)에 맞는지 보세요.
 
-# N1 <- matrix(c(33, 11, 6, 4, 12, 16), nrow = 2,
-#              dimnames = list(c("Identical", "Fraternal"),
-#                              c("Alike", "Little_Alike", "Not_Alike")))
-# N1
-# sum(N1["Fraternal", ])                # 31 이어야 합니다
+N1 <- matrix(c(33, 11, 6, 4, 12, 16), nrow = 2,
+             dimnames = list(c("Identical", "Fraternal"),
+                             c("Alike", "Little_Alike", "Not_Alike")))
+N1
+sum(N1["Fraternal", ])                # 31
 
+## ── 필수 계산 2 : pct_unlike ────────────────────────────────
+## prop.table(margin = 1) 은 행별 비율입니다. Not_Alike 열만 꺼냅니다.
 
-#> ── 필수 계산 2 : pct_unlike ────────────────────────────────
-#> prop.table(margin = 1) 은 행별 비율입니다. Not_Alike 열만 꺼냅니다.
+pct_unlike <- round(100 * prop.table(N1, margin = 1), 1)[, "Not_Alike"]
+pct_unlike                            # Identical 23.5, Fraternal 51.6
+```
 
-# pct_unlike <- round(100 * prop.table(N1, margin = 1), 1)[, "Not_Alike"]
-# pct_unlike                            # Identical 23.5, Fraternal 51.6
+```{r try-it-w2}
+## ── 바꿔 보기 ───────────────────────────────────────────────
+## 아래 줄의  margin = 1  을  margin = 2  로 바꾸고 다시 Knit 해 보세요.
+## 숫자가 전부 달라집니다. 1 은 "일란성 중 몇 %", 2 는 "안 닮은 쌍 중 몇 %" 입니다.
+## 무엇을 100% 로 놓았느냐에 따라 같은 표가 다른 말을 합니다.
+## 어느 쪽이 이 연구의 질문에 맞는 비율인지가 Comments 4번(한계)의 재료입니다.
 
+round(100 * prop.table(N1, margin = 1), 1)
 ```
 
 두 값이 피셔가 쓴 51% / 24% 와 맞는지 확인하고, 맞지 않으면 표를 다시 보세요.
