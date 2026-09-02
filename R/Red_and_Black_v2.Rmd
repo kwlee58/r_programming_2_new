@@ -1,0 +1,266 @@
+---
+title: "Red and Black : 가장 닮은 두 집단을 찾아서"
+subtitle: "카이제곱 통계량과 대수의 법칙"
+author: "제출자의 학과, 학번, 이름"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## 이 실험에 대하여
+
+### 오늘 만드는 것
+
+**랜덤화 출석부**를 만든다. 수강생을 Red 와 Black 두 집단으로 나누는 일이다.
+두 집단에 서로 다른 설문을 주고 답을 비교하려면 먼저 나눠야 한다.
+
+그런데 아무렇게나 나누면 안 된다. 두 집단이 **닮아 있어야** 비교가 된다.
+한쪽에 신입생이 몰려 있으면 답의 차이가 설문 때문인지 학년 때문인지 알 수 없다.
+
+6주차에 `t` 분포를 직접 만들어 보았다. 오늘은 **두 번째 표본분포**를 만든다.
+카이제곱분포다. 그냥 그려 보는 것이 아니라 쓸 데가 있어서 만든다.
+
+오늘 물을 것은 넷이다.
+
+1. 어떻게 나누는가 — `sample()` 과 나머지 연산
+2. 닮았다는 것을 어떻게 재는가 — 카이제곱 통계량
+3. 그 잣대는 어떻게 생긴 분포인가 — 자유도 32 의 카이제곱분포
+4. 얼마나 닮게 만들 수 있는가 — 반복횟수를 늘려 가며
+
+```{r data}
+class_roll <- readRDS("class_roll_masked_2402.RDS")
+class_roll <- as.data.frame(class_roll, stringsAsFactors = FALSE)
+N <- nrow(class_roll)
+N
+names(class_roll)
+```
+
+수강생 명부 812명이다. 응용프로그래밍 수업이라 **개인정보를 가린 판**을 쓴다.
+학번 뒤 네 자리, 이름, 이메일 앞부분이 지워져 있다.
+
+### ① 어떻게 나누는가
+
+```{r assign}
+set.seed(14)
+group <- sample(1:N) %% 2
+group <- factor(group, levels = c(0, 1), labels = c("Red", "Black"))
+table(group)
+```
+
+한 줄씩 보자.
+
+- `sample(1:N)` — 크기를 따로 주지 않으면 1부터 812까지를 **한 번씩 다 쓰되 순서만
+  무작위로 섞는다.** 뽑아서 버리는 것이 아니라 자리를 바꾸는 것이다.
+- `%% 2` — 나머지 연산자. 2로 나눈 나머지이니 짝수면 0, 홀수면 1.
+- 1부터 812까지에는 짝수가 406개, 홀수가 406개다. 순서를 아무리 섞어도 그 개수는
+  변하지 않는다. 그래서 **Red 와 Black 이 정확히 406명씩** 나온다.
+  우연에 맡기지 않고 크기를 정확히 반으로 가르는 요령이다.
+- `factor(..., levels, labels)` — 0 과 1 에 이름을 붙인다. 이후 모든 표에
+  0/1 대신 Red/Black 으로 나온다.
+- `set.seed(14)` — 컴퓨터의 난수는 계산으로 만들어진다. 시작값을 정해 주면 그 뒤
+  수열이 늘 같다. **시드가 같으면 배정도 같다.** 이 실험이 성립하는 이유다.
+
+### ② 닮았다는 것을 어떻게 재는가
+
+다섯 변수를 만든다. 명부에 있는 것을 그대로 쓴다.
+
+```{r variables}
+id2  <- ifelse(as.numeric(substr(class_roll$id, 1, 4)) <= 2018,
+               "2018", substr(class_roll$id, 1, 4))          # 학번 = 입학년도
+isp  <- sapply(strsplit(sapply(strsplit(class_roll$email, "@", fixed = TRUE), "[", 2),
+                        "[.]"), "[", 1)
+ispg <- factor(ifelse(isp %in% c("naver", "gmail"), isp, "기타서비스"),
+               levels = c("naver", "gmail", "기타서비스"))    # 이메일 서비스업체
+ph   <- cut(as.numeric(substr(class_roll$cell_no, 8, 11)),
+            breaks = seq(0, 10000, by = 1000))                # 전화 끝 4자리
+fn   <- substring(class_roll$name, 1, 1)
+lng  <- factor(ifelse(fn %in% c("김", "이", "박", "최", "정"), fn, "기타"),
+               levels = c("김", "이", "박", "최", "정", "기타"))  # 5대 성씨
+col  <- class_roll$college                                     # 단과대학
+```
+
+두 집단이 얼마나 닮았는지 재려면 먼저 표를 만든다.
+
+```{r table-demo}
+tb <- table(group, id2)     # 2행 7열 분할표
+tb
+```
+
+이제 이렇게 묻는다. **두 집단이 완전히 닮았다면 각 칸에 몇 명이 있어야 하는가.**
+그 값을 **기대도수**라 하고, `그 행의 합 × 그 열의 합 ÷ 전체` 로 구한다.
+
+$$\chi^2 \;=\; \sum \frac{(\text{관측도수} - \text{기대도수})^2}{\text{기대도수}}$$
+
+차이를 제곱하니 어느 쪽으로 어긋나든 양수로 쌓인다. 완전히 같으면 0 이고
+어긋날수록 커진다. **작을수록 닮았다**는 뜻이다.
+
+```{r chisq-demo}
+chisq.test(tb)$expected |> round(1)     # 기대도수
+chisq.test(tb)$statistic                # 통계량만 꺼낸다
+```
+
+`chisq.test()` 는 여러 값이 든 목록을 돌려준다. 우리는 통계량만 필요하니
+`$statistic` 으로 꺼낸다. 기대도수가 작은 칸이 있으면 경고가 뜨는데,
+여기서는 `suppressWarnings()` 로 끈다.
+
+```{r chi-helper}
+chi <- function(g, v) suppressWarnings(unname(chisq.test(table(g, v))$statistic))
+```
+
+### ③ 자유도가 32 인 이유
+
+범주가 k 개면 자유도는 k − 1 이다. 전체 인원이 정해져 있으니 마지막 칸은 앞의
+것들로 결정되기 때문이다.
+
+```{r df}
+sapply(list(학번 = id2, 이메일 = ispg, 전화 = ph, 성씨 = lng, 단과대학 = col),
+       function(v) length(unique(na.omit(v))) - 1)
+```
+
+6 + 2 + 9 + 5 + 10 = **32**.
+
+카이제곱 분포에는 외워 둘 만한 성질이 둘 있다.
+
+| | |
+|---|---|
+| 기대값 | 자유도 그대로 = **32** |
+| 분산 | 자유도의 두 배 = 64 → 표준편차 **8** |
+
+### ④ 컴퓨터가 찾는 방법
+
+가장 닮은 구성을 찾는 방법은 단순하다. 시드를 바꿔 가며 여러 번 나눠 보고
+`Xsum` 이 가장 작은 것을 고른다.
+
+```{r search}
+red_and_black <- function(k) {
+  set.seed(k)
+  g <- factor(sample(1:N) %% 2, levels = c(0, 1), labels = c("Red", "Black"))
+  chi(g, id2) + chi(g, ispg) + chi(g, ph) + chi(g, lng) + chi(g, col)
+}
+
+Xsum <- sapply(1:100, red_and_black)   # 100번 부르고 벡터 하나로 모은다
+names(Xsum) <- 1:100                   # 시드 번호를 이름표로
+round(summary(Xsum), 2)
+round(sd(Xsum), 2)
+which.min(Xsum)                        # 가장 작은 값이 몇 번째 시드인가
+```
+
+- `sapply(x, f)` — `x` 의 원소를 하나씩 `f` 에 넣고 결과를 **벡터 하나로 모아 준다.**
+  `for` 문도, 결과를 담을 그릇도 필요 없다.
+- `names()` 로 이름표를 붙여 두면 `which.min()` 이 위치와 시드를 함께 알려 준다.
+- 값 자체는 `min()` 으로, 그 위치는 `which.min()` 으로 얻는다.
+
+```{r hist100, fig.width = 7, fig.height = 4.5}
+hist(Xsum, breaks = 15, freq = FALSE, col = "#EEF3FA", border = "white",
+     xlim = c(0, 70), main = "100번 돌렸을 때", xlab = "Xsum", ylab = "밀도")
+curve(dchisq(x, df = 32), add = TRUE, col = "#EB6834", lwd = 2)
+```
+
+`curve()` 에 `add = TRUE` 를 주면 이미 그린 그림 위에 곡선을 겹쳐 그린다.
+`dchisq(x, df = 32)` 가 자유도 32 인 카이제곱 분포의 밀도함수다.
+
+100번만 돌렸는데도 평균과 표준편차가 32 와 8 에 꽤 가깝다. 다만 히스토그램은
+아직 울퉁불퉁하다.
+
+### 필수 계산 (두 가지)
+
+```{r required-calc-w9}
+## ── 필수 계산 1 : xsum_summary ──────────────────────────────
+## 반복횟수를 늘려 가며 최솟값 · 평균 · 표준편차가 어떻게 변하는지 본다.
+## 10,000 회가 오래 걸리는 컴퓨터라면 c(100, 1000) 까지만 해도 된다.
+
+M_list <- c(100, 1000, 10000)          # 버거우면 c(100, 1000)
+X_all  <- sapply(1:max(M_list), red_and_black)
+
+xsum_summary <- data.frame(
+  n    = M_list,
+  min  = round(sapply(M_list, function(m) min(X_all[1:m])),  2),
+  mean = round(sapply(M_list, function(m) mean(X_all[1:m])), 2),
+  sd   = round(sapply(M_list, function(m) sd(X_all[1:m])),   2))
+xsum_summary
+
+## ── 필수 계산 2 : best_five ─────────────────────────────────
+## 100번 중 가장 닮았던 배정에서 다섯 변수의 카이제곱을 각각 구한다.
+
+best <- as.numeric(names(which.min(Xsum)))
+set.seed(best)
+g_best <- factor(sample(1:N) %% 2, levels = c(0, 1), labels = c("Red", "Black"))
+
+best_five <- round(c(학번     = chi(g_best, id2),
+                     이메일   = chi(g_best, ispg),
+                     전화     = chi(g_best, ph),
+                     성씨     = chi(g_best, lng),
+                     단과대학 = chi(g_best, col)), 3)
+best_five
+c(시드 = best, 합 = round(sum(best_five), 2))
+```
+
+평균은 32 로, 표준편차는 8 로 다가간다. **대수의 법칙**이다. 같은 실험을
+되풀이해서 평균을 내면 그 값이 기대값으로 수렴한다.
+
+최솟값만 다르게 움직인다. 계속 작아진다. 더 많이 찾아볼수록 더 닮은 구성이 나온다.
+
+### 그래서 정말 닮았나
+
+```{r best-tables}
+table(g_best, id2)
+table(g_best, ispg)
+table(g_best, lng)
+table(g_best, col)
+```
+
+눈으로 봐도 닮았고, 숫자로 재도 합이 12.6 이다. 평균이 32 인 분포에서
+12.6 이면 왼쪽 꼬리 근처다.
+
+```{r try-it-w9}
+## ── 바꿔 보기 ───────────────────────────────────────────────
+## 시드 범위를 1:100 대신 101:200 으로 바꾸고 다시 Knit 해 보세요.
+## 최솟값도, 최솟값을 준 시드도 달라집니다.
+## 그런데 평균과 표준편차는 여전히 32 와 8 근처입니다. 왜 그럴까요?
+
+X2 <- sapply(1:100, red_and_black)
+c(최솟값 = round(min(X2), 2), 시드 = as.numeric(which.min(X2)),
+  평균 = round(mean(X2), 2), 표준편차 = round(sd(X2), 2))
+```
+
+<P style = "page-break-before:always">
+
+## Comments
+
+> 아래 네 항목을 모두 채워 주세요. 분량보다 항목의 충실함으로 평가합니다.
+> 각 항목은 **두세 문장** 이면 충분합니다.
+
+**1. 맥락** — 이 명부는 무엇이고, 왜 두 집단으로 나누려 하는가.
+그리고 반복횟수를 어디까지 돌렸는가.
+
+(여기에 작성)
+
+**2. 주장** — 반복횟수를 늘리면서 관찰한 것을 한 문장으로.
+
+(여기에 작성)
+
+**3. 근거** — 위 주장을 뒷받침하는 수치, 그리고 그것을 만들어 낸 코드의 핵심
+한 줄과 그 줄이 하는 일.
+
+(여기에 작성)
+
+**4. 한계** — 다섯 변수에서 닮았다고 해서 두 집단이 **모든 면에서** 닮았다고
+할 수 있는가. 없다면 왜인가.
+
+(여기에 작성)
+
+<P style = "page-break-before:always">
+
+## 제출 전 자가점검
+
+```{r submit-check, echo = FALSE, results = "asis"}
+if (file.exists("submit_check.R")) {
+  source("submit_check.R", encoding = "UTF-8")
+  submit_check(week = 9)
+} else {
+  cat("submit_check.R 을 이 Rmd 파일과 같은 폴더에 두세요.")
+}
+```

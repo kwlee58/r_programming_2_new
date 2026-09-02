@@ -246,6 +246,42 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
     add("필수 계산 2 : strata (업력 세 층의 법인 비율)", ok2,
         "n_startup / pct_startup / n_established / pct_established 네 열, 3행(2년미만·2-5년·5년이상)으로 담으세요. 조직 수는 56/11/3 과 3/14/10 입니다. 57/10 이 나왔다면 cut() 에 right = FALSE 를 빠뜨린 것입니다.")
 
+} else if (week == 9) {
+    ok1 <- safe({
+      g <- as.data.frame(val("xsum_summary"))
+      need <- c("n", "min", "mean", "sd")
+      if (!got("xsum_summary") || nrow(g) < 2 || !all(need %in% names(g))) FALSE else {
+        기준 <- data.frame(n = c(100, 1000, 10000),
+                           min = c(12.60, 9.44, 8.17),
+                           mean = c(32.88, 32.26, 32.19),
+                           sd = c(8.54, 8.19, 7.94))
+        ok <- all(c(100, 1000) %in% as.numeric(g[["n"]]))
+        for (r in seq_len(nrow(g))) {
+          k <- match(as.numeric(g[["n"]][r]), 기준$n)
+          if (is.na(k)) { ok <- FALSE; next }
+          ok <- ok &&
+            abs(as.numeric(g[["min"]][r])  - 기준$min[k])  < 0.02 &&
+            abs(as.numeric(g[["mean"]][r]) - 기준$mean[k]) < 0.02 &&
+            abs(as.numeric(g[["sd"]][r])   - 기준$sd[k])   < 0.02
+        }
+        ok
+      }
+    })
+    add("필수 계산 1 : xsum_summary (반복횟수별 수렴)", ok1,
+        "n / min / mean / sd 네 열로 담으세요. 100 회와 1,000 회는 반드시 있어야 합니다(10,000 회는 선택). 100 회는 12.60 / 32.88 / 8.54, 1,000 회는 9.44 / 32.26 / 8.19, 10,000 회는 8.17 / 32.19 / 7.94 입니다. 값이 다르면 시드를 1 부터 차례로 쓰지 않았거나 변수를 묶은 방식이 다른 것입니다.")
+
+    ok2 <- safe({
+      v <- val("best_five"); nm <- names(v)
+      if (!got("best_five") || length(v) != 5 ||
+          !all(c("학번", "이메일", "전화", "성씨", "단과대학") %in% nm)) FALSE else {
+        기준 <- c(학번 = 0.764, 이메일 = 0.306, 전화 = 4.331,
+                  성씨 = 0.967, 단과대학 = 6.233)
+        all(abs(as.numeric(v[names(기준)]) - 기준) < 0.02)
+      }
+    })
+    add("필수 계산 2 : best_five (가장 닮은 배정의 다섯 카이제곱)", ok2,
+        "학번 / 이메일 / 전화 / 성씨 / 단과대학 다섯 이름으로 담으세요. 0.764 / 0.306 / 4.331 / 0.967 / 6.233 이고 합이 12.60 입니다. 합이 12.60 이 아니면 which.min 이 준 시드로 set.seed 를 다시 하지 않은 것입니다.")
+
   }
 
   ## ---- 4. 출력 ---------------------------------------------------
