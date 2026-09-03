@@ -405,6 +405,37 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
     add("필수 계산 2 : temp_check (기온이 기록된 구간)", ok2,
         "항목 / 값 두 열, 네 행으로 담으세요. 위에서부터 9, 0, -30, -37.5 입니다. 두 번째가 0 이 아니면 관측 시기를 달 이름으로 세지 않은 것입니다. 진군 시기(6\u20139월)에는 기온 관측이 하나도 없습니다.")
 
+  } else if (week == 14) {
+    ok1 <- safe({
+      g <- as.data.frame(val("match_dist"))
+      need <- c("\ub9e4\uce6d\uc218", "\uacbd\uc6b0\uc758\uc218", "\uc774\ub860\ud655\ub960", "\ubaa8\uc758\ud655\ub960")
+      if (!got("match_dist") || nrow(g) != 5 || !all(need %in% names(g))) FALSE else {
+        cnt <- as.integer(g[["\uacbd\uc6b0\uc758\uc218"]])
+        th  <- as.numeric(g[["\uc774\ub860\ud655\ub960"]])
+        sm  <- as.numeric(g[["\ubaa8\uc758\ud655\ub960"]])
+        all(cnt == c(9, 8, 6, 0, 1)) &&
+        all(abs(th - c(9, 8, 6, 0, 1) / 24) < 0.001) &&
+        sm[4] == 0 &&
+        max(abs(sm - th)) < 0.01
+      }
+    })
+    add("\ud544\uc218 \uacc4\uc0b0 1 : match_dist (\ub9e4\uce6d \uac1c\uc218\uc758 \ubd84\ud3ec)", ok1,
+        "\ub9e4\uce6d\uc218 / \uacbd\uc6b0\uc758\uc218 / \uc774\ub860\ud655\ub960 / \ubaa8\uc758\ud655\ub960 \ub124 \uc5f4, \ub2e4\uc12f \ud589\uc73c\ub85c \ub2f4\uc73c\uc138\uc694. \uacbd\uc6b0\uc758\uc218\ub294 \uc704\uc5d0\uc11c\ubd80\ud130 9, 8, 6, 0, 1 \uc774\uace0 \ud569\uc774 24 \uc785\ub2c8\ub2e4. \uc774 \ub2e4\uc12f \uc22b\uc790\uac00 \ub9de\uc9c0 \uc54a\uc73c\uba74 \uc21c\uc5f4 24\uac00\uc9c0\ub97c \uc81c\ub300\ub85c \uac78\ub7ec\ub0b4\uc9c0 \ubabb\ud55c \uac83\uc785\ub2c8\ub2e4. \ubaa8\uc758\ud655\ub960\uc740 \uc774\ub860\ud655\ub960\uacfc 0.01 \uc548\uc5d0\uc11c \ub9de\uc544\uc57c \ud558\uace0, 3 \uc758 \uc790\ub9ac\ub294 \uc815\ud655\ud788 0 \uc774\uc5b4\uc57c \ud569\ub2c8\ub2e4.")
+
+    ok2 <- safe({
+      g <- as.data.frame(val("monty_fall"))
+      need <- c("\uaddc\uce59", "\uc720\ud6a8\ud55c\ud310", "\ubc14\uafd4\uc11c\uc774\uae34\ube44\uc728")
+      if (!got("monty_fall") || nrow(g) != 2 || !all(need %in% names(g))) FALSE else {
+        n <- as.numeric(g[["\uc720\ud6a8\ud55c\ud310"]])
+        p <- as.numeric(g[["\ubc14\uafd4\uc11c\uc774\uae34\ube44\uc728"]])
+        abs(p[1] - 2/3) < 0.015 &&
+        abs(p[2] - 1/2) < 0.015 &&
+        abs(n[2] / n[1] - 2/3) < 0.02
+      }
+    })
+    add("\ud544\uc218 \uacc4\uc0b0 2 : monty_fall (\uaddc\uce59\uc744 \ubc14\uafb8\uba74)", ok2,
+        "\uaddc\uce59 / \uc720\ud6a8\ud55c\ud310 / \ubc14\uafd4\uc11c\uc774\uae34\ube44\uc728 \uc138 \uc5f4, \ub450 \ud589\uc73c\ub85c \ub2f4\uc73c\uc138\uc694. \uccab \uc904\uc774 2/3, \ub458\uc9f8 \uc904\uc774 1/2 \uadfc\ucc98\uc5ec\uc57c \ud569\ub2c8\ub2e4. \ub458\uc9f8 \uc904\uc774 2/3 \uac00 \ub098\uc624\uba74 \ubb34\ud6a8\uac00 \ub41c \ud310(monty == key)\uc744 \ube7c\uc9c0 \uc54a\uc740 \uac83\uc774\uace0, 1/3 \uc774 \ub098\uc624\uba74 \ubc14\uafb8\uc9c0 \uc54a\uc740 \ucabd\uc744 \uc13c \uac83\uc785\ub2c8\ub2e4. \uc720\ud6a8\ud55c \ud310\uc740 \uc804\uccb4\uc758 2/3 \uadfc\ucc98\uc785\ub2c8\ub2e4.")
+
   }
 
   ## ---- 4. 출력 ---------------------------------------------------
