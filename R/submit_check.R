@@ -282,6 +282,77 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
     add("필수 계산 2 : best_five (가장 닮은 배정의 다섯 카이제곱)", ok2,
         "학번 / 이메일 / 전화 / 성씨 / 단과대학 다섯 이름으로 담으세요. 0.764 / 0.306 / 4.331 / 0.967 / 6.233 이고 합이 12.60 입니다. 합이 12.60 이 아니면 which.min 이 준 시드로 set.seed 를 다시 하지 않은 것입니다.")
 
+  } else if (week == 10) {
+    ok1 <- safe({
+      g <- as.data.frame(val("share_layers"))
+      need <- c("layer", "y1976", "y2024", "diff")
+      if (!got("share_layers") || nrow(g) != 5 || !all(need %in% names(g))) FALSE else {
+        기준 <- data.frame(
+          layer = c("P90_95", "P95_99", "P99_100", "P99.9_100", "P99.99_100"),
+          y1976 = c(11.4, 13.1,  8.9,  2.6, 0.9),
+          y2024 = c(11.9, 17.3, 22.4, 11.3, 5.2),
+          diff  = c( 0.5,  4.2, 13.5,  8.7, 4.3))
+        k <- match(기준$layer, as.character(g[["layer"]]))
+        if (any(is.na(k))) FALSE else
+          all(abs(as.numeric(g[["y1976"]][k]) - 기준$y1976) < 0.06) &&
+          all(abs(as.numeric(g[["y2024"]][k]) - 기준$y2024) < 0.06) &&
+          all(abs(as.numeric(g[["diff"]][k])  - 기준$diff)  < 0.06)
+      }
+    })
+    add("필수 계산 1 : share_layers (다섯 층의 1976 → 2024)", ok1,
+        "layer / y1976 / y2024 / diff 네 열, 다섯 행으로 담으세요. diff 는 0.5 / 4.2 / 13.5 / 8.7 / 4.3 입니다. 값이 다르면 반올림을 먼저 하지 않았거나(round 를 뺀 값에 적용) 층 이름을 잘못 고른 것입니다.")
+
+    ok2 <- safe({
+      g <- as.data.frame(val("gap_1963"))
+      need <- c("group", "y1963", "y2024", "ratio")
+      if (!got("gap_1963") || nrow(g) != 2 || !all(need %in% names(g))) FALSE else {
+        k <- match(c("Bottom99", "Top1"), as.character(g[["group"]]))
+        if (any(is.na(k))) FALSE else
+          abs(as.numeric(g[["ratio"]][k[1]]) - 1.53) < 0.02 &&
+          abs(as.numeric(g[["ratio"]][k[2]]) - 3.91) < 0.02 &&
+          abs(as.numeric(g[["y1963"]][k[1]]) - 44881) < 2 &&
+          abs(as.numeric(g[["y2024"]][k[2]]) - 1542637) < 2
+      }
+    })
+    add("필수 계산 2 : gap_1963 (1963년 대비 배율)", ok2,
+        "group / y1963 / y2024 / ratio 네 열, 두 행(Bottom99, Top1)으로 담으세요. 배율은 1.53 과 3.91 입니다. 값이 다르면 data-FigA1 시트의 열을 잘못 고른 것입니다 — 2, 3 번째 열이 하위 99% 와 상위 1% 의 평균소득입니다.")
+
+  } else if (week == 11) {
+    ok1 <- safe({
+      g <- as.data.frame(val("mtr_band"))
+      need <- c("band", "n", "share")
+      if (!got("mtr_band") || nrow(g) != 3 || !all(need %in% names(g))) FALSE else {
+        기준 <- data.frame(band = c("under40", "40to70", "over70"),
+                           n = c(49, 13, 50), share = c(19.3, 15.1, 11.7))
+        k <- match(기준$band, as.character(g[["band"]]))
+        if (any(is.na(k))) FALSE else
+          all(as.integer(g[["n"]][k]) == 기준$n) &&
+          all(abs(as.numeric(g[["share"]][k]) - 기준$share) < 0.06)
+      }
+    })
+    add("필수 계산 1 : mtr_band (세율 구간별 평균 점유율)", ok1,
+        "band / n / share 세 열, 세 행으로 담으세요. under40 은 49 해 19.3%, 40to70 은 13 해 15.1%, over70 은 50 해 11.7% 입니다. n 이 다르면 cut() 에 right = FALSE 를 빠뜨린 것입니다.")
+
+    ok2 <- safe({
+      g <- as.data.frame(val("z_check"))
+      need <- c("Year", "share_mm", "tax_mm", "share_0", "tax_0")
+      if (!got("z_check") || nrow(g) != 3 || !all(need %in% names(g))) FALSE else {
+        기준 <- data.frame(Year = c(1944, 1976, 2024),
+                           share_mm = c(0.129, 0.000, 0.724),
+                           tax_mm   = c(1.000, 0.724, 0.345),
+                           share_0  = c(0.113, 0.089, 0.224),
+                           tax_0    = c(0.940, 0.700, 0.370))
+        k <- match(기준$Year, as.numeric(g[["Year"]]))
+        if (any(is.na(k))) FALSE else
+          all(abs(as.numeric(g[["share_mm"]][k]) - 기준$share_mm) < 0.003) &&
+          all(abs(as.numeric(g[["tax_mm"]][k])   - 기준$tax_mm)   < 0.003) &&
+          all(abs(as.numeric(g[["share_0"]][k])  - 기준$share_0)  < 0.003) &&
+          all(abs(as.numeric(g[["tax_0"]][k])    - 기준$tax_0)    < 0.003)
+      }
+    })
+    add("필수 계산 2 : z_check (같은 해, 두 가지 기준)", ok2,
+        "Year / share_mm / tax_mm / share_0 / tax_0 다섯 열, 세 행(1944·1976·2024)으로 담으세요. 1976 의 share_mm 은 0.000, share_0 은 0.089 입니다. 둘이 같게 나오면 z() 에 a 와 b 를 넘기지 않은 것입니다.")
+
   }
 
   ## ---- 4. 출력 ---------------------------------------------------

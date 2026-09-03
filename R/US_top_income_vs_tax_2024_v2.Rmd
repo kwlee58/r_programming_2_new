@@ -1,0 +1,720 @@
+---
+title: "Marginal Tax Rates vs US Income (1913 ~ 2024)"
+subtitle: "2026-2학기 개정판 · 두 축을 겹쳐 그리는 그래프"
+author: "coop711"
+output: html_document
+---
+
+<!--
+이 파일은 US_top_income_shares_vs_tax_rates_2024_kr_p.Rmd 의 2026-2학기 수업용
+개정판입니다. 그림을 그리는 코드는 원본 그대로입니다. 좌우 두 개의 세로축을
+수평하게 맞추는 여백 조정, 눈금을 선형변환으로 옮겨 놓고 실제 값을 적어 주는 방식,
+글자 위치는 여러 해에 걸쳐 다듬어진 것이므로 손대지 않았습니다.
+더한 것 : (1) 맨 앞의 컨텍스트 절
+          (2) 맨 끝의 필수 계산 · Comments 양식 · 자가점검
+바꾼 것 : RData 를 불러 오는 대신 엑셀에서 바로 읽도록 자료 준비 코드를 앞에 붙였습니다.
+          ../pics 로 그림 파일을 내보내는 dev.copy() 는 주석으로 막아 두었습니다.
+-->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## 이 데이터에 대하여
+
+지난주에는 한 자료를 안쪽으로 쪼개어 보았다. 이번 주에는 **서로 다른 두 자료를
+한 화면에 얹는다.**
+
+### 두 개의 출처
+
+| 계열 | 출처 | 성격 |
+|---|---|---|
+| 상위 1% 소득점유율 | Saez, `TabFig2024.xlsx` | 세무 신고서에서 집계한 것 |
+| 최고 한계세율 | Tax Foundation, `federal_income_tax_rates.txt` | 법에 적힌 세율 |
+
+**둘을 잇는 것은 연도뿐이다.** 하나는 사람들이 실제로 번 돈이고, 다른 하나는
+법전에 적힌 숫자다. 같은 해에 나란히 놓을 수는 있지만, 그것이 곧 둘이
+서로를 설명한다는 뜻은 아니다. 이번 주 「한계」 항목이 여기서 나온다.
+
+### 붉은 선의 계단은 누가 놓았나
+
+세율은 법이 바뀌기 전까지 그대로다. 그래서 계단 모양이 된다.
+**계단 하나가 의회를 통과한 법 하나다.**
+
+| 해 | 최고세율 | 무슨 일이 있었나 | 상위 1% |
+|---|---|---|---|
+| 1913 | 7% | 수정헌법 16조 — 50만 달러 초과분에만 | 18.0 |
+| 1918 | 77% | 1차 세계대전 | 16.0 |
+| 1925 | 25% | 멜런 감세 — 1920년대 내내 내려간다 | 20.2 |
+| 1932 | 63% | 후버 — 대공황 한복판, 뉴딜 이전 | 15.6 |
+| 1936 | 79% | 뉴딜 세제 — "부자에게 물리기(Soak the Rich)" | 19.3 |
+| 1944 | 94% | 전쟁 — 백 년을 통틀어 가장 높다 | 11.3 |
+| 1965 | 70% | 케네디·존슨 감세 | 10.9 |
+| 1982 | 50% | 레이건 — 1981년 경제회복조세법 | 10.8 |
+| 1988 | 28% | 레이건 — 1986년 세제개혁법 | 15.5 |
+| 2018 | 37% | 이후 다시 50%를 넘은 적이 없다 | 22.0 |
+
+**세율만 보아서는 안 된다.** 1913년의 7%는 50만 달러 초과분에,
+1944년의 94%는 20만 달러 초과분에 붙었다. 문턱이 크게 내려온 것이다.
+그 사이 소득세 신고서를 낸 사람은 1940년 780만 명에서 1941년 1,490만 명이
+되었고, 전쟁이 끝날 무렵에는 일곱 배가 되었다.
+미국 세제사에서 이를 **계급세에서 대중세로(class tax to mass tax)** 라고 부른다.
+
+1942년 4월 루우즈벨트는 의회에 보낸 교서에서, 세금을 내고 난 뒤 어떤 미국
+시민도 연 2만 5천 달러가 넘는 소득을 가져서는 안 된다고 했다. 사실상 100%
+세율이다. **의회는 받아들이지 않았다.** 우리 그림에 그려지는 것은 통과된
+것뿐이다.
+
+### 범위가 다르다
+
+점유율은 8.9%에서 27.6% 사이를 오간다. 세율은 7%에서 94%까지 간다.
+같은 세로축에 그리면 점유율 선이 바닥에 깔려 아무것도 보이지 않는다.
+그래서 **선형변환**을 쓴다.
+
+$$z(x) = \frac{x - a}{b - a}$$
+
+`a` 를 최솟값, `b` 를 최댓값으로 잡으면 모든 값이 0과 1 사이로 들어온다.
+그리고 원래 값은 **왼쪽 축과 오른쪽 축에 따로 적어** 준다.
+이것이 이 그림의 요령이다. 그리고 이번 주에 따져 볼 것이기도 하다.
+
+---
+
+## 자료 읽기
+
+### 1) 소득점유율 (Saez, `Table A3`)
+
+지난주에 읽었던 것과 같은 범위다.
+
+```{r shares}
+library(readxl)
+library(magrittr)
+v_names <- c("Year", "P90_100", "P95_100", "P99_100", "P99.5_100", "P99.9_100", "P99.99_100", "P90_95", "P95_99", "P99_99.5", "P99.5_99.9", "P99.9_99.99")
+US_top_income_shares_24 <-
+  readxl::read_excel("../data/TabFig2024.xlsx",
+                     range = "Table A3!A6:M117",
+                     col_names = FALSE)
+US_top_income_shares_24 %<>%
+  `[`(-8)
+names(US_top_income_shares_24) <- v_names
+US_top_income_shares_24 %<>%
+  data.frame
+class(US_top_income_shares_24$Year) <- "integer"
+```
+
+### 2) 평균소득과 세율
+
+`data-FigA1` 시트에는 하위 99%와 상위 1%의 **평균소득**이 들어 있다.
+자본이득을 뺀 것과 넣은 것, 두 벌이다. 세율은 텍스트 파일에서 읽는다.
+
+```{r data preparation}
+options(digits = 2)
+US_income_average_24 <-
+   read_excel("../data/TabFig2024.xlsx",
+              range = "data-FigA1!A4:G115",
+              col_names = FALSE,
+              col_types = "numeric")
+US_income_average_24 <- US_income_average_24[, -c(4, 7)]
+v_names <- c("Year", "Bottom_99", "Top_1", "Bottom_99_K", "Top_1_K")
+names(US_income_average_24) <- v_names
+US_income_average_24 %<>%
+  data.frame
+#> Marginal Tax Rates
+tax_rates <-
+  read.table("../data/federal_income_tax_rates.txt",
+             skip = 1,
+             header = FALSE)
+names(tax_rates) <- c("Year", "Lowest", "Marginal")
+top_income_tax <-
+  cbind(US_top_income_shares_24[c("Year", "P99_100")],
+        US_income_average_24[c("Bottom_99", "Top_1", "Bottom_99_K", "Top_1_K")],
+        tax_rates[2:3])
+str(top_income_tax)
+```
+
+세 자료가 모두 112행이라서 `cbind()` 로 옆에 붙일 수 있었다.
+**행 수가 같다는 것만 믿고 옆으로 붙이는 것은 위험한 일이다.**
+한 해라도 어긋나 있으면 아무 경고 없이 잘못된 표가 만들어진다.
+그래서 붙인 뒤에는 반드시 확인한다.
+
+```{r sanity}
+all(US_top_income_shares_24$Year == tax_rates$Year)
+all(US_top_income_shares_24$Year == US_income_average_24$Year)
+range(top_income_tax$P99_100)
+range(top_income_tax$Marginal)
+```
+
+### 3) 1913년을 100으로 놓은 평균소득
+
+```{r rates}
+Rate_99 <-
+  US_income_average_24[, "Bottom_99"] /
+  US_income_average_24[, "Bottom_99"][1] * 100
+Rate_1 <-
+  US_income_average_24[, "Top_1"] /
+  US_income_average_24[, "Top_1"][1] * 100
+Rate_99_K <-
+  US_income_average_24[, "Bottom_99_K"] /
+  US_income_average_24[, "Bottom_99_K"][1] * 100
+Rate_1_K <-
+  US_income_average_24[, "Top_1_K"] /
+  US_income_average_24[, "Top_1_K"][1] * 100
+```
+
+---
+
+## 선형변환 함수
+
+`q = x` 로 하면 변수의 관찰값 전체를 변환한다.
+`q` 는 그 중 일부의 변환된 값을 보고자 할 때 입력한다.
+
+```{r z-func}
+z <- function(x, q, a = min(x), b = max(x)) {
+  (q - a) / (b - a)
+}
+#> 0에서 1사이의 범위로 변환
+top_income_tax$P99_100_z <-
+  top_income_tax$P99_100 %>%
+  z(., .)
+top_income_tax$Marginal_z <-
+  top_income_tax$Marginal %>%
+  z(., .)
+Rate_99_z <-
+  Rate_99 %>%
+  z(., ., a = min(c(Rate_99, Rate_1)), b = max(c(Rate_99, Rate_1)))
+Rate_1_z <-
+  Rate_1 %>%
+  z(., ., a = min(c(Rate_99, Rate_1)), b = max(c(Rate_99, Rate_1)))
+Rate_99_K_z <-
+  Rate_99_K %>%
+  z(., ., a = min(c(Rate_99_K, Rate_1_K)), b = max(c(Rate_99_K, Rate_1_K)))
+Rate_1_K_z <-
+  Rate_1_K %>%
+  z(., ., a = min(c(Rate_99_K, Rate_1_K)), b = max(c(Rate_99_K, Rate_1_K)))
+```
+
+`Rate_99_z` 와 `Rate_1_z` 를 보라. **두 계열을 같은 `a`, `b` 로 변환했다.**
+따로따로 변환했다면 두 선이 모두 화면을 꽉 채워, 격차가 사라져 버렸을 것이다.
+무엇을 함께 변환하고 무엇을 따로 변환할지가 이 그림의 첫 번째 결정이다.
+
+## 한글 폰트 준비
+
+```{r font}
+library(showtext)
+font_ok <- tryCatch({
+  font_add_google("Nanum Gothic", "nanum")
+  TRUE
+}, error = function(e) FALSE)
+if (!font_ok) {
+  cand <- c("/System/Library/Fonts/Supplemental/AppleGothic.ttf",
+            file.path(Sys.getenv("WINDIR"), "Fonts", "malgun.ttf"))
+  cand <- cand[file.exists(cand)]
+  if (length(cand)) font_add("nanum", regular = cand[1])
+}
+showtext_auto()
+showtext_opts(dpi = 96)
+```
+
+---
+
+## ① 상위 1% 소득점유율과 최고 한계세율
+
+연도를 공통으로 수평축에 놓고, 상위 1%의 소득점유율과 한계소득세율처럼
+**서로 다른 범위를 가진 변수들을 한 화면에 함께 표현**해야 하기 때문에
+선형변환을 이용하여 범위를 0에서 1 사이로 맞추고, 각 변수의 변환하기 전
+원시 값은 좌측 수직축과 우측 수직축에 표현하는 트릭을 써 보자.
+
+```{r top 1 percent shares vs MTR, fig.width = 12, fig.height = 6.75}
+#> 왼쪽, 오른쪽 수직 축의 축 눈금을 수평하게 놓을 수 있도록 공간 조정
+suppressMessages({par(mar = c(5, 6, 4, 6) + 0.1,
+    family = "nanum")
+#> 점과 선을 함께 사용하여 소득 상위 1%의 점유율 표시.
+top_income_tax %>%
+  plot(P99_100_z ~ Year,
+       data = .,
+       type = "b",
+       pch = 17,
+       cex = 1.2,
+       lwd = 3,
+       axes = FALSE,
+       ann = FALSE,
+       xlim = c(1910, 2030),
+       ylim = c(0, 1))
+#> 점유율 도표를 박스 안에
+box()
+#> 수평축 눈금 표시
+seq(1910, 2030, by = 10) %>%
+  axis(side = 1, at = ., labels = .)
+#> 상위 1% 소득점유율을 왼편 수직축에 표시. 수직축 눈금을 표시하기 위하여 선형변환
+#> 함수를 이용하되, 실제 표시되는 눈금은 상위 1% 소득점유율의 실제 값이 표시될 수
+#> 있도록 최소값과 최대값을 범위로 하고 중간에는 10%, 15%, 20%만 나오도록 함.
+y1_at <-
+  top_income_tax$P99_100 %>%
+  z(c(10, 15, 20)) %>%
+  c(0, ., 1)
+labels1_at <-
+  top_income_tax$P99_100 %>%
+  min %>%
+  c(seq(10, 20, by = 5), max(top_income_tax$P99_100)) %>%
+  format(digits = 2, nsmall = 1)
+axis(side = 2,
+     at = y1_at,
+     labels = labels1_at,
+     las = 1)
+#> 왼편 수직축 가장자리에 석 줄을 띄워 놓고 축 이름 표시.
+mtext("상위 1% 소득점유율(%)",
+      side = 2,
+      line = 3)
+#> 범위를 0에서 1사이로 변환한 한계소득세율을 도표에 추가.
+top_income_tax %>%
+  lines(Marginal_z ~ Year, data = .,
+        type = "l",
+        lty = 1,
+        lwd = 5,
+        col = "red",
+        xlim = c(1910, 2030), ylim = c(0, 1))
+#> 오른편 수직축에 한계소득세율의 눈금을 표시하기 위하여 역시 선형변환 함수를
+#> 이용하고 실제 표시하는 눈금은 한계소득세율의 실제값 사용.
+y4_at <- top_income_tax$Marginal %>%
+  z(seq(20, 80, by = 20)) %>%
+  c(0, ., 1)
+labels4_at <- top_income_tax$Marginal %>%
+  min %>%
+  c(seq(20, 80, by = 20), max(top_income_tax$Marginal)) %>%
+  format(digits = 2, nsmall = 1)
+axis(side = 4,
+     at = y4_at,
+     labels = labels4_at,
+     las = 1)
+#> 오른편 수직축의 이름을 석 줄 띄워 표시.
+mtext("최고 한계세율(%)",
+      side = 4,
+      line = 3)
+#> 메인 타이틀 작성
+title(main = "상위 1% 소득점유율과 최고 한계세율",
+      xlab = "연도",
+      cex.main = 1.8)
+#> 어느 선이 어느 변수인지 텍스트로 표시
+text(x = 1953, y = 0.9,
+     labels = "최고 한계세율",
+     cex = 1.2)
+text(x = 1964, y = 0.2,
+     labels = "상위 1% 소득점유율",
+     cex = 1.2)
+})
+```
+
+이 그림에서 눈여겨볼 것이 세 가지다.
+
+첫째, **왼쪽 축의 맨 아래 눈금이 8.9, 맨 위가 27.6이다.** 0이 아니다.
+`z()` 로 0에서 1 사이로 늘려 놓았기 때문에 자료의 최솟값이 바닥에,
+최댓값이 천장에 붙는다. 오른쪽 축도 마찬가지로 7.0에서 94.0이다.
+
+둘째, `axes = FALSE, ann = FALSE` 로 축과 이름을 **모두 끄고** 시작한다.
+그 다음 `box()`, `axis()`, `mtext()`, `title()` 로 하나씩 붙인다.
+축 네 개를 각각 다른 자료의 눈금으로 쓰려면 이 방법밖에 없다.
+
+셋째, 세율은 `type = "l"` 이고 점유율은 `type = "b"` 다.
+세율은 법이 바뀌기 전까지 그대로인 **계단**이고, 점유율은 해마다 새로 집계한
+**관측값**이다. 선의 모양이 자료의 성격을 말해 준다.
+
+## ② 뒤집어 보면
+
+위의 그림으로부터 한계소득세율이 높을 때 상위 1%의 소득점유율이 낮고,
+한계소득세율이 낮을 때는 반대로 상위 1%의 소득점유율이 높은 것을 관찰할 수 있다.
+이를 보다 명확히 파악하기 위하여 한계소득세율을 뒤집어 보면,
+즉 `u`를 변환한 한계소득세율이라 할 때 `1 - u`를 비교 대상으로 그려보면,
+
+```{r inverse MTR, fig.width = 12, fig.height = 6.75}
+suppressMessages({par(mar = c(5, 6, 4, 6) + 0.1,
+    family = "nanum")
+plot(P99_100_z ~ Year,
+     data = top_income_tax,
+     type = "b",
+     pch = 17,
+     cex = 1.2,
+     lwd = 3,
+     axes = FALSE,
+     ann = FALSE,
+     xlim = c(1910, 2030),
+     ylim = c(0, 1))
+box()
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+y1_at <- c(0,
+           z(top_income_tax$P99_100, c(10, 15, 20)),
+           1)
+labels1_at <- format(c(min(top_income_tax$P99_100),
+                       seq(10, 20, by = 5),
+                       max(top_income_tax$P99_100)),
+                    digits = 2,
+                    nsmall = 1)
+axis(side = 2,
+     at = y1_at,
+     labels = labels1_at,
+     las = 1)
+mtext("상위 1% 소득점유율(%)",
+      side = 2,
+      line = 3)
+#> 변환된 한계소득세율을 뒤집는다.
+top_income_tax$M_inv <- 1 - top_income_tax$Marginal_z
+lines(M_inv ~ Year,
+      data = top_income_tax,
+      type = "l",
+      lty = 1,
+      lwd = 5,
+      col = "red",
+      xlim = c(1910, 2030), ylim = c(0, 1))
+y4_at <- c(0,
+           z(top_income_tax$Marginal, seq(20, 80, by = 20)),
+           1)
+labels4_at <- format(c(min(top_income_tax$Marginal),
+                       seq(20, 80, by = 20),
+                       max(top_income_tax$Marginal)),
+                    digits = 2,
+                    nsmall = 1)
+axis(side = 4,
+     at = y4_at,
+     labels = rev(labels4_at),
+     las = 1)
+mtext("최고 한계세율(%)",
+      side = 4,
+      line = 3)
+title(main = "상위 1% 소득점유율과 최고 한계세율",
+      xlab = "연도",
+      cex.main = 1.8)
+text(x = 1973,
+     y = 0.35,
+     labels = "최고 한계세율",
+     cex = 1.2)
+text(x = 1998,
+     y = 0.17,
+     labels = "상위 1% 소득점유율",
+     cex = 1.2)
+})
+```
+
+**자료는 하나도 바뀌지 않았다.** 바뀐 것은 `1 - u` 한 줄과,
+오른쪽 축 눈금을 `rev()` 로 뒤집은 것뿐이다.
+그런데 앞 그림에서 거울처럼 마주 보던 두 선이 여기서는 나란히 붙어 간다.
+
+같은 자료가 「반대로 움직인다」로도, 「함께 움직인다」로도 보인다.
+어느 쪽이 참인가. **둘 다 참이다.** 그리고 바로 그 점이,
+이런 그림 한 장으로 인과를 말하면 안 되는 이유다.
+
+## ③ 누구의 소득이 늘었나 (자본이득 제외)
+
+상위 1%의 소득 증가폭과 하위 99%의 소득 증가폭(자본소득 제외)을
+최고한계세율의 변화와 함께 비교
+
+```{r top 1 and bottom 99 vs MTR, fig.width = 12, fig.height = 6.75}
+suppressMessages({par(mar = c(5, 6, 4, 6) + 0.1,
+    family = "nanum")
+plot(Rate_99_z ~ Year,
+     data = top_income_tax,
+     type = "b",
+     lwd = 2,
+     pch = 24,
+     col = "black",
+     bg = "black",
+     axes = FALSE,
+     ann = FALSE,
+     xlim = c(1910, 2030),
+     ylim = c(0, 1))
+lines(Rate_1_z ~ Year,
+      data = top_income_tax,
+      lwd = 2,
+      type = "b",
+      pch = 24,
+      col = "black",
+      bg = "white")
+box()
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+#> [2026-2 수정] 선은 두 계열을 함께 놓고 변환했으므로(a, b 가 두 계열 전체의
+#> 최솟값·최댓값), 눈금도 같은 a, b 로 옮겨야 선과 눈금이 맞는다.
+ab <- c(min(c(Rate_99, Rate_1)), max(c(Rate_99, Rate_1)))
+y2_at <- c(0,
+           z(Rate_99, c(100, 200, 300), a = ab[1], b = ab[2]),
+           1)
+labels2_at <- format(c(ab[1],
+                       c(100, 200, 300),
+                       ab[2]),
+                    digits = 2,
+                    nsmall = 1)
+axis(side = 2,
+     at = y2_at,
+     labels = labels2_at,
+     las = 1)
+ylab_2 <- "평균 소득 (1913 = 100)"
+mtext(ylab_2,
+      side = 2,
+      line = 4)
+lines(Marginal_z ~ Year,
+      data = top_income_tax,
+      type ="l",
+      lwd = 5,
+      lty = 1,
+      col = "red",
+      xlim = c(1910, 2030),
+      ylim = c(0, 1))
+y4_at <- c(0,
+           z(top_income_tax$Marginal, seq(20, 80, by = 20)),
+           1)
+labels4_at <- format(c(min(top_income_tax$Marginal),
+                       seq(20, 80, by = 20),
+                       max(top_income_tax$Marginal)),
+                    digits = 2,
+                    nsmall = 1)
+axis(side = 4,
+     at = y4_at,
+     labels = labels4_at,
+     las = 1)
+ylab_4 <- "최고 한계세율(%)"
+mtext(ylab_4,
+      side = 4,
+      line = 3)
+title(main = "상위 1%와 하위 99% 소득 증가\n(자본이득 제외)",
+      xlab = "연도",
+      cex.main = 1.5)
+legend("bottomright",
+       legend = c("하위 99%", "상위 1%"),
+       pch = 24,
+       col = "black",
+       pt.bg = c("black", "white"),
+       inset = 0.05)
+text(x = 1925,
+     y = 0.9,
+     labels = "최고 한계세율",
+     cex = 1.2)
+})
+```
+
+두 계열을 **같은 기준으로** 변환했으므로 (`a`, `b` 를 두 계열 전체의 최솟값·최댓값으로
+잡았다) 둘 사이의 간격이 그대로 살아 있다.
+
+> **눈금과 선은 같은 기준으로 옮겨야 한다.**
+> 선은 두 계열 전체의 최솟값·최댓값으로 변환했는데, 왼쪽 눈금만 `Rate_99` 하나의
+> 최솟값·최댓값으로 옮기면 눈금이 선과 어긋난다. 그래서 위 코드에서 `ab` 를 따로
+> 만들어 `z()` 에 넘겼다. 화면에 그린 것과 축에 적은 것이 같은 변환을 거쳤는지,
+> 이런 그림에서는 늘 확인해야 한다.
+
+1980년대 중반까지 검은 점과 흰 점은 붙어서 간다. 그 뒤로 갈라진다.
+갈라지는 시점이 붉은 선이 내려앉은 시점과 가깝다. **가깝다는 것이 인과는 아니다.**
+
+## ④ 자본이득까지 넣으면
+
+상위 1%의 소득 증가폭과 하위 99%의 소득 증가폭(자본소득 포함)을
+최고세율의 변화와 함께 비교
+
+```{r top 1 and bottom 99 vs MTR with K, fig.width = 12, fig.height = 6.75}
+suppressMessages({par(mar = c(5, 6, 4, 6) + 0.1,
+    family = "nanum")
+plot(Rate_99_K_z ~ Year,
+     data = top_income_tax,
+     type = "b",
+     lwd = 2,
+     pch = 24,
+     col = "black",
+     bg = "black",
+     axes = FALSE,
+     ann = FALSE,
+     xlim = c(1910, 2030),
+     ylim = c(0, 1))
+lines(Rate_1_K_z ~ Year,
+      data = top_income_tax,
+      type = "b",
+      lwd = 2,
+      pch = 24,
+      col = "black",
+      bg = "white")
+box()
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+#> [2026-2 수정] ③과 같은 이유로 눈금의 a, b 를 두 계열 전체의 값으로 맞춘다.
+ab_K <- c(min(c(Rate_99_K, Rate_1_K)), max(c(Rate_99_K, Rate_1_K)))
+y3_at <- c(0,
+           z(Rate_99_K, seq(100, 600, by = 100), a = ab_K[1], b = ab_K[2]),
+           1)
+labels3_at <- format(c(ab_K[1],
+                       seq(100, 600, by = 100),
+                       ab_K[2]),
+                    digits = 2,
+                    nsmall = 1)
+axis(side = 2,
+     at = y3_at,
+     labels = labels3_at,
+     las = 1)
+mtext("평균 소득 (1913 = 100)",
+      side = 2,
+      line = 4)
+lines(Marginal_z ~ Year,
+      data = top_income_tax,
+      type ="l",
+      lty = 1,
+      lwd = 5,
+      col = "red",
+      xlim = c(1910, 2030),
+      ylim = c(0, 1))
+y4_at <- c(0,
+           z(top_income_tax$Marginal, seq(20, 80, by = 20)),
+           1)
+labels4_at <- format(c(min(top_income_tax$Marginal),
+                       seq(20, 80, by = 20),
+                       max(top_income_tax$Marginal)),
+                    digits = 2,
+                    nsmall = 1)
+axis(side = 4,
+     at = y4_at,
+     labels = labels4_at,
+     las = 1)
+mtext("최고 한계세율(%)",
+      side = 4,
+      line = 3)
+title(main = "상위 1%와 하위 99% 소득 증가\n(자본이득 포함)",
+      xlab = "연도",
+      cex.main = 1.5)
+legend("bottomright",
+       legend = c("하위 99%", "상위 1%"),
+       pch = 24,
+       col = "black",
+       pt.bg = c("black", "white"),
+       inset = 0.05)
+text(x = 1925,
+     y = 0.9,
+     labels = "최고 한계세율",
+     cex = 1.2)
+})
+```
+
+③과 ④의 차이는 **자본이득을 빼느냐 넣느냐** 하나뿐이다.
+왼쪽 축의 맨 위 눈금을 견주어 보라. ③에서는 상위 1%의 최댓값이,
+④에서는 훨씬 큰 값이 천장에 붙는다.
+주식과 부동산을 팔아서 번 돈을 소득으로 셀 것인가.
+**세는 방식을 정하는 일이 곧 결론을 정하는 일이다.**
+
+---
+
+## 필수 계산 (두 가지)
+
+> 아래 두 개는 **지정된 이름 그대로** 만들어야 자가점검을 통과합니다.
+> 코드는 완성되어 있습니다. 여러분이 할 일은 **읽는 것**입니다.
+
+### 필수 계산 1 : `mtr_band`
+
+그림을 접어 두고 숫자만 본다. 최고 한계세율을 세 구간으로 나누고,
+각 구간에 속한 해들의 상위 1% 점유율 평균을 낸다.
+
+```{r calc1}
+## ── 필수 계산 1 : mtr_band ──────────────────────────────────
+## 앞에서 options(digits = 2) 로 맞춰 두었던 표시 자릿수를 되돌린다.
+## 이 한 줄이 없으면 19.3 이 19 로 찍힌다. 자릿수는 전역 설정이라는 것을 기억하자.
+options(digits = 4)
+## cut() 으로 세율을 세 구간으로 나누고, tapply() 로 구간별 평균을 낸다.
+## right = FALSE 는 구간의 왼쪽 끝을 포함한다는 뜻이다. [0,40) [40,70) [70,100)
+d <- top_income_tax                     # 아래에서 짧게 쓰려고 붙인 별명
+band <- cut(d$Marginal, breaks = c(0, 40, 70, 100), right = FALSE,
+            labels = c("under40", "40to70", "over70"))
+
+mtr_band <- data.frame(
+  band  = levels(band),
+  n     = as.integer(table(band)),
+  share = round(as.numeric(tapply(d$P99_100, band, mean)), 1))
+mtr_band
+```
+
+세율이 낮은 구간일수록 상위 1%의 몫이 크다. 49해 / 13해 / 50해로 표본도 고르다.
+
+```{r corr}
+cor(d$P99_100, d$Marginal)
+```
+
+### 필수 계산 2 : `z_check`
+
+②에서 자료를 하나도 건드리지 않고 그림의 인상을 바꾸어 보았다.
+이번에는 **기준을 바꾸면** 어떻게 되는지를 숫자로 확인한다.
+`a`, `b` 를 자료의 최솟값·최댓값으로 잡은 것과, 0과 100으로 잡은 것을 나란히 놓는다.
+
+```{r calc2}
+## ── 필수 계산 2 : z_check ───────────────────────────────────
+yrs <- c(1944, 1976, 2024)
+r   <- d[match(yrs, d$Year), ]
+
+z_check <- data.frame(
+  Year     = yrs,
+  share_mm = round(z(d$P99_100, r$P99_100), 3),              # a = min, b = max
+  tax_mm   = round(z(d$Marginal, r$Marginal), 3),
+  share_0  = round(z(d$P99_100, r$P99_100, 0, 100), 3),      # a = 0,   b = 100
+  tax_0    = round(z(d$Marginal, r$Marginal, 0, 100), 3))
+z_check
+```
+
+1976년 점유율을 보라. 최솟값·최댓값 기준으로는 **0.000** — 그림의 맨 바닥에
+붙는다. 0~100 기준으로는 **0.089** 로, 바닥에서 조금 떠 있다.
+같은 8.9%인데 그림에서의 위치가 다르다.
+①의 왼쪽 축이 0이 아니라 8.9에서 시작했던 까닭이 이것이다.
+
+---
+
+## 바꿔 보기
+
+> 채점 대상이 아닙니다. 한 줄만 바꿔서 다시 Knit 해 보세요.
+
+```{r try-it-w11}
+## 아래 breaks 를 c(0, 50, 100) 으로 바꾸고 labels 도 두 개로 줄여 보세요.
+##   band2 <- cut(d$Marginal, breaks = c(0, 50, 100), right = FALSE,
+##                labels = c("under50", "over50"))
+## 구간을 어디서 자르느냐에 따라 평균이 달라집니다.
+## 세 구간일 때와 두 구간일 때, 어느 쪽이 더 강한 이야기를 하는지 견주어 보세요.
+band2 <- cut(d$Marginal, breaks = c(0, 40, 70, 100), right = FALSE,
+             labels = c("under40", "40to70", "over70"))
+round(tapply(d$P99_100, band2, mean), 1)
+```
+
+<P style = "page-break-before:always">
+
+## Comments
+
+> 아래 네 항목을 모두 채워 주세요. 분량보다 항목의 충실함으로 평가합니다.
+> 코드를 그대로 옮겨 적는 것은 근거가 아닙니다.
+> 각 항목은 **두세 문장** 이면 충분합니다.
+
+**1. 맥락** — 이 그림은 서로 다른 두 자료를 연도로 이어 붙인 것이다.
+각각 누가 어떻게 만든 숫자인가. 하나는 사람들의 행동이고 하나는 법 조문이라는
+차이가 왜 중요한가.
+
+(여기에 작성)
+
+**2. 주장** — ①번 그림에서 읽어낼 수 있는 것을 한 문장으로.
+
+(여기에 작성)
+
+**3. 근거** — 위 주장을 뒷받침하는 수치, 그리고 그것을 만들어 낸 코드의
+핵심 한 줄과 그 줄이 하는 일.
+
+(여기에 작성)
+
+**4. 한계** — 두 선이 거울처럼 맞물린다고 해서 "세율을 올리면 상위 1%의 몫이
+줄어든다"고 말할 수 있는가? 1970년대 이후 미국에서 세율 말고도 함께 달라진 것을
+하나만 들고, 그것이 왜 이 주장을 흔드는지 쓰시오.
+
+(여기에 작성)
+
+<P style = "page-break-before:always">
+
+## 제출 전 자가점검
+
+아래 청크를 그대로 두고 Knit 하면 형식 점검 결과가 나옵니다.
+**모두 '통과' 가 뜬 것을 확인한 뒤에 제출하세요.**
+이 점검은 형식만 봅니다. 내용은 교수자가 읽고 평가합니다.
+
+```{r submit-check, echo = FALSE, results = "asis"}
+if (file.exists("submit_check.R")) {
+  source("submit_check.R", encoding = "UTF-8")
+  submit_check(week = 11)
+} else {
+  cat("submit_check.R 을 이 Rmd 파일과 같은 폴더에 두세요.")
+}
+```

@@ -1,0 +1,525 @@
+---
+title: "US Top Income Shares 1913 ~ 2024"
+subtitle: "2026-2학기 개정판 · 점유율이라는 잣대"
+author: "coop711"
+output: html_document
+---
+
+<!--
+이 파일은 US_top_income_shares_2024_summary_kr.Rmd 의 2026-2학기 수업용 개정판입니다.
+그림을 그리는 코드는 원본 그대로입니다. 눈금, 격자, 범례 위치, 주석 위치는
+여러 해에 걸쳐 다듬어진 것이므로 손대지 않았습니다.
+더한 것 : (1) 맨 앞의 컨텍스트 절
+          (2) 맨 끝의 필수 계산 · Comments 양식 · 자가점검
+뺀 것   : ggplot 판 (원본 US_top_income_shares_2024_summary_kr.Rmd 에 그대로 있습니다)
+          RData 저장, ../pics 로 그림 파일 내보내기
+-->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(digits = 4)
+```
+
+## 이 데이터에 대하여
+
+코드를 실행하기 전에, 우리가 무엇을 다루려는지 먼저 확인한다.
+낯선 데이터를 만났을 때 던지는 질문은 늘 같다.
+**누가, 언제, 왜, 어떻게 모았고, 그 과정에서 무엇이 빠졌는가.**
+
+### 출처
+
+Emmanuel Saez(UC Berkeley) 교수가 관리하는 표
+[`TabFig2024.xlsx`](http://eml.berkeley.edu/~saez/) 의 `Table A3` 이다.
+Piketty 와 Saez 가 2003년에 발표한 논문의 자료를 해마다 갱신해 오고 있다.
+
+### 왜 1913년부터인가
+
+우연이 아니다. 1913년은 미국이 **수정헌법 16조**로 연방 소득세를 시작한 해다.
+소득세가 있어야 소득 신고서가 쌓이고, 신고서가 쌓여야 누가 얼마를 벌었는지 셀 수 있다.
+**이 자료는 통계조사가 아니라 세무 행정의 부산물이다.** 그 사실이 이 자료의
+힘이자 한계다.
+
+그때 매긴 세율은 **최고 7%**, 그것도 소득 50만 달러를 넘는 부분에만 붙었다.
+독신 3천 달러, 부부 4천 달러까지는 면세여서 당시 미국인의 절반 이상은
+소득세를 낼 일이 아예 없었다. **세수를 걷자고 만든 세금이 아니었다.**
+
+### 손상익하(損上益下)
+
+주역 익괘(益卦)에 나오는 말이다. 위를 덜어 아래에 보탠다.
+노자 77장에는 같은 뜻이 이렇게 적혀 있다 — 天之道 損有餘而補不足,
+하늘의 도는 남는 데서 덜어 모자란 데를 채운다.
+
+누진소득세는 그것을 하겠다고 만든 장치다. **그러면 실제로 그렇게 되었는가.**
+그것을 재는 자가 이번 주에 배울 점유율이다. 그리고 노자는 곧바로 덧붙인다 —
+人之道則不然 損不足以奉有餘. 사람의 도는 그렇지 않아서, 모자란 데서 덜어
+남는 쪽을 받든다고.
+
+이 자료의 U 자를 반으로 접으면 앞 절반과 뒤 절반이 그 두 문장을 닮았다.
+다만 **그것은 해석이고, 그림이 하는 말이 아니다.** 그 둘을 나누어 보는 것이
+이 수업의 목표다.
+
+### 점유율이라는 잣대
+
+이 표가 담은 것은 평균도 중위값도 아니다. **점유율(share)** 이다.
+`P90_100` 은 소득 상위 10%가 전체 소득의 몇 퍼센트를 가져갔는지를 말한다.
+`P99_100` 은 상위 1%, `P99.9_100` 은 상위 0.1%.
+
+평균은 모두를 한 숫자로 뭉갠다. 점유율은 **어디서 자를지**를 우리가 정해야 한다.
+그리고 이번 주에 볼 것은 — 어디서 자르느냐에 따라 이야기가 완전히 달라진다는 것이다.
+
+### 열 이름 읽는 법
+
+| 이름 | 뜻 |
+|---|---|
+| `P90_100` | 상위 10% 전체 |
+| `P95_100` | 상위 5% |
+| `P99_100` | 상위 1% |
+| `P99.9_100` | 상위 0.1% |
+| `P99.99_100` | 상위 0.01% |
+| `P90_95` | 상위 10% 중 아래쪽 절반 (10등~5등 구간) |
+| `P95_99` | 상위 5% 중 1%를 뺀 부분 |
+
+`P90_100 = P90_95 + P95_99 + P99_100` 이다. 상위 10%를 세 층으로 쪼갠 것이다.
+
+---
+
+## 자료 읽기
+
+엑셀 시트에서 필요한 범위만 잘라 온다.
+`Table A3!A6:M117` 은 시트 이름과 범위를 한꺼번에 지정한 것이다.
+`col_names = FALSE` 로 읽은 뒤 이름을 따로 붙이는 까닭은,
+원본 시트의 머리글이 두 줄에 걸쳐 있어서 그대로 쓸 수 없기 때문이다.
+
+```{r readxl}
+library(readxl)
+library(magrittr)
+v_names <- c("Year", "P90_100", "P95_100", "P99_100", "P99.5_100", "P99.9_100", "P99.99_100", "P90_95", "P95_99", "P99_99.5", "P99.5_99.9", "P99.9_99.99")
+US_top_income_shares_24 <-
+  readxl::read_excel("../data/TabFig2024.xlsx",
+                     range = "Table A3!A6:M117",
+                     col_names = FALSE)
+US_top_income_shares_24 %<>%
+  `[`(-8)
+names(US_top_income_shares_24) <- v_names
+US_top_income_shares_24 %<>%
+  data.frame
+class(US_top_income_shares_24$Year) <- "integer"
+str(US_top_income_shares_24)
+```
+
+`[`(-8) 은 8번째 열을 버리라는 뜻이다. 원본 시트의 그 자리는 칸을 띄우려고
+비워 둔 열이다. **엑셀에서 보기 좋으라고 넣은 빈 칸이 R 에서는 열 하나가 된다.**
+
+112행이다. 1913년부터 2024년까지 한 해도 빠짐없이 들어 있다.
+
+```{r head-tail}
+head(US_top_income_shares_24[, 1:4], 3)
+tail(US_top_income_shares_24[, 1:4], 3)
+```
+
+맨 위 세 줄을 보라. 1913~1916년의 `P90_100` 과 `P95_100` 은 **비어 있다**(`NA`).
+상위 1%만 있다. 소득세를 막 시작한 몇 해는 신고 대상이 아주 좁아서
+상위 10%까지 셀 수가 없었다. **자료가 없는 것이 아니라 셀 수 없었던 것이다.**
+
+## 한글 폰트 준비
+
+그림 안에 한글을 쓰기 위해 `showtext` 로 나눔고딕을 불러 온다.
+인터넷이 막혀 있으면 컴퓨터에 이미 있는 한글 글꼴로 대신한다.
+
+```{r font}
+library(showtext)
+font_ok <- tryCatch({
+  font_add_google("Nanum Gothic", "nanum")
+  TRUE
+}, error = function(e) FALSE)
+if (!font_ok) {
+  cand <- c("/System/Library/Fonts/Supplemental/AppleGothic.ttf",
+            file.path(Sys.getenv("WINDIR"), "Fonts", "malgun.ttf"))
+  cand <- cand[file.exists(cand)]
+  if (length(cand)) font_add("nanum", regular = cand[1])
+}
+showtext_auto()
+showtext_opts(dpi = 96)
+```
+
+---
+
+## ① 상위 10%의 소득점유율
+
+소득 상위 10%(`P90_100`)의 소득점유율 변화
+
+```{r top 10, fig.width = 12, fig.height = 6.75}
+par(family = "nanum")
+x_lab <- "연도"
+y_lab <- "소득 점유(%)"
+plot(P90_100 ~ Year,
+     data = US_top_income_shares_24,
+     xlab = x_lab,
+     ylab = y_lab,
+     xlim = c(1910, 2030),
+     ylim = c(30, 60),
+     xaxt = "n",
+     type = "b",
+     pch = 17)
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+abline(h = seq(30, 60, by = 5),
+       lty = 3)
+abline(v = seq(1910, 2030, by = 10),
+       lty = 3)
+main_title <- "미국 상위 10% 소득 점유(1917 ~ 2024)"
+title(main = main_title, cex.main = 1.8)
+text(x = c(1928, 2007, 2021),
+     y = c(50, 50, 56),
+     labels = c("1928", "2007", "2021"),
+     pos = 3)
+times_label <- c("대공황", "대번영", "대침체")
+text(x = c(1935, 1965, 2015),
+     y = c(48.5, 32, 53),
+     label = times_label,
+     cex = 1.5,
+     col = "red")
+```
+
+U 자다. 1928년에 한 번 솟았다가 내려앉고, 1970년대 중반에 바닥을 친 뒤 다시 올라간다.
+1928년과 2007년, 두 봉우리 바로 뒤에 각각 대공황과 금융위기가 있었다.
+
+`type = "b"` 는 점과 선을 함께 그린다. 해마다 점을 찍었으므로
+어느 해에 자료가 있고 없는지가 그림에 그대로 드러난다.
+`xaxt = "n"` 으로 눈금을 끄고 `axis()` 로 10년 간격을 다시 붙인 것,
+`abline(lty = 3)` 으로 점선 격자를 직접 그은 것은
+**원본 엑셀 그림의 눈금 간격을 그대로 따라가려는 것**이다.
+
+## ② 상위 10%를 세 층으로
+
+소득 상위 10%(`P90_100`)를 상위 1%(`P99_100`), 차상위 4%(`P95_99`),
+차차상위 5%(`P90_95`)로 분할
+
+```{r partition top 10, fig.width = 12, fig.height = 6.75}
+par(family = "nanum")
+plot(P99_100 ~ Year,
+     data = US_top_income_shares_24,
+     xlab = x_lab,
+     ylab = y_lab,
+     xlim = c(1910, 2030),
+     ylim = c(5, 30),
+     xaxt = "n",
+     type = "b",
+     pch = 17)
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+lines(P95_99 ~ Year,
+      data = US_top_income_shares_24,
+      type = "b",
+      pch = 17,
+      col = "red")
+lines(P90_95 ~ Year,
+      data = US_top_income_shares_24,
+      type = "b",
+      pch = 17,
+      col = "blue")
+abline(h = seq(5, 25, by = 5),
+       lty = 3)
+abline(v = seq(1910, 2030, by = 10),
+       lty = 3)
+legend_text_1 <- c("99-100%:$691,270 이상(2024년 기준)",
+                   "95-99%:$271,850-$691,270",
+                   "90-95%:$180,890-$271,850")
+legend(x = 1947,
+       y = 30,
+       legend = legend_text_1,
+       pch = 17,
+       col = c("black", "red", "blue"))
+main_title_1 <- "미국 상위 10% 소득 점유 분할 (1913 ~ 2024)"
+title(main = main_title_1, cex.main = 1.8)
+text(x = c(1924, 2007, 2021),
+     y = c(23.5, 23.5, 27.5),
+     labels = c("1928", "2007", "2021"),
+     pos = 3)
+text(x = c(1935, 1965, 2015),
+     y = c(22, 8, 25),
+     labels = times_label,
+     cex = 1.5,
+     col = "red")
+```
+
+파란 선(90-95%)은 거의 평평하다. 빨간 선(95-99%)은 조금 올랐다.
+**검은 선(상위 1%)만 급하게 올랐다.**
+"상위 10%의 몫이 늘었다"는 말이 얼마나 뭉뚱그린 말인지 여기서 드러난다.
+
+범례에 달러 금액이 붙어 있는 것에 주목하자. 상위 1%의 문턱은 2024년 기준
+$691,270 이다. 점유율만 보면 추상적이지만, 문턱 금액을 함께 보면
+이 선들이 각각 어떤 사람들의 이야기인지가 잡힌다.
+
+## ③ 상위 1% 안쪽
+
+소득 상위 1%(`P99_100`)를 상위 0.1%(`P99.9_100`), 차상위 0.4%(`P99.5_99.9`),
+차차상위 0.5%(`P99_99.5`)로 분할
+
+```{r partition top 1, fig.width = 12, fig.height = 6.75}
+par(family = "nanum")
+plot(P99.9_100 ~ Year,
+     data = US_top_income_shares_24,
+     xlab = x_lab,
+     ylab = y_lab,
+     xlim = c(1910, 2030),
+     ylim = c(0, 16),
+     xaxt = "n",
+     yaxt = "n",
+     type = "b",
+     pch = 17)
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+axis(side = 2,
+     at = seq(0, 15, by = 3),
+     labels = seq(0, 15, by = 3))
+lines(P99.5_99.9 ~ Year,
+      data = US_top_income_shares_24,
+      type = "b",
+      pch = 17,
+      col = "red")
+lines(P99_99.5 ~ Year,
+      data = US_top_income_shares_24,
+      type = "b",
+      pch = 17,
+      col = "blue")
+abline(h = seq(0, 12, by = 3),
+       lty = 3)
+abline(v = seq(1910, 2030, by = 10),
+       lty = 3)
+legend_text_2 <- c("99.9-100%:$3,362,400 이상(2024년 기준)",
+                   "99.5-99.9%:$1,057,200-$3,362,400",
+                   "99-99.5%:$691,270-$1,057,200")
+legend(x = 1946,
+       y = 16,
+       legend = legend_text_2,
+       pch = 17,
+       col = c("black", "red", "blue"))
+main_title_2 <- "미국 상위 1% 소득 점유 분할 (1913 ~ 2024)"
+title(main = main_title_2, cex.main = 1.8)
+text(x = c(1924, 2007, 2021),
+     y = c(11, 12.5, 15),
+     labels = c("1928", "2007", "2021"),
+     pos = 3)
+text(x = c(1935, 1965, 2015),
+     y = c(10, 2, 13),
+     label = times_label,
+     cex = 1.5,
+     col = "red")
+```
+
+같은 일이 한 겹 더 안에서 되풀이된다. **자를수록 안쪽이 더 가파르다.**
+
+여기서는 `yaxt = "n"` 으로 세로 눈금까지 끄고 3 간격으로 다시 붙였다.
+0, 3, 6, 9, 12, 15. 2, 4, 6 이나 5, 10, 15 가 아니다.
+1928년 봉우리(11.5)와 2021년 봉우리(15.0)가 서로 다른 칸에 놓이도록 고른 간격이다.
+**축을 어떻게 나눌지도 읽는 사람을 어디로 이끌지에 대한 선택이다.**
+
+## ④ 상위 0.1% 안쪽
+
+소득 상위 0.1%(`P99.9_100`)를 상위 0.01%(`P99.99_100`)와
+다음 0.09%(`P99.9_99.99`)로 분할
+
+```{r partition top 0.01 vs 0.09, fig.width = 12, fig.height = 6.75}
+par(family = "nanum")
+plot(P99.99_100 ~ Year,
+     data = US_top_income_shares_24,
+     xlab = x_lab,
+     ylab = y_lab,
+     xlim = c(1910, 2030),
+     ylim = c(0, 8),
+     xaxt = "n",
+     type = "b",
+     pch = 17)
+axis(side = 1,
+     at = seq(1910, 2030, by = 10),
+     labels = seq(1910, 2030, by = 10))
+lines(P99.9_99.99 ~ Year,
+      data = US_top_income_shares_24,
+      type = "b",
+      pch = 17,
+      col = "blue")
+abline(h = seq(0, 6, by = 2),
+       lty = 3)
+abline(v = seq(1910, 2030, by = 10),
+       lty = 3)
+legend_text_3 <- c("99.99-100%:$17,180,000 이상(2024년 기준)",
+                   "99.9-99.99%:$3,362,400-$17,180,000")
+legend(x = 1945,
+       y = 8,
+       legend = legend_text_3,
+       pch = 17,
+       col = c("black", "blue"))
+main_title_3 <- "미국 상위 0.1% 소득 점유 분할 (1913 ~ 2024)"
+title(main = main_title_3, cex.main = 1.8)
+text(x = c(1924, 2007, 2021),
+     y = c(6.3, 6.3, 7.5),
+     labels = c("1928", "2007", "2021"),
+     pos = 3)
+text(x = c(1935, 1965, 2015),
+     y = c(5.6, 0.5, 6.5),
+     label = times_label,
+     cex = 1.5,
+     col = "red")
+```
+
+만 명 중 한 명이다. 그 한 명이 1976년에는 전체 소득의 0.9%를,
+2024년에는 5.2%를 가져간다. **세로축이 0에서 8까지밖에 되지 않는다는 것을
+잊지 말자.** 앞의 그림들과 눈금이 다르므로 선의 기울기를 눈으로 견주면 안 된다.
+견주려면 숫자로 견주어야 한다. 그래서 다음이 필요하다.
+
+> ggplot 으로 그린 같은 그림 네 장은 `US_top_income_shares_2024_summary_kr.Rmd`
+> 에 있습니다. 같은 자료를 다른 문법으로 그리면 어떻게 달라지는지
+> 견주어 보고 싶은 사람은 그 파일을 열어 보세요. 채점 대상은 아닙니다.
+
+---
+
+## 필수 계산 (두 가지)
+
+> 아래 두 개는 **지정된 이름 그대로** 만들어야 자가점검을 통과합니다.
+> 코드는 완성되어 있습니다. 여러분이 할 일은 **읽는 것**입니다.
+> 각 줄이 무엇을 하는지 알면 그것이 Comments 3번(근거)의 재료가 됩니다.
+
+### 필수 계산 1 : `share_layers`
+
+1976년(바닥)과 2024년의 다섯 층을 나란히 놓고 그 차이를 본다.
+
+```{r calc1}
+## ── 필수 계산 1 : share_layers ──────────────────────────────
+## 한 해를 뽑고, 필요한 열만 골라 벡터로 만든다.
+top <- US_top_income_shares_24          # 아래에서 짧게 쓰려고 붙인 별명
+pick <- function(y, cols) {
+  as.numeric(top[top$Year == y, cols])
+}
+cols <- c("P90_95", "P95_99", "P99_100", "P99.9_100", "P99.99_100")
+
+share_layers <- data.frame(
+  layer = cols,
+  y1976 = round(pick(1976, cols), 1),
+  y2024 = round(pick(2024, cols), 1))
+share_layers$diff <- round(share_layers$y2024 - share_layers$y1976, 1)
+share_layers
+```
+
+`P99_100` 한 줄이 나머지를 다 합친 것보다 크다. 막대로 보면 이렇다.
+
+```{r calc1-plot, fig.width = 12, fig.height = 6.75}
+par(family = "nanum", mar = c(5.4, 4.6, 3.0, 1.2))
+m <- rbind(`1976` = share_layers$y1976, `2024` = share_layers$y2024)
+colnames(m) <- c("P90-95", "P95-99", "상위 1%", "상위 0.1%", "상위 0.01%")
+bp <- barplot(m, beside = TRUE, ylim = c(0, 26), col = c("#8A8F98", "#C0392B"),
+              border = NA, ylab = "소득 점유(%)",
+              main = "1976년(바닥)과 2024년")
+grid(nx = NA, ny = NULL, col = "grey85")
+barplot(m, beside = TRUE, col = c("#8A8F98", "#C0392B"), border = NA,
+        add = TRUE, axes = FALSE)
+text(colMeans(bp), m[2, ] + 1.6, sprintf("%+.1f", share_layers$diff),
+     col = "#C0392B", font = 2, cex = 1.1)
+abline(v = mean(c(bp[2, 3], bp[1, 4])), col = "grey55", lty = 2)
+mtext("이 셋을 더하면 상위 10%", side = 1, line = 2.6,
+      adj = 0.22, col = "grey45", cex = 0.95)
+mtext("이 둘은 상위 1% 안에 들어 있다", side = 1, line = 2.6,
+      adj = 0.92, col = "grey45", cex = 0.95)
+legend("topright", bty = "n", fill = c("#8A8F98", "#C0392B"), border = NA,
+       legend = c("1976", "2024"))
+```
+
+왼쪽 세 개는 서로 겹치지 않는다. 합하면 상위 10% 다. 오른쪽 두 개는 다르다.
+상위 1% **안에** 들어 있는 것들이다. 그림을 읽을 때 이런 것을 놓치면 안 된다.
+
+### 필수 계산 2 : `gap_1963`
+
+점유율은 몫의 비율이다. 그러면 **금액**은 어떻게 되었나.
+1963년은 상위 1% 점유율이 가장 낮았던 시절(9.9%)이고, 최고 한계세율이 91%이던 해다.
+
+```{r calc2}
+## ── 필수 계산 2 : gap_1963 ──────────────────────────────────
+## data-FigA1 시트에는 하위 99% 와 상위 1% 의 평균소득(2024년 달러)이 들어 있다.
+avg <- readxl::read_excel("../data/TabFig2024.xlsx",
+                          range = "data-FigA1!A4:G115",
+                          col_names = FALSE, col_types = "numeric")
+avg <- as.data.frame(avg)[, c(1, 2, 3)]
+names(avg) <- c("Year", "Bottom99", "Top1")
+
+gap_1963 <- data.frame(
+  group = c("Bottom99", "Top1"),
+  y1963 = round(as.numeric(avg[avg$Year == 1963, c("Bottom99", "Top1")])),
+  y2024 = round(as.numeric(avg[avg$Year == 2024, c("Bottom99", "Top1")])))
+gap_1963$ratio <- round(gap_1963$y2024 / gap_1963$y1963, 2)
+gap_1963
+```
+
+같은 61년 동안 하위 99%는 **1.53배**, 상위 1%는 **3.91배**가 되었다.
+두 집단의 격차는 8.8배에서 22.5배로 벌어졌다.
+이 표는 다음 주에 다시 만난다.
+
+---
+
+## 바꿔 보기
+
+> 채점 대상이 아닙니다. 한 줄만 바꿔서 다시 Knit 해 보세요.
+
+```{r try-it-w10, fig.width = 12, fig.height = 6.75}
+## 아래 plot() 의 ylim 을 c(5, 30) 에서 c(0, 60) 으로 바꾸고 다시 Knit 해 보세요.
+## 선은 하나도 바뀌지 않았는데 상위 1%의 상승이 훨씬 완만해 보입니다.
+## ②번 그림과 견주어 보면, 축을 어디까지 잡느냐가 곧 주장의 세기임을 알 수 있습니다.
+par(family = "nanum")
+plot(P99_100 ~ Year,
+     data = US_top_income_shares_24,
+     xlab = x_lab,
+     ylab = y_lab,
+     xlim = c(1910, 2030),
+     ylim = c(5, 30),
+     type = "b",
+     pch = 17)
+abline(h = seq(5, 30, by = 5), lty = 3)
+title(main = "ylim 을 c(0, 60) 으로 바꾸고 다시 Knit 해 보세요", cex.main = 1.4)
+```
+
+<P style = "page-break-before:always">
+
+## Comments
+
+> 아래 네 항목을 모두 채워 주세요. 분량보다 항목의 충실함으로 평가합니다.
+> 코드를 그대로 옮겨 적는 것은 근거가 아닙니다.
+> 각 항목은 **두세 문장** 이면 충분합니다.
+
+**1. 맥락** — 이 데이터는 누가, 언제, 왜, 어떤 방식으로 모았는가.
+그리고 1913~1916년의 상위 10% 칸이 비어 있는 이유는 무엇인가.
+
+(여기에 작성)
+
+**2. 주장** — 「상위 10%를 세 층으로」 그림에서 읽어낼 수 있는 것을 한 문장으로.
+
+(여기에 작성)
+
+**3. 근거** — 위 주장을 뒷받침하는 수치, 그리고 그것을 만들어 낸 코드의
+핵심 한 줄과 그 줄이 하는 일.
+
+(여기에 작성)
+
+**4. 한계** — 이 자료는 **세금 신고서**에서 나왔다. 그래서 이 숫자에 잡히지 않는
+소득에는 어떤 것이 있겠는가. 그것이 상위 1%의 몫을 실제보다 작게 보이게 하는가,
+크게 보이게 하는가.
+
+(여기에 작성)
+
+<P style = "page-break-before:always">
+
+## 제출 전 자가점검
+
+아래 청크를 그대로 두고 Knit 하면 형식 점검 결과가 나옵니다.
+**모두 '통과' 가 뜬 것을 확인한 뒤에 제출하세요.**
+이 점검은 형식만 봅니다. 내용은 교수자가 읽고 평가합니다.
+
+```{r submit-check, echo = FALSE, results = "asis"}
+if (file.exists("submit_check.R")) {
+  source("submit_check.R", encoding = "UTF-8")
+  submit_check(week = 10)
+} else {
+  cat("submit_check.R 을 이 Rmd 파일과 같은 폴더에 두세요.")
+}
+```
