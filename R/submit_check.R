@@ -353,6 +353,58 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
     add("필수 계산 2 : z_check (같은 해, 두 가지 기준)", ok2,
         "Year / share_mm / tax_mm / share_0 / tax_0 다섯 열, 세 행(1944·1976·2024)으로 담으세요. 1976 의 share_mm 은 0.000, share_0 은 0.089 입니다. 둘이 같게 나오면 z() 에 a 와 b 를 넘기지 않은 것입니다.")
 
+  } else if (week == 12) {
+    ok1 <- safe({
+      g <- as.data.frame(val("pump_deaths"))
+      need <- c("pump", "n", "share")
+      if (!got("pump_deaths") || nrow(g) != 13 || !all(need %in% names(g))) FALSE else {
+        k <- grep("Broad", as.character(g[["pump"]]))
+        if (length(k) != 1) FALSE else
+          sum(as.integer(g[["n"]])) == 578 &&
+          as.integer(g[["n"]][k]) == 359 &&
+          abs(as.numeric(g[["share"]][k]) - 62.1) < 0.06
+      }
+    })
+    add("필수 계산 1 : pump_deaths (펌프별 최근접 사망자)", ok1,
+        "pump / n / share 세 열, 열세 행으로 담으세요. 합이 578 이고 Broad St 가 359 명, 62.1% 입니다. 합이 578 이 아니면 max.col() 이 아니라 다른 방법으로 배정한 것입니다.")
+
+    ok2 <- safe({
+      g <- as.data.frame(val("edge_cases"))
+      if (!got("edge_cases") || nrow(g) != 3 || !all(c("n", "share") %in% names(g))) FALSE else {
+        기준_n <- c(77, 140, 249)
+        기준_s <- c(13.3, 24.2, 43.1)
+        all(as.integer(g[["n"]]) == 기준_n) &&
+        all(abs(as.numeric(g[["share"]]) - 기준_s) < 0.06)
+      }
+    })
+    add("필수 계산 2 : edge_cases (경계에 선 사람들)", ok2,
+        "기준 / n / share 세 열, 세 행으로 담으세요. 위에서부터 77 명(13.3%), 140 명(24.2%), 249 명(43.1%) 입니다. 값이 다르면 거리 행렬 D 를 행별로 정렬(apply(D, 1, sort))하지 않은 것입니다.")
+
+  } else if (week == 13) {
+    ok1 <- safe({
+      g <- as.data.frame(val("march_loss"))
+      need <- c("구간", "시작", "끝", "손실", "손실률")
+      if (!got("march_loss") || nrow(g) != 2 || !all(need %in% names(g))) FALSE else {
+        all(as.numeric(g[["시작"]]) == c(340000, 100000)) &&
+        all(as.numeric(g[["끝"]])   == c(100000,   4000)) &&
+        all(as.numeric(g[["손실"]]) == c(240000,  96000)) &&
+        all(abs(as.numeric(g[["손실률"]]) - c(70.6, 96.0)) < 0.06)
+      }
+    })
+    add("필수 계산 1 : march_loss (진군과 후퇴의 손실)", ok1,
+        "구간 / 시작 / 끝 / 손실 / 손실률 다섯 열, 두 행으로 담으세요. 진군 340000 \u2192 100000 (240000, 70.6%), 후퇴 100000 \u2192 4000 (96000, 96.0%) 입니다. 시작이 340000 이 아니거나 끝이 100000 이 아니면 본대 아닌 분견대까지 섞인 것입니다. group == 1 로 걸러내세요.")
+
+    ok2 <- safe({
+      g <- as.data.frame(val("temp_check"))
+      if (!got("temp_check") || nrow(g) != 4 || !("값" %in% names(g))) FALSE else {
+        v <- as.numeric(g[["값"]])
+        v[1] == 9 && v[2] == 0 &&
+        abs(v[3] - (-30)) < 1e-6 && abs(v[4] - (-37.5)) < 1e-6
+      }
+    })
+    add("필수 계산 2 : temp_check (기온이 기록된 구간)", ok2,
+        "항목 / 값 두 열, 네 행으로 담으세요. 위에서부터 9, 0, -30, -37.5 입니다. 두 번째가 0 이 아니면 관측 시기를 달 이름으로 세지 않은 것입니다. 진군 시기(6\u20139월)에는 기온 관측이 하나도 없습니다.")
+
   }
 
   ## ---- 4. 출력 ---------------------------------------------------

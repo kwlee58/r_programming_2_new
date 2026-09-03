@@ -1,0 +1,399 @@
+---
+title: "John Snow's Cholera Map, 1854"
+subtitle: "2026-2학기 개정판 · 자료를 어디에 놓느냐가 곧 주장이다"
+author: "coop711"
+output: html_document
+---
+
+<!--
+이 파일은 Snow_gg.Rmd 의 2026-2학기 수업용 개정판입니다.
+그림을 한 겹씩 쌓아 올리는 여섯 단계는 원본 그대로입니다.
+더한 것 : (1) 맨 앞의 컨텍스트 절
+          (2) 맨 끝의 필수 계산 · Comments 양식 · 자가점검
+바꾼 것 : 한글 글꼴을 KoPubWorld 고정 경로 대신 나눔고딕으로 받아 오고,
+          안 되면 컴퓨터에 있는 글꼴로 자동 대체하도록 했습니다.
+-->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+options(digits = 4)
+```
+
+## 이 데이터에 대하여
+
+지난 두 주는 백 년치 표를 다루었다. 이번 주와 다음 주는 **자리를 가진 자료**다.
+숫자가 어디에 놓이는지가 곧 그 숫자의 뜻이 되는 자료.
+
+### 출처
+
+1854년 8월 말부터 9월 초까지 런던 소호(Soho)의 브로드 스트리트 일대에서
+열흘 남짓 사이에 500명 넘게 죽었다. 의사 **John Snow** 는 그 사망자들의
+**집 주소**를 하나하나 찾아 지도 위에 점으로 찍었다.
+우리가 쓰는 자료는 그가 1855년 책 『콜레라의 전파 방식에 대하여』에 실은
+지도를 좌표로 옮긴 것으로, R 의 `HistData` 패키지에 들어 있다.
+
+| 자료 | 내용 |
+|---|---|
+| `Snow.deaths` | 사망자 578명의 위치 |
+| `Snow.pumps` | 공용 펌프 13곳의 위치와 이름 |
+| `Snow.streets` | 도로의 선분 좌표 |
+| `Snow.polygons` | 펌프별 구역 — 「가장 가까운」 곳을 나눈 다각형 |
+
+### 이 점들이 무엇인지 정확히 알아 둘 것
+
+지도 위의 검은 점은 **사람이 죽은 자리가 아니다. 그 사람이 살던 집이다.**
+이 한 가지가 이번 주 「한계」 항목의 재료다.
+
+브로드 스트리트 펌프의 물을 마신 사람이 모두 그 근처에 살지는 않았다.
+일하러 왔다가 마신 사람, 학교에서 마신 사람은 자기 동네에 점으로 찍힌다.
+반대로 그 동네에 살면서 그 물을 마시지 않은 사람도 있었다.
+
+**Snow 를 설득시킨 결정적인 증거 두 가지는 오히려 이 지도에 없다.**
+브로드 스트리트 한복판 양조장의 노동자들은 거의 아무도 걸리지 않았다.
+그들은 물 대신 맥주를 마셨다. 그리고 소호에서 한참 떨어진 햄스테드에 살던
+한 과부는 브로드 스트리트 물맛을 좋아해서 마차로 배달시켜 마시다가 죽었다.
+지도에서 멀리 떨어진 그 점 하나가, 지도 안의 500개 점보다 강한 증거였다.
+
+### 구역을 나누는 두 가지 방법
+
+`Snow.polygons` 는 펌프마다 「가장 가까운」 구역을 나눈 것이다.
+그런데 그 **가깝다**가 자로 잰 직선거리인지, 길을 따라 걸어간 거리인지는
+그림만 보아서는 알 수 없다. 소호의 골목은 구부러져 있고 막다른 길도 있어서
+둘은 얼마든지 다를 수 있다.
+
+**본문에서 직접 확인해 볼 것이다.** 자료에 붙은 설명을 그대로 믿고
+논증을 쌓는 것이 이번 주에 가장 조심할 일이다.
+
+---
+
+## 자료 읽기
+
+```{r data}
+library(HistData)
+library(ggplot2)
+library(dplyr)
+
+data(Snow.deaths)
+data(Snow.pumps)
+data(Snow.streets)
+data(Snow.polygons)
+
+str(Snow.deaths)
+Snow.pumps
+length(Snow.polygons)
+```
+
+사망자 578명, 펌프 13곳, 그리고 펌프마다 구역이 하나씩 있다.
+
+## 한글 글꼴 준비
+
+```{r font}
+library(showtext)
+font_ok <- tryCatch({
+  font_add_google("Nanum Gothic", "nanum")
+  TRUE
+}, error = function(e) FALSE)
+if (!font_ok) {
+  cand <- c("/System/Library/Fonts/Supplemental/AppleGothic.ttf",
+            file.path(Sys.getenv("WINDIR"), "Fonts", "malgun.ttf"))
+  cand <- cand[file.exists(cand)]
+  if (length(cand)) font_add("nanum", regular = cand[1])
+}
+showtext_auto()
+showtext_opts(dpi = 96)
+```
+
+---
+
+## 한 겹씩 쌓아 올린다
+
+지도는 한 번에 그려지지 않는다. 무엇을 먼저 놓고 무엇을 나중에 얹을지가
+곧 읽는 순서가 된다. 여섯 단계를 하나씩 쌓아 본다.
+
+### ① 도로만
+
+```{r step1, fig.width = 7, fig.height = 7}
+g1 <- ggplot() +
+  geom_path(data = Snow.streets,
+            aes(x = x, y = y, group = street),
+            color = "grey50", linewidth = 0.4) +
+  labs(title = "1단계 · 도로만") +
+  theme_bw(base_family = "nanum") +
+  theme(plot.title = element_text(hjust = 0.5))
+g1
+```
+
+아직 아무 주장도 없다. 소호의 골목이 얼마나 좁고 구부러져 있는지만 보인다.
+
+### ② 사망자
+
+```{r step2, fig.width = 7, fig.height = 7}
+g2 <- g1 +
+  geom_point(data = Snow.deaths,
+             aes(x = x, y = y),
+             color = "black", shape = 15, size = 1.2) +
+  labs(title = "2단계 · 사망자를 얹는다")
+g2
+```
+
+한가운데가 검다. 그런데 **이것만으로는 아무것도 말할 수 없다.**
+사람이 많이 사는 곳에서 사람이 많이 죽는 것은 당연하다.
+
+### ③ 펌프
+
+```{r step3, fig.width = 7, fig.height = 7}
+g3 <- g2 +
+  geom_point(data = Snow.pumps,
+             aes(x = x, y = y),
+             color = "red", shape = 17, size = 3) +
+  geom_text(data = Snow.pumps,
+            aes(x = x, y = y, label = label),
+            vjust = 1.3, size = 3, family = "nanum") +
+  labs(title = "3단계 · 펌프를 얹는다")
+g3
+```
+
+**여기서 그림이 주장으로 바뀐다.** 검은 덩어리의 한복판에 빨간 삼각형이 하나 있다.
+브로드 스트리트 펌프다. 점과 펌프를 한 화면에 놓은 것, 그 한 번의 결정이
+「이 물이 원인이다」 라는 문장을 만들었다.
+
+### ④ 구역
+
+```{r step4, fig.width = 7, fig.height = 7}
+polygons_df <- bind_rows(lapply(seq_along(Snow.polygons), function(i) {
+  data.frame(Snow.polygons[[i]], id = i)
+}))
+g4 <- g3 +
+  geom_polygon(data = polygons_df,
+               aes(x = x, y = y, group = id),
+               fill = NA, color = "brown", linewidth = 0.6) +
+  labs(title = "4단계 · 펌프별 구역")
+g4
+```
+
+갈색 선이 구역이다. 각 펌프에서 「가장 가까운」 영역을 나눈 것인데,
+그 「가깝다」가 **자로 잰 직선거리**인지 **길을 따라 걸어간 거리**인지는
+그림만 보아서는 알 수 없다. 소호의 골목은 구부러져 있고 막다른 길도 있어서
+둘은 다를 수 있다. **확인해 보자.**
+
+```{r poly-check}
+## 사망자를 두 가지 방법으로 펌프에 배정하고, 결과가 다른 사람이 몇 명인지 센다.
+## (1) 직선거리로 가장 가까운 펌프
+dx <- outer(Snow.deaths$x, Snow.pumps$x, "-")
+dy <- outer(Snow.deaths$y, Snow.pumps$y, "-")
+D  <- sqrt(dx^2 + dy^2)                       # 578 × 13 거리 행렬
+near <- max.col(-D, ties.method = "first")
+
+## (2) 어느 구역(다각형) 안에 들어 있는가
+## 점이 다각형 안에 있는지 보는 고전적인 방법 : 광선 쏘기(ray casting).
+## 점에서 오른쪽으로 반직선을 긋고 다각형의 변과 몇 번 만나는지 센다.
+## 홀수 번 만나면 안, 짝수 번이면 밖이다.
+in_poly <- function(px, py, vx, vy) {
+  n <- length(vx); j <- n; inside <- FALSE
+  for (i in seq_len(n)) {
+    if (((vy[i] > py) != (vy[j] > py)) &&
+        (px < (vx[j] - vx[i]) * (py - vy[i]) / (vy[j] - vy[i]) + vx[i]))
+      inside <- !inside
+    j <- i
+  }
+  inside
+}
+walk <- vapply(seq_len(nrow(Snow.deaths)), function(k) {
+  hit <- which(vapply(seq_along(Snow.polygons), function(i)
+    in_poly(Snow.deaths$x[k], Snow.deaths$y[k],
+            Snow.polygons[[i]]$x, Snow.polygons[[i]]$y), logical(1)))
+  if (length(hit) == 1L) hit else NA_integer_
+}, integer(1))
+
+c(두_기준이_다른_사람 = sum(!is.na(walk) & walk != near),
+  어느_구역에도_없는_사람 = sum(is.na(walk)))
+```
+
+**한 명도 다르지 않다.** 578명 전부가 같은 펌프로 간다.
+이 다각형은 걸어간 거리가 아니라 **직선거리로 나눈 것**이다.
+펌프 두 곳의 한가운데를 수직으로 자른, 이른바 보로노이(Voronoi) 분할이다.
+
+이런 확인을 왜 하느냐. **자료에 붙은 설명을 그대로 믿고 논증을 쌓으면
+그 논증 전체가 흔들리기 때문이다.** 「걸어가는 거리로 나눈 구역」이라고
+적혀 있다고 해서 그런 것은 아니다. 세 줄이면 확인할 수 있는 것을
+확인하지 않는 쪽이 위험하다.
+
+### ⑤ 눈금자
+
+```{r step5, fig.width = 7, fig.height = 7}
+g5 <- g4 +
+  annotate("segment", x = 4, xend = 8, y = 19.5, yend = 19.5, linewidth = 0.8) +
+  annotate("text", x = c(4, 6, 8, 8), y = c(20.0, 20.0, 20.0, 20.5),
+           label = c("0", "2", "4", "100 m."), size = 3) +
+  labs(title = "5단계 · 눈금자를 얹는다")
+g5
+```
+
+눈금자가 없으면 이 지도는 「어딘가의 그림」이다. 100미터가 어느 정도인지
+알려 주는 순간 **걸어서 갈 만한 거리인가** 를 독자가 판단할 수 있게 된다.
+
+### ⑥ 밀도
+
+```{r step6, fig.width = 7, fig.height = 7}
+library(KernSmooth)
+kde <- bkde2D(Snow.deaths[, c("x", "y")], bandwidth = c(0.5, 0.5))
+dens_df <- expand.grid(x = kde$x1, y = kde$x2)
+dens_df$z <- as.vector(kde$fhat)
+clrs <- colorRampPalette(c(rgb(0, 1, 0, 0), rgb(1, 0, 0, 0.8)), alpha = TRUE)(20)
+
+g6 <- g5 +
+  geom_raster(data = dens_df, aes(x = x, y = y, fill = z),
+              interpolate = TRUE) +
+  scale_fill_gradientn(colors = clrs, guide = "none") +
+  labs(title = "6단계 · 밀도를 얹는다")
+g6
+```
+
+**여기서부터는 조심해야 한다.** 밀도는 자료가 아니라 계산이다.
+`bandwidth = c(0.5, 0.5)` 라는 숫자를 우리가 정했고, 그 숫자를 키우면
+붉은 덩어리가 넓게 퍼지고 줄이면 점 하나하나가 따로 논다.
+**얼마나 뭉뚱그려 볼지를 우리가 고른 것이다.**
+
+### 마무리
+
+```{r final, fig.width = 7, fig.height = 7}
+g7 <- g6 +
+  coord_fixed(xlim = c(3, 20), ylim = c(3, 20)) +
+  labs(title = "John Snow's Cholera Map (1854, Soho, London)",
+       subtitle = "사망자 = 검은 사각형    펌프 = 빨간 삼각형",
+       caption = "Source: John Snow (1855) On the Mode of Communication of Cholera") +
+  theme_bw(base_family = "nanum") +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 11, margin = margin(b = 10)),
+        plot.caption = element_text(size = 8, hjust = 1, margin = margin(t = 10)),
+        axis.title = element_blank(), axis.text = element_blank(),
+        axis.ticks = element_blank(), legend.position = "none",
+        panel.grid = element_blank())
+g7
+```
+
+---
+
+## 필수 계산 (두 가지)
+
+> 아래 두 개는 **지정된 이름 그대로** 만들어야 자가점검을 통과합니다.
+> 코드는 완성되어 있습니다. 여러분이 할 일은 **읽는 것**입니다.
+
+### 필수 계산 1 : `pump_deaths`
+
+각 사망자를 **직선거리로 가장 가까운 펌프**에 배정하고, 펌프별로 센다.
+
+```{r calc1}
+## ── 필수 계산 1 : pump_deaths ───────────────────────────────
+## 거리 행렬 D 와 최근접 펌프 near 는 앞의 「구역 확인」 청크에서 만들어 두었다.
+pump_deaths <- data.frame(
+  pump  = as.character(Snow.pumps$label),
+  n     = as.integer(table(factor(near, levels = seq_len(nrow(Snow.pumps))))))
+pump_deaths$share <- round(pump_deaths$n / sum(pump_deaths$n) * 100, 1)
+pump_deaths
+
+## 브로드 스트리트 펌프가 몇 번인지는 번호로 외우지 말고 이름으로 찾는다.
+broad <- grep("Broad", Snow.pumps$label)
+broad
+```
+
+한 줄만 보면 된다. 브로드 스트리트 펌프가 몇 명을 가져가는지.
+
+### 필수 계산 2 : `edge_cases`
+
+지도는 사람을 펌프 하나에 딱 배정한다. 갈색 선 이쪽이면 이 펌프, 저쪽이면 저 펌프.
+그런데 **선 바로 옆에 살던 사람은 어떻게 되는가.**
+
+가장 가까운 펌프와 **두 번째로 가까운 펌프**의 거리 차를 재 보면,
+그 배정이 얼마나 아슬아슬한지가 숫자로 나온다.
+눈금자에서 4칸이 100미터였으니 **1칸은 약 25미터**다.
+
+```{r calc2}
+## ── 필수 계산 2 : edge_cases ────────────────────────────────
+## 행마다 거리를 정렬해서 첫째와 둘째의 차를 구한다.
+d_sorted <- t(apply(D, 1, sort))
+gap <- d_sorted[, 2] - d_sorted[, 1]          # 1등과 2등의 거리 차
+
+edge_cases <- data.frame(
+  기준 = c("차이 0.25칸 미만 (약 6m)",
+           "차이 0.5칸 미만 (약 12m)",
+           "차이 1칸 미만 (약 25m)"),
+  n    = c(sum(gap < 0.25), sum(gap < 0.5), sum(gap < 1)))
+edge_cases$share <- round(edge_cases$n / nrow(D) * 100, 1)
+edge_cases
+```
+
+```{r calc2-extra}
+## 참고 — 브로드 스트리트에 배정된 사람들이 그 펌프에서 얼마나 떨어져 있었나
+summary(D[near == broad, broad])
+```
+
+지도의 갈색 선은 굵기가 없는 한 줄이지만, **실제로는 그 선 근처에 사람들이 산다.**
+배정을 딱 잘라 놓은 것은 자료가 아니라 우리다.
+
+---
+
+## 바꿔 보기
+
+> 채점 대상이 아닙니다. 한 줄만 바꿔서 다시 Knit 해 보세요.
+
+```{r try-it-w12, fig.width = 7, fig.height = 7}
+## 아래 bandwidth 를 c(0.2, 0.2) 로, 그리고 c(1.5, 1.5) 로 바꾸어 보세요.
+## 0.2 로 하면 점 하나하나가 따로 놀고, 1.5 로 하면 소호 전체가 붉어집니다.
+## 자료는 하나도 바뀌지 않았습니다. 「얼마나 뭉뚱그려 볼 것인가」 만 바꾼 것입니다.
+kde2 <- bkde2D(Snow.deaths[, c("x", "y")], bandwidth = c(0.5, 0.5))
+d2 <- expand.grid(x = kde2$x1, y = kde2$x2); d2$z <- as.vector(kde2$fhat)
+ggplot() +
+  geom_raster(data = d2, aes(x, y, fill = z), interpolate = TRUE) +
+  geom_point(data = Snow.pumps, aes(x, y), color = "white", shape = 17, size = 3) +
+  scale_fill_gradientn(colors = clrs, guide = "none") +
+  coord_fixed(xlim = c(3, 20), ylim = c(3, 20)) +
+  labs(title = "bandwidth 를 바꾸어 다시 Knit 해 보세요") +
+  theme_bw(base_family = "nanum")
+```
+
+<P style = "page-break-before:always">
+
+## Comments
+
+> 아래 네 항목을 모두 채워 주세요. 분량보다 항목의 충실함으로 평가합니다.
+> 코드를 그대로 옮겨 적는 것은 근거가 아닙니다.
+> 각 항목은 **두세 문장** 이면 충분합니다.
+
+**1. 맥락** — 이 자료는 누가, 언제, 왜, 어떤 방식으로 모았는가.
+그리고 지도 위의 검은 점 하나는 정확히 무엇을 뜻하는가.
+
+(여기에 작성)
+
+**2. 주장** — 여섯 단계 중 **어느 단계에서** 이 그림이 주장이 되었는가.
+그리고 그 주장을 한 문장으로.
+
+(여기에 작성)
+
+**3. 근거** — 위 주장을 뒷받침하는 수치, 그리고 그것을 만들어 낸 코드의
+핵심 한 줄과 그 줄이 하는 일.
+
+(여기에 작성)
+
+**4. 한계** — 검은 점은 **사람이 죽은 자리가 아니라 살던 집**이다.
+그렇다면 이 지도가 놓치는 사람은 어떤 사람인가. 한 종류만 구체적으로 들고,
+그 사람들이 지도에 제대로 찍혔다면 붉은 덩어리의 모양이 어떻게 달라졌을지 쓰시오.
+
+(여기에 작성)
+
+<P style = "page-break-before:always">
+
+## 제출 전 자가점검
+
+아래 청크를 그대로 두고 Knit 하면 형식 점검 결과가 나옵니다.
+**모두 '통과' 가 뜬 것을 확인한 뒤에 제출하세요.**
+이 점검은 형식만 봅니다. 내용은 교수자가 읽고 평가합니다.
+
+```{r submit-check, echo = FALSE, results = "asis"}
+if (file.exists("submit_check.R")) {
+  source("submit_check.R", encoding = "UTF-8")
+  submit_check(week = 12)
+} else {
+  cat("submit_check.R 을 이 Rmd 파일과 같은 폴더에 두세요.")
+}
+```
