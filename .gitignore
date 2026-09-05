@@ -17,3 +17,7 @@ R/gganim_plot*.png
 **/figs/*.gif
 _bak_20260901/
 R/*_solution.Rmd
+**/.Rhistory
+.Rapp.history
+**/.Rapp.history
+.RDataTmp
