@@ -65,11 +65,25 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
              stop_marks[stop_marks > from])
     to  <- if (length(nxt)) min(nxt) - 1L else length(src)
     body <- src[from:to]
-    ## 제목 줄에 붙어 있는 첫 문단(= 문제 지문)은 검사 대상에서 뺀다.
-    ## 학생이 쓰는 자리는 '(여기에 작성)' 이 있던 그 아래이기 때문.
-    j <- 1L
-    while (j <= length(body) && nzchar(trimws(body[j]))) j <- j + 1L
-    body <- if (j < length(body)) body[(j + 1L):length(body)] else character(0)
+    ## 학생이 쓰는 자리만 골라낸다.
+    ## (가) 답변 표시가 있는 양식 : 표시 사이만 센다. 지문이 몇 문단이든 안전하다.
+    ## (나) 표시가 없는 예전 양식 : 지문을 건너뛴다. 지문의 끝이 인용문(>)이면
+    ##      그 뒤부터가 답 자리이고, 인용문이 없으면 첫 문단 뒤부터가 답 자리다.
+    ##      1주차 4번처럼 지문이 여러 문단인 경우를 (나)가 잡아낸다. (2026-09-11)
+    b0 <- grep("답변 시작", body)
+    b1 <- grep("답변 끝",   body)
+    if (length(b0) && length(b1) && b1[1] > b0[1]) {
+      body <- if (b1[1] - b0[1] > 1L) body[(b0[1] + 1L):(b1[1] - 1L)] else character(0)
+    } else {
+      q <- grep("^\\s*>", body)
+      if (length(q)) {
+        body <- if (max(q) < length(body)) body[(max(q) + 1L):length(body)] else character(0)
+      } else {
+        j <- 1L
+        while (j <= length(body) && nzchar(trimws(body[j]))) j <- j + 1L
+        body <- if (j < length(body)) body[(j + 1L):length(body)] else character(0)
+      }
+    }
     body <- body[!grepl("^\\s*```", body)]
     body <- body[!grepl("^\\s*>", body)]
     body <- body[!grepl("^\\s*<!--|-->", body)]
