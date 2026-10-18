@@ -15,6 +15,7 @@ header-includes:
 ## Working Data Loading
 
 ```{r, data loading, echo = TRUE}
+rm(list = ls())   #> 이 청크만 따로 돌려도 앞서 만든 객체가 남지 않도록
 library(magrittr)
 load("./crimtab.RData")
 ls()
