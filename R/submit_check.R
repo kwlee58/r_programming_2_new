@@ -42,7 +42,7 @@ submit_check <- function(week, file = NULL, env = parent.frame()) {
   au <- if (length(au)) au[1] else ""
   add("제출자 표기",
       grepl("[0-9]{8}", au) && !grepl("coop711|Your Name|홍길동|제출자", au),
-      "YAML 의 author 를 '데이터과학부, 학번 8자리, 이름' 으로 바꾸세요.")
+      "YAML 의 author 를 '본인 학과, 학번 여덟 자리, 이름' 으로 바꾸세요. 학과 이름은 점검하지 않습니다.")
 
   ## ---- 2. Comments 네 항목 ---------------------------------------
   keys <- c("맥락", "주장", "근거", "한계")
